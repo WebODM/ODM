@@ -1,5 +1,3 @@
-![ODM Logo](https://user-images.githubusercontent.com/1951843/79699889-438ce580-8260-11ea-9c79-8667834aeab2.png)
-
 An open source command line toolkit for processing aerial drone imagery. ODM turns simple 2D images into:
 
 * Classified Point Clouds
@@ -260,15 +258,8 @@ ODM makes use of [several libraries](https://github.com/OpenDroneMap/ODM/blob/ma
  - [PDAL](https://github.com/PDAL/PDAL)
  - [Entwine](https://entwine.io/)
  - [MVS Texturing](https://github.com/nmoehrle/mvs-texturing)
- - [GRASS GIS](https://grass.osgeo.org/)
  - [GDAL](https://gdal.org/)
  - [PoissonRecon](https://github.com/mkazhdan/PoissonRecon)
 
 
-## Citation
 
-> *OpenDroneMap Authors* ODM - A command line toolkit to generate maps, point clouds, 3D models and DEMs from drone, balloon or kite images. **OpenDroneMap/ODM GitHub Page** 2020; [https://github.com/OpenDroneMap/ODM](https://github.com/OpenDroneMap/ODM)
-
-## Trademark
-
-See [Trademark Guidelines](https://github.com/OpenDroneMap/documents/blob/master/TRADEMARK.md)
