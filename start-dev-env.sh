@@ -98,7 +98,7 @@ if [[ ! -z $IMAGE ]]; then
 fi
 export PORT="${PORT:=3000}"
 export QTC="${QTC:=NO}"
-export IMAGE="${IMAGE:=opendronemap/nodeodm}"
+export IMAGE="${IMAGE:=webodm/nodeodm}"
 export GPU="${GPU:=NO}"
 
 if [ -z "$DATA" ]; then

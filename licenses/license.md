@@ -1,4 +1,4 @@
-Licensing for portions of OpenDroneMap are as follows:
+Licensing for portions of ODM are as follows:
 * ImageMagick - Apache 2.0 - http://www.imagemagick.org/script/license.php
 * Jhead - None - http://www.sentex.net/~mwandel/jhead/
 * libjpeg - GPLv2 - http://sourceforge.net/projects/libjpeg/
@@ -19,6 +19,6 @@ Licensing for portions of OpenDroneMap are as follows:
   * Flann - BSD2 - http://opensource.org/licenses/bsd-license.php
   * Eigen - MPL2 - http://www.mozilla.org/MPL/2.0
   * Qhull - http://www.qhull.org/COPYING.txt
-* libext - https://github.com/OpenDroneMap/OpenDroneMap/blob/gh-pages/licenses/libext_copyright.txt
-* libx11 - https://github.com/OpenDroneMap/OpenDroneMap/blob/gh-pages/licenses/libx11_copyright.txt
+* libext - https://github.com/WebODM/ODM/blob/gh-pages/licenses/libext_copyright.txt
+* libx11 - https://github.com/WebODM/ODM/blob/gh-pages/licenses/libx11_copyright.txt
 * MVS Texturing - BSD - https://github.com/nmoehrle/mvs-texturing/blob/master/LICENSE.txt

@@ -1,1 +1,1 @@
-See https://github.com/OpenDroneMap/documents/blob/master/CONTRIBUTING.md
+See https://github.com/WebODM/WebODM/blob/master/CONTRIBUTING.md

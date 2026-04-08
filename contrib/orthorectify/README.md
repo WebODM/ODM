@@ -11,13 +11,13 @@ This tool is capable of orthorectifying individual images (or all images) from a
 After running a reconstruction using ODM:
 
 ```
-docker run -ti --rm -v /home/youruser/datasets:/datasets opendronemap/odm --project-path /datasets project
+docker run -ti --rm -v /home/youruser/datasets:/datasets webodm/odm --project-path /datasets project
 ```
 
 You can run the orthorectification module by running:
 
 ```
-docker run -ti --rm -v /home/youruser/datasets:/datasets --entrypoint /code/contrib/orthorectify/run.sh opendronemap/odm /datasets/project
+docker run -ti --rm -v /home/youruser/datasets:/datasets --entrypoint /code/contrib/orthorectify/run.sh webodm/odm /datasets/project
 ```
 
 This will start the orthorectification process for all images in the dataset. See additional flags you can pass at the end of the command above:

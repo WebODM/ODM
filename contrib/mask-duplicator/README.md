@@ -6,4 +6,4 @@ This snippet takes the file path of a single image mask and duplicates it for al
 
 Before using this code snippet, open one of your 360 images in an image editor and mask out the helmet or tripod, etc at the bottom of your image. Save this image as a png and then use it as the mask image that will be duplicated for all images in the dataset.
 
-See https://docs.opendronemap.org/masks/ for more details on mask creation.
+See https://docs.webodm.org/tutorials/using-image-masks/ for more details on mask creation.

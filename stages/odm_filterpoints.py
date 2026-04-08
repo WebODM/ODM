@@ -61,7 +61,7 @@ class ODMFilterPoints(types.ODM_Stage):
                 extra_msg = ''
                 if 'boundary' in outputs:
                     extra_msg = '. Also, since you used a boundary setting, make sure that the boundary polygon you specified covers the reconstruction area correctly.'
-                raise system.ExitException("Uh oh! We ended up with an empty point cloud. This means that the reconstruction did not succeed. Have you followed best practices for data acquisition? See https://docs.opendronemap.org/flying/%s" % extra_msg)
+                raise system.ExitException("Uh oh! We ended up with an empty point cloud. This means that the reconstruction did not succeed. Have you followed best practices for data acquisition? See https://docs.webodm.org/flying-tips/%s" % extra_msg)
         else:
             log.ODM_WARNING('Found a valid point cloud file in: %s' %
                             tree.filtered_point_cloud)

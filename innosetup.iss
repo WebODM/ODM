@@ -6,8 +6,8 @@
 #define MyAppVersion FileRead(VerFile)
 #expr FileClose(VerFile)
 #undef VerFile
-#define MyAppPublisher "OpenDroneMap"
-#define MyAppURL "https://opendronemap.org"
+#define MyAppPublisher "WebODM"
+#define MyAppURL "https://webodm.org"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
