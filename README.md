@@ -9,37 +9,43 @@ An open source command line toolkit for processing aerial drone imagery. ODM tur
 
 The application is available for Windows, Mac and Linux and it works from the command line, making it ideal for power users, scripts and for integration with other software.
 
-If you would rather not type commands in a shell and are looking for a friendly user interface, check out [WebODM](https://github.com/OpenDroneMap/WebODM).
+If you would rather not type commands in a shell and are looking for a friendly user interface, check out [WebODM](https://github.com/WebODM/WebODM).
 
 ## Quickstart
 
 The easiest way to run ODM is via docker. To install docker, see [docs.docker.com](https://docs.docker.com). Once you have docker installed and [working](https://docs.docker.com/get-started/#test-docker-installation), you can get ODM by running from a Command Prompt / Terminal:
 
 ```bash
-docker pull opendronemap/odm
+docker pull webodm/odm
 ```
 
 Run ODM by placing some images (JPEGs, TIFFs or DNGs) in a folder named “images” (for example `C:\Users\youruser\datasets\project\images` or `/home/youruser/datasets/project/images`) and simply run from a Command Prompt / Terminal:
 
 ```bash
 # Windows
-docker run -ti --rm -v c:/Users/youruser/datasets:/datasets opendronemap/odm --project-path /datasets project
+docker run -ti --rm -v c:/Users/youruser/datasets:/datasets webodm/odm --project-path /datasets project
 ```
 ```bash
 # Mac/Linux
-docker run -ti --rm -v /home/youruser/datasets:/datasets opendronemap/odm --project-path /datasets project
+docker run -ti --rm -v /home/youruser/datasets:/datasets webodm/odm --project-path /datasets project
 ```
 
-You can pass [additional parameters](https://docs.opendronemap.org/arguments/) by appending them to the command:
+You can pass additional parameters by appending them to the command:
 
 ```bash
-docker run -ti --rm -v /datasets:/datasets opendronemap/odm --project-path /datasets project [--additional --parameters --here]
+docker run -ti --rm -v /datasets:/datasets webodm/odm --project-path /datasets project [--additional --parameters --here]
 ```
 
 For example, to generate a DSM (`--dsm`) and increase the orthophoto resolution (`--orthophoto-resolution 2`) :
 
 ```bash
-docker run -ti --rm -v /datasets:/datasets opendronemap/odm --project-path /datasets project --dsm --orthophoto-resolution 2
+docker run -ti --rm -v /datasets:/datasets webodm/odm --project-path /datasets project --dsm --orthophoto-resolution 2
+```
+
+For all parameters:
+
+```bash
+docker run -ti --rm -v /datasets:/datasets webodm/odm --help
 ```
 
 ## Viewing Results
@@ -70,19 +76,19 @@ You can use the following free and open source software to open the files genera
 
 ## API
 
-ODM can be made accessible from a network via [NodeODM](https://github.com/OpenDroneMap/NodeODM).
+ODM can be made accessible from a network via [NodeODM](https://github.com/WebODM/NodeODM).
 
 ## Documentation
 
-See http://docs.opendronemap.org for tutorials and more guides.
+See http://docs.webodm.org for tutorials and more guides.
 
-## Forum
+## Community
 
-We have a vibrant [community forum](https://community.opendronemap.org/). You can [search it](https://community.opendronemap.org/search?expanded=true) for issues you might be having with ODM and you can post questions there. We encourage users of ODM to participate in the forum and to engage with fellow drone mapping users.
+See https://webodm.org/community to find a community near you.
 
 ## Windows Setup
 
-ODM can be installed natively on Windows. Just download the latest setup from the [releases](https://github.com/OpenDroneMap/ODM/releases) page. After opening the ODM Console you can process datasets by typing:
+ODM can be installed natively on Windows. Just download the latest setup from the [releases](https://github.com/WebODM/ODM/releases) page. After opening the ODM Console you can process datasets by typing:
 
 ```bash
 run C:\Users\youruser\datasets\project  [--additional --parameters --here]
@@ -90,10 +96,10 @@ run C:\Users\youruser\datasets\project  [--additional --parameters --here]
 
 ## GPU Acceleration
 
-ODM has support for doing SIFT feature extraction on a GPU, which is about 2x faster than the CPU on a typical consumer laptop. To use this feature, you need to use the `opendronemap/odm:gpu` docker image instead of `opendronemap/odm` and you need to pass the `--gpus all` flag:
+ODM has support for doing SIFT feature extraction on a GPU, which is about 2x faster than the CPU on a typical consumer laptop. To use this feature, you need to use the `webodm/odm:gpu` docker image instead of `webodm/odm:gpu` and you need to pass the `--gpus all` flag:
 
 ```
-docker run -ti --rm -v c:/Users/youruser/datasets:/datasets --gpus all opendronemap/odm:gpu --project-path /datasets project --feature-type sift
+docker run -ti --rm -v c:/Users/youruser/datasets:/datasets --gpus all webodm/odm:gpu --project-path /datasets project --feature-type sift
 ```
 
 When you run ODM, if the GPU is recognized, in the first few lines of output you should see:
@@ -133,7 +139,7 @@ See https://github.com/NVIDIA/nvidia-docker and https://docs.nvidia.com/datacent
 You can run ODM natively on Ubuntu 24.04 (although we don't recommend it):  
 
 ```bash
-git clone https://github.com/OpenDroneMap/ODM
+git clone https://github.com/WebODM/ODM
 cd ODM
 bash configure.sh install
 ```
@@ -154,14 +160,14 @@ First install:
 Then Run:
 
 ```bash
-git clone https://github.com/OpenDroneMap/ODM
+git clone https://github.com/WebODM/ODM
 cd ODM
 bash configure_macos.sh install
 ```
 
 You can then process datasets with `./run.sh /datasets/odm_data_aukerman`
 
-This could be improved in the future. [Helps us create a Homebrew formula](https://github.com/OpenDroneMap/ODM/issues/1531).
+This could be improved in the future. [Helps us create a Homebrew formula](https://github.com/WebODM/ODM/issues/1531).
 
 ### Updating a native installation
 
@@ -202,7 +208,7 @@ Starting from version 3.0.4, ODM can automatically extract images from video fil
 
 ## Developers
 
-Help improve our software! We welcome contributions from everyone, whether to add new features, improve speed, fix existing bugs or add support for more cameras. Check our [code of conduct](https://github.com/OpenDroneMap/documents/blob/master/CONDUCT.md), the [contributing guidelines](https://github.com/OpenDroneMap/documents/blob/master/CONTRIBUTING.md) and [how decisions are made](https://github.com/OpenDroneMap/documents/blob/master/GOVERNANCE.md#how-decisions-are-made).
+Help improve our software! We welcome contributions from everyone, whether to add new features, improve speed, fix existing bugs or add support for more cameras. Check [contributing guidelines](https://github.com/WebODM/WebODM/blob/master/CONTRIBUTING.md).
 
 
 ### Installation and first run
@@ -229,7 +235,9 @@ You can now make changes to the ODM source. When you are ready to test the chang
  docker  stop odmdev
 ```
 ### To come back to dev environement
-change your_username to your username
+
+(change `your_username` to your username)
+
 ```bash
 docker start odmdev
 docker exec -ti odmdev bash
@@ -237,21 +245,22 @@ su your_username
 ```
 
 
-If you have questions, join the developer's chat at https://community.opendronemap.org/c/developers-chat/21
+If you have questions, join the #devtalk's channel on discord: https://webodm.org/community
 
 1. Try to keep commits clean and simple
 2. Submit a pull request with detailed changes and test results
 3. Have fun!
 
 ### Troubleshooting
-The dev environment makes use of `opendronemap/nodeodm` by default. You may want to run 
-`docker pull opendronemap/nodeodm` before running `./start-dev-env.sh` to avoid using an old cached version.
+
+The dev environment makes use of `webodm/nodeodm` by default. You may want to run 
+`docker pull webodm/nodeodm` before running `./start-dev-env.sh` to avoid using an old cached version.
 
 In order to make a clean build, remove `~/.odm-dev-home` and `ODM/.setupdevenv`.
 
 ## Credits
 
-ODM makes use of [several libraries](https://github.com/OpenDroneMap/ODM/blob/master/snap/snapcraft.yaml#L36) and other awesome open source projects to perform its tasks. Among them we'd like to highlight:
+ODM makes use of other awesome open source projects to perform its tasks. Among them we'd like to highlight:
 
  - [OpenSfM](https://github.com/mapillary/OpenSfM)
  - [OpenMVS](https://github.com/cdcseacave/openMVS/)

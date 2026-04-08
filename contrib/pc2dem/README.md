@@ -9,7 +9,7 @@ This tool includes methods to perform efficient and scalable gapfill interpolati
 ## Usage
 
 ```
-docker run -ti --rm -v /home/youruser/folder_with_point_cloud:/input --entrypoint /code/contrib/pc2dem/pc2dem.py opendronemap/odm /input/point_cloud.las [flags]
+docker run -ti --rm -v /home/youruser/folder_with_point_cloud:/input --entrypoint /code/contrib/pc2dem/pc2dem.py webodm/odm /input/point_cloud.las [flags]
 ```
 
 The result (`dsm.tif` or `dtm.tif`) will be stored in the same folder as the input point cloud. See additional `flags` you can pass at the end of the command above:

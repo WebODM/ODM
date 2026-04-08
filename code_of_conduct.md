@@ -1,1 +1,1 @@
-See https://github.com/OpenDroneMap/documents/blob/master/CONDUCT.md
+See https://github.com/WebODM/WebODM/blob/master/CONDUCT.md

@@ -103,7 +103,7 @@ def main(argv):
     ### LAUNCH global alignment (Time-SIFT multitemporal block)
     try:
         subprocess.run(['docker', 'run', '-i', '--rm', '-v', datasets_DIR + ':/datasets',
-                        'opendronemap/odm', '--project-path', '/datasets', timesift_DIR, '--end-with', 'opensfm'])
+                        'webodm/odm', '--project-path', '/datasets', timesift_DIR, '--end-with', 'opensfm'])
     except:
         print(f'\033[91m[Time-SIFT]    ERROR: {sys.exc_info()[0]}\033[0m')
         exit()
@@ -135,7 +135,7 @@ def main(argv):
 
         #### Launches dense matching from the good previous step, with possible options (e.g. => to stop at the point clouds)
         command_rerun = ['docker', 'run', '-i', '--rm', '-v', datasets_DIR + ':/datasets',
-                             'opendronemap/odm',
+                             'webodm/odm',
                              '--project-path', '/datasets', epoch,
                              '--rerun-from', 'openmvs']
         if additional_options_to_rerun:
