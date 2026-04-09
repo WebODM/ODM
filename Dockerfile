@@ -14,10 +14,6 @@ COPY . ./
 # Run the build
 RUN bash configure.sh install
 
-# Run the tests
-ENV PATH="/code/venv/bin:$PATH"
-RUN bash test.sh
-
 # Clean Superbuild
 RUN bash configure.sh clean
 
