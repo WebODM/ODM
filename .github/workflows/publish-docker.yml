@@ -1,0 +1,108 @@
+name: Publish Docker
+
+on:
+  push:
+    branches:
+    - master
+    tags:
+    - v*
+  workflow_dispatch:
+jobs:
+  build-amd64:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1440
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        config-inline: |
+          [worker.oci]
+            max-parallelism = 1
+    - name: Login to DockerHub
+      uses: docker/login-action@v3 
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Docker meta
+      id: docker_meta
+      uses: crazy-max/ghaction-docker-meta@v1
+      with:
+        images: webodm/odm
+        tag-semver: |
+          {{version}}
+    - name: Set Swap Space
+      uses: pierotofy/set-swap-space@master
+      with:
+        swap-size-gb: 10
+    - name: Build and push Docker image (AMD64)
+      id: docker_build_amd64
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: ./portable.Dockerfile
+        platforms: linux/amd64
+        push: true
+        no-cache: true
+        tags: |
+          webodm/odm:latest-amd64
+        provenance: false
+  build-arm64:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 1440
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        config-inline: |
+          [worker.oci]
+            max-parallelism = 1
+    - name: Login to DockerHub
+      uses: docker/login-action@v3 
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Set Swap Space
+      uses: pierotofy/set-swap-space@master
+      with:
+        swap-size-gb: 10
+    - name: Build and push Docker image (ARM64)
+      id: docker_build_arm64
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: ./portable.Dockerfile
+        platforms: linux/arm64
+        push: true
+        no-cache: true
+        tags: |
+          webodm/odm:latest-arm64
+        provenance: false
+
+  create-manifest:
+    runs-on: ubuntu-latest
+    needs: [build-amd64, build-arm64]
+    steps:
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Create and push multi-platform manifest
+      run: |
+        docker pull --platform linux/amd64 webodm/odm:latest-amd64
+        docker pull --platform linux/arm64 webodm/odm:latest-arm64
+        docker manifest create webodm/odm:latest \
+          webodm/odm:latest-amd64 \
+          webodm/odm:latest-arm64
+        docker manifest push webodm/odm:latest
+    
+    # Trigger NodeODM build, OATS test
+    - name: Dispatch Build Event
+      id: build_dispatch
+      run: |
+        curl -X POST -u "${{secrets.PAT_USERNAME}}:${{secrets.PAT_TOKEN}}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/WebODM/NodeODM/actions/workflows/publish-docker.yaml/dispatches --data '{"ref": "master"}'
+        curl -X POST -u "${{secrets.PAT_USERNAME}}:${{secrets.PAT_TOKEN}}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/WebODM/oats/actions/workflows/test.yaml/dispatches --data '{"ref": "master"}'

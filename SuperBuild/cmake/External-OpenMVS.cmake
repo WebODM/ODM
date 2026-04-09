@@ -2,8 +2,8 @@ set(_proj_name openmvs)
 set(_SB_BINARY_DIR "${SB_BINARY_DIR}/${_proj_name}")
 
 externalproject_add(vcg
-    GIT_REPOSITORY  https://github.com/OpenDroneMap/VCG.git
-    GIT_TAG         285
+    GIT_REPOSITORY  https://github.com/WebODM/VCG.git
+    GIT_TAG         3fe55c6fa48ca111dab31eaa594ecab33913a8f1
     UPDATE_COMMAND  ""
     SOURCE_DIR      ${SB_SOURCE_DIR}/vcg
     CONFIGURE_COMMAND ""
@@ -42,7 +42,7 @@ if(WIN32)
   # generated with https://github.com/ykhwong/dummy-dll-generator that is 
   # loaded UNLESS the real CUDA DLL is available, since it will
   # be loaded before our dummy DLL.
-  file(DOWNLOAD "https://github.com/OpenDroneMap/windows-deps/releases/download/2.5.0/nvcuda_dummy.dll" "${SB_INSTALL_DIR}/bin/nvcuda.dll")
+  file(DOWNLOAD "https://github.com/WebODM/windows-deps/releases/download/2.5.0/nvcuda_dummy.dll" "${SB_INSTALL_DIR}/bin/nvcuda.dll")
 endif()
 
 ExternalProject_Add(${_proj_name}
@@ -52,7 +52,7 @@ ExternalProject_Add(${_proj_name}
   STAMP_DIR         ${_SB_BINARY_DIR}/stamp
   #--Download step--------------
   DOWNLOAD_DIR      ${SB_DOWNLOAD_DIR}
-  GIT_REPOSITORY    https://github.com/OpenDroneMap/openMVS
+  GIT_REPOSITORY    https://github.com/WebODM/openMVS
   GIT_TAG           355
   #--Update/Patch step----------
   UPDATE_COMMAND    ""

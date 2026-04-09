@@ -29,8 +29,8 @@ elseif(APPLE)
                            -DOPENCV_LIB_INSTALL_PATH=${SB_INSTALL_DIR}/lib
                            -DOPENCV_BIN_INSTALL_PATH=${SB_INSTALL_DIR}/bin)
 else()
-  set(OCV_CMAKE_EXTRA_ARGS -DPYTHON3_NUMPY_INCLUDE_DIRS=${PYTHON_HOME}/lib/python3.12/site-packages/numpy/_core/include
-                             -DPYTHON3_PACKAGES_PATH=${PYTHON_HOME}/lib/python3.12/site-packages
+  set(OCV_CMAKE_EXTRA_ARGS -DPYTHON3_NUMPY_INCLUDE_DIRS=${PYTHON_HOME}/lib/python3.12/dist-packages/numpy/_core/include
+                             -DPYTHON3_PACKAGES_PATH=${PYTHON_HOME}/lib/python3.12/dist-packages
                              -DPYTHON3_EXECUTABLE=${PYTHON_EXE_PATH})
 endif()
 
