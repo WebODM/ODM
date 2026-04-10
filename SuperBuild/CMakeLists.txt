@@ -133,19 +133,6 @@ include(ExternalProject-Setup)
 #########################################
 
 # ---------------------------------------------------------------------------------------------
-# Geospatial Data Abstraction Library (GDAL)
-#
-set(ODM_GDAL_Version 3.11.1)
-if(WIN32)
-  message(STATUS "GDAL: Using pip-installed version from ${GDAL_ROOT}")
-  # Create a dummy target to satisfy dependencies
-  add_custom_target(gdal)
-else()
-  option(ODM_BUILD_GDAL "Force to build GDAL library" ON)
-  SETUP_EXTERNAL_PROJECT(GDAL ${ODM_GDAL_Version} ${ODM_BUILD_GDAL})
-endif()
-
-# ---------------------------------------------------------------------------------------------
 # Open Source Computer Vision (OpenCV)
 #
 set(ODM_OpenCV_Version 4.12.0)
@@ -171,11 +158,6 @@ option(ODM_BUILD_Ceres "Force to build Ceres library" OFF)
 
 SETUP_EXTERNAL_PROJECT(Ceres ${ODM_Ceres_Version} ${ODM_BUILD_Ceres})
 
-
-# ---------------------------------------------------------------------------------------------
-# Hexer
-#
-SETUP_EXTERNAL_PROJECT(Hexer 1.5 ON)
 
 # ---------------------------------------------------------------------------------------------
 # Open Structure from Motion (OpenSfM)
