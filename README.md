@@ -93,27 +93,22 @@ run C:\Users\youruser\datasets\project  [--additional --parameters --here]
 
 ## GPU Acceleration
 
-ODM has support for doing SIFT feature extraction on a GPU, which is about 2x faster than the CPU on a typical consumer laptop. To use this feature, you need to use the `webodm/odm:gpu` docker image instead of `webodm/odm:gpu` and you need to pass the `--gpus all` flag:
+ODM has GPU support to speed up certain computations. To enable it, you need to use the `webodm/odm:gpu` docker image and you need to pass the `--gpus all` flag:
 
 ```
-docker run -ti --rm -v c:/Users/youruser/datasets:/datasets --gpus all webodm/odm:gpu --project-path /datasets project --feature-type sift
+docker run -ti --rm -v c:/Users/youruser/datasets:/datasets --gpus all webodm/odm:gpu --project-path /datasets project
 ```
 
 When you run ODM, if the GPU is recognized, in the first few lines of output you should see:
 
 ```
-[INFO]    Writing exif overrides
-[INFO]    Maximum photo dimensions: 4000px
-[INFO]    Found GPU device: Intel(R) OpenCL HD Graphics
-[INFO]    Using GPU for extracting SIFT features
+[INFO]    nvidia-smi detected
 ```
-
-The SIFT GPU implementation is CUDA-based, so should work with most NVIDIA graphics cards of the GTX 9xx Generation or newer.
 
 If you have an NVIDIA card, you can test that docker is recognizing the GPU by running:
 
 ```
-docker run --rm --gpus all nvidia/cuda:10.0-base nvidia-smi
+docker run --rm --gpus all nvidia/cuda:13.0.0-base-ubuntu24.04 nvidia-smi
 ```
 
 If you see an output that looks like this:
@@ -129,11 +124,11 @@ Fri Jul 24 18:51:55 2020
 
 You're in good shape!
 
-See https://github.com/NVIDIA/nvidia-docker and https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker for information on docker/NVIDIA setup.
+See https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html for information on docker/NVIDIA setup.
 
-### Build Docker Images From Source
+### Build Docker Images
 
-If you want to rebuild your own docker image (if you have changed the source code, for example), from the ODM folder you can type:
+If you want to rebuild your own docker image, from the `ODM` folder you can type:
 
 ```bash
 docker build -t myodm --no-cache .
