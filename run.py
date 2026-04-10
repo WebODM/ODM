@@ -17,17 +17,12 @@ from opendm.arghelpers import args_to_dict, save_opts, find_rerun_stage
 
 from stages.odm_app import ODMApp
 
-def odm_version():
-    try:
-        with open("VERSION") as f:
-            return f.read().split("\n")[0].strip()
-    except:
-        return "?"
+
 
 if __name__ == '__main__':
     args = config.config()
 
-    log.ODM_INFO('Initializing ODM %s - %s' % (odm_version(), system.now()))
+    log.ODM_INFO('Initializing ODM %s - %s' % (log.odm_version(), system.now()))
 
     progressbc.set_project_name(args.name)
     args.project_path = os.path.join(args.project_path, args.name)
@@ -69,7 +64,6 @@ if __name__ == '__main__':
     
     # Do not show end message for local submodels runs
     if retcode == 0 and not "submodels" in args.project_path:
-        log.ODM_INFO('Done! d-(^_^)z')
         log.ODM_INFO('ODM app finished - %s' % system.now())
     else:
         exit(retcode)

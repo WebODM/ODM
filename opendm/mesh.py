@@ -160,7 +160,7 @@ def screened_poisson_reconstruction(inPointCloud, outMesh, depth = 8, samples = 
             'depth': depth,
             'samples': samples,
             'pointWeight': pointWeight,
-            'threads': int(threads)
+            'parallel': '--parallel 2' if threads <= 1 else ''
         }
 
         # Run PoissonRecon
@@ -170,9 +170,9 @@ def screened_poisson_reconstruction(inPointCloud, outMesh, depth = 8, samples = 
                     '--depth {depth} '
                     '--pointWeight {pointWeight} '
                     '--samplesPerNode {samples} '
-                    '--threads {threads} '
-                    '--bType 2 '
-                    '--linearFit '.format(**poissonReconArgs))
+                    '--density '
+                    '{parallel} '
+                    '--confidence'.format(**poissonReconArgs), env_vars={'OMP_NUM_THREADS': int(threads)})
         except Exception as e:
             log.ODM_WARNING(str(e))
             

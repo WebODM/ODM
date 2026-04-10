@@ -203,11 +203,11 @@ class OSFMContext:
             feature_process_size = 2048 # default
 
             feature_quality_scale = {
-                'ultra': 1,
+                'ultra': 1.0,
                 'high': 0.5,
                 'medium': 0.25,
                 'low': 0.125,
-                'lowest': 0.0675,
+                'lowest': 0.0625 
             }
 
             max_dims = find_largest_photo_dims(photos)
@@ -247,6 +247,8 @@ class OSFMContext:
                 matcher_neighbors = 3
 
             config = [
+                "report_name: ODM",
+                "report_version: %s" % log.odm_version(),
                 "use_exif_size: no",
                 "flann_algorithm: KDTREE", # more stable, faster than KMEANS
                 "feature_process_size: %s" % feature_process_size,
