@@ -131,49 +131,6 @@ You're in good shape!
 
 See https://github.com/NVIDIA/nvidia-docker and https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker for information on docker/NVIDIA setup.
 
-## Native Install (Ubuntu 24.04)
-
-You can run ODM natively on Ubuntu 24.04 (although we don't recommend it):  
-
-```bash
-git clone https://github.com/WebODM/ODM
-cd ODM
-bash configure.sh install
-```
-
-You can then process datasets with `./run.sh /datasets/odm_data_aukerman`
-
-## Native Install (MacOS)
-
-> **Warning:** Installation on Mac is currently unmaintained, and may not work out-of-the-box. See this [issue](https://community.opendronemap.org/t/odm-install-on-a-mac-os-14-6-1/25007/3).
-
-You can run ODM natively on Intel/ARM MacOS.
-
-First install:
-
- * Xcode 13 (not 14, there's currently a bug)
- * [Homebrew](https://docs.brew.sh/Installation)
-
-Then Run:
-
-```bash
-git clone https://github.com/WebODM/ODM
-cd ODM
-bash configure_macos.sh install
-```
-
-You can then process datasets with `./run.sh /datasets/odm_data_aukerman`
-
-This could be improved in the future. [Helps us create a Homebrew formula](https://github.com/WebODM/ODM/issues/1531).
-
-### Updating a native installation
-
-When updating to a newer version of native ODM, it is recommended that you run:
-
-`bash configure.sh reinstall`
-
-to ensure all the dependent packages and modules get updated.
-
 ### Build Docker Images From Source
 
 If you want to rebuild your own docker image (if you have changed the source code, for example), from the ODM folder you can type:
