@@ -148,20 +148,22 @@ def compute_cutline(orthophoto_file, crop_area_file, destination, max_concurrenc
 
         log.ODM_INFO("Merging polygons")
         cutline_polygons = unary_union(polygons)
-        if not hasattr(cutline_polygons, '__getitem__'):
-            cutline_polygons = [cutline_polygons]
 
-        largest_cutline = cutline_polygons[0]
-        max_area = largest_cutline.area
-        for p in cutline_polygons:
-            if p.area > max_area:
-                max_area = p.area
-                largest_cutline = p
+        if not hasattr(cutline_polygons, 'geoms'):
+            largest_cutline = cutline_polygons
+            max_area = largest_cutline.area
+        else:
+            largest_cutline = cutline_polygons.geoms[0]
+            max_area = largest_cutline.area
+            for p in cutline_polygons.geoms:
+                if p.area > max_area:
+                    max_area = p.area
+                    largest_cutline = p
         
         log.ODM_INFO("Largest cutline found: %s m^2" % max_area)
 
         meta = {
-            'crs': {'init': str(f.crs).lower() },
+            'crs': fiona.crs.CRS.from_wkt(f.crs.to_wkt()),
             'driver': 'GPKG',
             'schema': {
                 'properties': {},
