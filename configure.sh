@@ -248,6 +248,7 @@ clean() {
     find ${RUNPATH} -type f -name "*.a" -delete -or -type f -name "*.o" -delete
 }
 
+
 usage() {
     echo "Usage:"
     echo "bash configure.sh <install|update|uninstall|installreqs|help> [nproc]"
@@ -261,11 +262,11 @@ usage() {
     echo "  help"
 }
 
-if [[ $1 =~ ^(install|reinstall|uninstall|installreqs|installpython|clean)$ ]]; then
+if [[ $1 =~ ^(install|installruntimedeps|reinstall|uninstall|installreqs|clean)$ ]]; then
     RUNPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     "$1"
 else
-    echo "Invalid instructions." >&2
+    echo "Invalid command"
     usage
     exit 1
 fi
