@@ -80,7 +80,7 @@ class GCPFile:
     def entries_count(self):
         return len(self.entries)
     
-        def checkpoints_count(self):
+    def checkpoints_count(self):
         c = 0
         for entry in self.iter_entries():
             if entry.is_checkpoint():
