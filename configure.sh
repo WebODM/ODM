@@ -261,7 +261,7 @@ usage() {
     echo "  help"
 }
 
-if [[ $1 =~ ^(install|installruntimedepsonly|reinstall|uninstall|installreqs|installpython|clean)$ ]]; then
+if [[ $1 =~ ^(install|reinstall|uninstall|installreqs|installpython|clean)$ ]]; then
     RUNPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     "$1"
 else

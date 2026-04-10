@@ -116,7 +116,7 @@ usage() {
     echo "[nproc] is an optional argument that can set the number of processes for the make -j tag. By default it uses $(nproc)"
 }
 
-if [[ $1 =~ ^(install|installruntimedepsonly|reinstall|uninstall|installreqs|clean)$ ]]; then
+if [[ $1 =~ ^(install|reinstall|uninstall|installreqs|clean)$ ]]; then
     RUNPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     "$1"
 else
