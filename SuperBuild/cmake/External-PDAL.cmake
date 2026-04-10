@@ -10,7 +10,7 @@ set(LASZIP_LIB "${SB_INSTALL_DIR}/lib/liblaszip.so")
 endif()
 
 ExternalProject_Add(${_proj_name}
-  DEPENDS           gdal hexer laszip
+  DEPENDS           laszip
   PREFIX            ${_SB_BINARY_DIR}
   TMP_DIR           ${_SB_BINARY_DIR}/tmp
   STAMP_DIR         ${_SB_BINARY_DIR}/stamp
@@ -28,7 +28,7 @@ ExternalProject_Add(${_proj_name}
     -DBUILD_PLUGIN_PGPOINTCLOUD=OFF
     -DBUILD_PLUGIN_CPD=OFF
     -DBUILD_PLUGIN_GREYHOUND=OFF
-    -DBUILD_PLUGIN_HEXBIN=ON
+    -DBUILD_PLUGIN_HEXBIN=OFF
     -DBUILD_PLUGIN_ICEBRIDGE=OFF
     -DBUILD_PLUGIN_MRSID=OFF
     -DBUILD_PLUGIN_NITF=OFF

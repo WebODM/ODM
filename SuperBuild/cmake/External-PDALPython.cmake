@@ -7,7 +7,7 @@ if (WIN32)
                     -DPython3_NumPy_INCLUDE_DIRS=${PYTHON_HOME}/Lib/site-packages/numpy/_core/include)
 else()
   set(PP_EXTRA_ARGS -DPython3_EXECUTABLE=${PYTHON_EXE_PATH}
-                    -DPython3_NumPy_INCLUDE_DIRS=${PYTHON_HOME}/lib/python3.12/site-packages/numpy/_core/include)
+                    -DPython3_NumPy_INCLUDE_DIRS=${PYTHON_HOME}/lib/python3.12/dist-packages/numpy/_core/include)
 endif()
 
 ExternalProject_Add(${_proj_name}
@@ -17,8 +17,8 @@ ExternalProject_Add(${_proj_name}
   STAMP_DIR         ${_SB_BINARY_DIR}/stamp
   #--Download step--------------
   DOWNLOAD_DIR      ${SB_DOWNLOAD_DIR}
-  GIT_REPOSITORY    https://github.com/PDAL/python
-  GIT_TAG           6791a880a87e95f7318e99acfb4a10186379c5dd
+  GIT_REPOSITORY    https://github.com/pierotofy/pdal-python
+  GIT_TAG           400
   #--Update/Patch step----------
   UPDATE_COMMAND    git submodule update --init --recursive
   #--Configure step-------------

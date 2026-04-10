@@ -111,15 +111,9 @@ if (WIN32)
 elseif(APPLE)
     set(PYTHON_HOME "${SB_ROOT_DIR}/../venv")
     set(PYTHON_EXE_PATH "${PYTHON_HOME}/bin/python")
-    set(GDAL_ROOT "${SB_INSTALL_DIR}")
-    set(GDAL_LIBRARY "${GDAL_ROOT}/lib/libgdal.dylib")
-    set(GDAL_INCLUDE_DIR "${GDAL_ROOT}/include")
 else()
-    set(PYTHON_HOME "${SB_ROOT_DIR}/../venv")
-    set(PYTHON_EXE_PATH "${PYTHON_HOME}/bin/python3")
-    set(GDAL_ROOT "${SB_INSTALL_DIR}")
-    set(GDAL_LIBRARY "${GDAL_ROOT}/lib/libgdal.so")
-    set(GDAL_INCLUDE_DIR "${GDAL_ROOT}/include")
+    set(PYTHON_EXE_PATH "/usr/bin/python3")
+    set(PYTHON_HOME "/usr/local/")
 endif()
 
 # Path to additional CMake modules
@@ -131,19 +125,6 @@ include(ExternalProject-Setup)
 #########################################
 # Download and install third party libs #
 #########################################
-
-# ---------------------------------------------------------------------------------------------
-# Geospatial Data Abstraction Library (GDAL)
-#
-set(ODM_GDAL_Version 3.11.1)
-if(WIN32)
-  message(STATUS "GDAL: Using pip-installed version from ${GDAL_ROOT}")
-  # Create a dummy target to satisfy dependencies
-  add_custom_target(gdal)
-else()
-  option(ODM_BUILD_GDAL "Force to build GDAL library" ON)
-  SETUP_EXTERNAL_PROJECT(GDAL ${ODM_GDAL_Version} ${ODM_BUILD_GDAL})
-endif()
 
 # ---------------------------------------------------------------------------------------------
 # Open Source Computer Vision (OpenCV)
@@ -173,11 +154,6 @@ SETUP_EXTERNAL_PROJECT(Ceres ${ODM_Ceres_Version} ${ODM_BUILD_Ceres})
 
 
 # ---------------------------------------------------------------------------------------------
-# Hexer
-#
-SETUP_EXTERNAL_PROJECT(Hexer 1.5 ON)
-
-# ---------------------------------------------------------------------------------------------
 # Open Structure from Motion (OpenSfM)
 #
 
@@ -190,7 +166,6 @@ set(custom_libs OpenSfM
 				MvsTexturing
 				OpenMVS
 				FPCFilter
-				PyPopsift
 				Obj2Tiles
 				OpenPointClass
 				ExifTool
@@ -198,8 +173,8 @@ set(custom_libs OpenSfM
 )
 
 externalproject_add(mve
-    GIT_REPOSITORY  https://github.com/OpenDroneMap/mve.git
-    GIT_TAG         356
+    GIT_REPOSITORY  https://github.com/WebODM/mve.git
+    GIT_TAG         066ff646837ef3f95905af45406391f76d4b266d
     UPDATE_COMMAND  ""
     SOURCE_DIR      ${SB_SOURCE_DIR}/mve
     CMAKE_ARGS      ${WIN32_CMAKE_ARGS} ${APPLE_CMAKE_ARGS}
@@ -225,8 +200,8 @@ else()
     endif()
 endif()
 externalproject_add(poissonrecon
-    GIT_REPOSITORY    https://github.com/OpenDroneMap/PoissonRecon.git
-    GIT_TAG           290
+    GIT_REPOSITORY    https://github.com/pierotofy/PoissonRecon.git
+    GIT_TAG           3912
     PREFIX            ${SB_BINARY_DIR}/PoissonRecon
     SOURCE_DIR        ${SB_SOURCE_DIR}/PoissonRecon
     UPDATE_COMMAND    ""
@@ -237,9 +212,8 @@ externalproject_add(poissonrecon
 )
 
 externalproject_add(dem2mesh
-    DEPENDS           gdal
-    GIT_REPOSITORY    https://github.com/OpenDroneMap/dem2mesh.git
-    GIT_TAG           334
+    GIT_REPOSITORY    https://github.com/WebODM/dem2mesh.git
+    GIT_TAG           623c8536941175c630fabe4f1352ddc314d98120
     PREFIX            ${SB_BINARY_DIR}/dem2mesh
     SOURCE_DIR        ${SB_SOURCE_DIR}/dem2mesh
     CMAKE_ARGS        -DCMAKE_INSTALL_PREFIX:PATH=${SB_INSTALL_DIR}
@@ -248,8 +222,7 @@ externalproject_add(dem2mesh
 )
 
 externalproject_add(dem2points
-    DEPENDS           gdal
-    GIT_REPOSITORY    https://github.com/OpenDroneMap/dem2points.git
+    GIT_REPOSITORY    https://github.com/WebODM/dem2points.git
     GIT_TAG           master
     PREFIX            ${SB_BINARY_DIR}/dem2points
     SOURCE_DIR        ${SB_SOURCE_DIR}/dem2points
@@ -259,9 +232,9 @@ externalproject_add(dem2points
 )
 
 externalproject_add(odm_orthophoto
-    DEPENDS           opencv gdal
-    GIT_REPOSITORY    https://github.com/OpenDroneMap/odm_orthophoto.git
-    GIT_TAG           355
+    DEPENDS           opencv
+    GIT_REPOSITORY    https://github.com/WebODM/odm_orthophoto.git
+    GIT_TAG           55b66d87cc168b8ab287bf10e81d4da0890f84f1
     PREFIX            ${SB_BINARY_DIR}/odm_orthophoto
     SOURCE_DIR        ${SB_SOURCE_DIR}/odm_orthophoto
     CMAKE_ARGS        -DCMAKE_INSTALL_PREFIX:PATH=${SB_INSTALL_DIR}
@@ -269,9 +242,8 @@ externalproject_add(odm_orthophoto
 )
 
 externalproject_add(fastrasterfilter
-    DEPENDS           gdal
-    GIT_REPOSITORY    https://github.com/OpenDroneMap/FastRasterFilter.git
-    GIT_TAG           main
+    GIT_REPOSITORY    https://github.com/WebODM/FastRasterFilter.git
+    GIT_TAG           2f16676a9b3d05d3b35ab01b6d2380c8f3a42270
     PREFIX            ${SB_BINARY_DIR}/fastrasterfilter
     SOURCE_DIR        ${SB_SOURCE_DIR}/fastrasterfilter
     CMAKE_ARGS        -DCMAKE_INSTALL_PREFIX:PATH=${SB_INSTALL_DIR}
@@ -279,17 +251,17 @@ externalproject_add(fastrasterfilter
 )
 
 externalproject_add(lastools
-    GIT_REPOSITORY    https://github.com/OpenDroneMap/LAStools.git
-    GIT_TAG           250
+    GIT_REPOSITORY    https://github.com/WebODM/LAStools.git
+    GIT_TAG           63ef3a4096c7a74173bccfca800b4e655ee00ae4
     PREFIX            ${SB_BINARY_DIR}/lastools
     SOURCE_DIR        ${SB_SOURCE_DIR}/lastools
     CMAKE_ARGS        -DCMAKE_INSTALL_PREFIX:PATH=${SB_INSTALL_DIR}
 )
 
 externalproject_add(draco
-    GIT_REPOSITORY    https://github.com/google/draco
-    GIT_SHALLOW       OFF
-    GIT_TAG           e801aebf9665f6dcf3b6b0a604055a300ff85aa4
+    GIT_REPOSITORY    https://github.com/pierotofy/draco
+    GIT_SHALLOW       ON
+    GIT_TAG           396
     PREFIX            ${SB_BINARY_DIR}/draco
     SOURCE_DIR        ${SB_SOURCE_DIR}/draco
     CMAKE_ARGS        -DDRACO_TRANSCODER_SUPPORTED=ON 

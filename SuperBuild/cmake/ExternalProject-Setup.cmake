@@ -1,5 +1,6 @@
 set(ADD_INTERNAL_LIB_MSG "--- Adding internal version")
 set(FORCE_BUILD_LIB_MSG "force build ${ADD_INTERNAL_LIB_MSG}")
+cmake_policy(SET CMP0135 NEW)
 
 macro(SETUP_EXTERNAL_PROJECT name version force_build)
 

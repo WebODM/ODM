@@ -22,18 +22,6 @@ def has_popsift_and_can_handle_texsize(width, height):
         log.ODM_WARNING(str(e))
         return False
 
-    try:
-        from opensfm import pypopsift
-        if pypopsift.fits_texture(int(width * 1.02), int(height * 1.02)):
-            log.ODM_INFO("popsift can handle texture size %dx%d" % (width, height))
-            return True
-        else:
-            log.ODM_INFO("popsift cannot handle texture size %dx%d" % (width, height))
-            return False
-    except Exception as e:
-        log.ODM_WARNING(str(e))
-        return False
-
 @lru_cache(maxsize=None)
 def get_cuda_compute_version(device_id = 0):
     cuda_lib = "libcuda.so"

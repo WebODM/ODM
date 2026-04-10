@@ -49,7 +49,7 @@ class ODMLogger:
         self.start_time = datetime.datetime.now()
 
     def log(self, startc, msg, level_name):
-        level = ("[" + level_name + "]").ljust(9)
+        level = "[" + level_name + "]"
         with lock:
             print("%s%s %s%s" % (startc, level, msg, ENDC))
             sys.stdout.flush()

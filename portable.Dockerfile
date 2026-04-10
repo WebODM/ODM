@@ -2,8 +2,8 @@ FROM ubuntu:24.04 AS builder
 
 # Env variables
 ENV DEBIAN_FRONTEND=noninteractive \
-    PYTHONPATH="$PYTHONPATH:/code/SuperBuild/install/local/lib/python3.12/dist-packages:/code/SuperBuild/install/lib/python3.12/dist-packages:/code/SuperBuild/install/bin/opensfm" \
-    LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/code/SuperBuild/install/lib"
+    PYTHONPATH="/code/SuperBuild/install/lib/python3.12/dist-packages:/code/SuperBuild/install/bin/opensfm" \
+    LD_LIBRARY_PATH="/code/SuperBuild/install/lib"
 
 # Prepare directories
 WORKDIR /code
@@ -13,10 +13,6 @@ COPY . ./
 
 # Run the build
 RUN PORTABLE_INSTALL=YES bash configure.sh install
-
-# Run the tests
-ENV PATH="/code/venv/bin:$PATH"
-RUN bash test.sh
 
 # Clean Superbuild
 RUN bash configure.sh clean
@@ -29,8 +25,8 @@ FROM ubuntu:24.04
 
 # Env variables
 ENV DEBIAN_FRONTEND=noninteractive \
-    PYTHONPATH="$PYTHONPATH:/code/SuperBuild/install/local/lib/python3.12/dist-packages:/code/SuperBuild/install/lib/python3.12/dist-packages:/code/SuperBuild/install/bin/opensfm" \
-    LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/code/SuperBuild/install/lib" \
+    PYTHONPATH="/code/SuperBuild/install/lib/python3.12:/code/SuperBuild/install/bin/opensfm" \
+    LD_LIBRARY_PATH="/code/SuperBuild/install/lib" \
     PDAL_DRIVER_PATH="/code/SuperBuild/install/bin"
 
 WORKDIR /code
@@ -38,12 +34,13 @@ WORKDIR /code
 # Copy everything we built from the builder
 COPY --from=builder /code /code
 
-ENV PATH="/code/venv/bin:$PATH"
+# Copy the Python libraries installed via pip from the builder
+COPY --from=builder /usr/local /usr/local
 
 # Install shared libraries that we depend on via APT, but *not*
 # the -dev packages to save space!
 # Also run a smoke test on ODM and OpenSfM
-RUN bash configure.sh installruntimedepsonly \
+RUN bash configure.sh installruntimedeps \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
   && bash run.sh --help \

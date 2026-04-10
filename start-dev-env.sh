@@ -12,8 +12,8 @@ if [ "$1" = "--setup" ]; then
         
         touch .setupdevenv
         apt update && apt install -y vim git
-        chown -R $3:$4 /code
-        chown -R $3:$4 /var/www
+        chown -R $3:$4 /code || true
+        chown -R $3:$4 /var/www || true
     fi
 
     echo "Adding $2 to /etc/passwd"

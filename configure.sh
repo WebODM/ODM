@@ -6,18 +6,11 @@ APT_GET="env DEBIAN_FRONTEND=noninteractive $(command -v apt-get)"
 check_version(){  
   UBUNTU_VERSION=$(lsb_release -r)
   case "$UBUNTU_VERSION" in
-    *"20.04"*|*"21.04"*|*"24.04"*)
+    *"24.04"*)
       echo "Ubuntu: $UBUNTU_VERSION, good!"
       ;;
-    *"18.04"*|*"16.04"*)
-      echo "ODM 2.1 has upgraded to Ubuntu 21.04, but you're on $UBUNTU_VERSION"
-      echo "* The last version of ODM that supports Ubuntu 16.04 is v1.0.2."
-      echo "* The last version of ODM that supports Ubuntu 18.04 is v2.0.0."
-      echo "We recommend you to upgrade, or better yet, use docker."
-      exit 1
-      ;;
     *)
-      echo "You are not on Ubuntu 21.04 (detected: $UBUNTU_VERSION)"
+      echo "You are not on a supported Ubuntu version (detected: $UBUNTU_VERSION)"
       echo "It might be possible to run ODM on a newer version of Ubuntu, however, you cannot rely on this script."
       exit 1
       ;;
@@ -35,74 +28,145 @@ ensure_prereqs() {
 
     if ! command -v sudo &> /dev/null; then
         echo "Installing sudo"
-        $APT_GET update
-        $APT_GET install -y -qq --no-install-recommends sudo
+        apt-get update
+        apt-get install -y --no-install-recommends sudo
     else
-        sudo $APT_GET update
+        sudo apt-get update
     fi
 
     if ! command -v lsb_release &> /dev/null; then
         echo "Installing lsb_release"
-        sudo $APT_GET install -y -qq --no-install-recommends lsb-release
+        sudo apt-get install -y --no-install-recommends lsb-release
     fi
 
     if ! command -v pkg-config &> /dev/null; then
         echo "Installing pkg-config"
-        sudo $APT_GET install -y -qq --no-install-recommends pkg-config
+        sudo apt-get install -y --no-install-recommends pkg-config
     fi
 
     echo "Installing tzdata"
-    sudo $APT_GET install -y -qq tzdata
+    sudo apt-get install -y tzdata
 
+    # UBUNTU_VERSION=$(lsb_release -r)
+    # if [[ "$UBUNTU_VERSION" == *"24.04"* ]]; then
+    #     echo "Enabling PPA for Ubuntu GIS"
+    #     sudo apt-get install -y --no-install-recommends software-properties-common
+    #     sudo add-apt-repository ppa:ubuntugis/ppa
+    #     sudo apt-get update
+    # fi
 
     echo "Installing Python PIP"
-    sudo $APT_GET install -y -qq --no-install-recommends \
+    sudo apt-get install -y --no-install-recommends \
         python3-pip \
-        python3-setuptools \
-        python3-venv
-    python3 -m venv venv --system-site-packages
-    venv/bin/pip3 install -U pip
-    venv/bin/pip3 install -U shyaml
+        python3-setuptools
+    sudo pip3 install -U pip
 }
 
-# Save all dependencies in snapcraft.yaml to maintain a single source of truth.
-# Maintaining multiple lists will otherwise be painful.
-installdepsfromsnapcraft() {
-    section="$2"
-    case "$1" in
-        build) key=build-packages; ;;
-        runtime) key=stage-packages; ;;
-        *) key=build-packages; ;; # shouldn't be needed, but it's here just in case
-    esac
-
-    UBUNTU_VERSION=$(lsb_release -r)
-    SNAPCRAFT_FILE="snapcraft.yaml"
-    if [[ "$UBUNTU_VERSION" == *"21.04"* ]]; then
-        SNAPCRAFT_FILE="snapcraft21.yaml"
-    elif [[ "$UBUNTU_VERSION" == *"24.04"* ]]; then
-        SNAPCRAFT_FILE="snapcraft24.yaml"
-    fi
-
-    cat snap/$SNAPCRAFT_FILE | \
-        venv/bin/shyaml get-values-0 parts.$section.$key | \
-        xargs -0 sudo $APT_GET install -y -qq --no-install-recommends
-}
-
-installruntimedepsonly() {
+installruntimedeps() {
     echo "Installing runtime dependencies"
     ensure_prereqs
     check_version
 
-    echo "Installing Required Requisites"
-    installdepsfromsnapcraft runtime prereqs
-    echo "Installing OpenCV Dependencies"
-    installdepsfromsnapcraft runtime opencv
-    echo "Installing OpenSfM Dependencies"
-    installdepsfromsnapcraft runtime opensfm
-    echo "Installing OpenMVS Dependencies"
-    installdepsfromsnapcraft runtime openmvs
-    echo "Installing GDAL Dependencies"
-    installdepsfromsnapcraft runtime gdal
+    for i in {1..20}; do
+        sudo apt-get install -y --no-install-recommends \
+            gdal-bin \
+            libgdal34t64 \
+            libgeotiff5 \
+            libjsoncpp25 \
+            libspqr4 \
+            libssl3t64 \
+            libusb-1.0-0 \
+            proj-data \
+            procps \
+            python3 \
+            python3-gdal \
+            python3-pkg-resources \
+            python3-requests \
+            python3-setuptools \
+            libavcodec60 \
+            libavformat60 \
+            libflann1.9 \
+            libgtk2.0-0 \
+            libjpeg-turbo8 \
+            libopenjpip7 \
+            liblapack3 \
+            libpng16-16 \
+            libproj25 \
+            libswscale7 \
+            libtbb12 \
+            libtiff6 \
+            libwebpdemux2 \
+            libxext6 \
+            libamd3 \
+            libcamd3 \
+            libccolamd3 \
+            libcholmod5 \
+            libcolamd3 \
+            libcxsparse4 \
+            libgoogle-glog0v6t64 \
+            libsuitesparseconfig7 \
+            libboost-program-options1.83.0 \
+            libboost-iostreams1.83.0 \
+            libboost-serialization1.83.0 \
+            libboost-system1.83.0 \
+            libgoogle-perftools4t64
+        break
+        echo "Attempt $i failed, sleeping..."
+        sleep 30
+    done
+}
+
+installbuilddeps(){
+    echo "Installing build dependencies"
+
+    for i in {1..20}; do
+        sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            cmake \
+            gdal-bin \
+            gfortran \
+            git \
+            libgdal-dev \
+            libgeotiff-dev \
+            libjsoncpp-dev \
+            libssl-dev \
+            libusb-1.0-0-dev \
+            ninja-build \
+            pkg-config \
+            python3-dev \
+            python3-gdal \
+            python3-pip \
+            python3-setuptools \
+            python3-wheel \
+            rsync \
+            swig3.0 \
+            libavcodec-dev \
+            libavformat-dev \
+            libeigen3-dev \
+            libflann-dev \
+            libgtk2.0-dev \
+            libjpeg-dev \
+            liblapack-dev \
+            libopenjpip7 \
+            libpng-dev \
+            libproj-dev \
+            libswscale-dev \
+            libtbb-dev \
+            libtiff-dev \
+            libxext-dev \
+            proj-bin \
+            libgoogle-glog-dev \
+            libsuitesparse-dev \
+            libcgal-dev \
+            libboost-program-options-dev \
+            libboost-iostreams-dev \
+            libboost-serialization-dev \
+            libboost-system-dev \
+            libgoogle-perftools-dev
+        break
+        echo "Attempt $i failed, sleeping..."
+        sleep 30
+    done
 }
 
 installreqs() {
@@ -112,38 +176,23 @@ installreqs() {
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RUNPATH/SuperBuild/install/lib
 
 	## Before installing
-    echo "Updating the system"
+    echo "Updating"
     ensure_prereqs
     check_version
     
-    echo "Installing Required Requisites"
-    installdepsfromsnapcraft build prereqs
-    echo "Installing OpenCV Dependencies"
-    installdepsfromsnapcraft build opencv
-    echo "Installing OpenSfM Dependencies"
-    installdepsfromsnapcraft build opensfm
-    echo "Installing OpenMVS Dependencies"
-    installdepsfromsnapcraft build openmvs
-    echo "Installing GDAL Dependencies"
-    installdepsfromsnapcraft build gdal
+    ensure_prereqs
+    check_version
+    installbuilddeps
     
     set -e
 
     # edt requires numpy to build
-    venv/bin/pip install numpy==2.3.2
+    pip install --ignore-installed numpy==2.3.2 --break-system-packages
+    pip install --ignore-installed -r requirements.txt --break-system-packages
+
     set +e
 }
 
-installpython() {
-    echo "Installing Python requirements with compiled GDAL"
-    cd /code
-    export GDAL_CONFIG=${RUNPATH}/SuperBuild/install/bin/gdal-config
-    
-    set -e
-    venv/bin/pip install -r requirements.txt --ignore-installed
-    set +e
-}
-    
 install() {
     installreqs
 
@@ -164,13 +213,7 @@ install() {
     echo "Compiling SuperBuild"
     cd ${RUNPATH}/SuperBuild
     mkdir -p build && cd build
-    cmake .. \
-        -DBUILD_PYTHON_BINDINGS=ON \
-        -DPython_ROOT=/code/venv \
-        -DPython_FIND_VIRTUALENV=ONLY \
-        && make -j$processes
-
-    installpython
+    cmake .. && make -j$(nproc)
 
     echo "Configuration Finished"
 }
@@ -188,7 +231,7 @@ uninstall() {
 reinstall() {
     check_version
 
-    echo "Reinstalling ODM modules"
+    echo "Reinstalling"
     uninstall
     install
 }
@@ -197,40 +240,33 @@ clean() {
     rm -rf \
         ${RUNPATH}/SuperBuild/build \
         ${RUNPATH}/SuperBuild/download \
-        ${RUNPATH}/SuperBuild/src
+        ${RUNPATH}/SuperBuild/src \
+        ${RUNPATH}/SuperBuild/install/bin/opensfm/.git \
+        ${RUNPATH}/SuperBuild/install/bin/opensfm/opensfm/src/third_party/pybind11/.git
 
     # find in /code and delete static libraries and intermediate object files
     find ${RUNPATH} -type f -name "*.a" -delete -or -type f -name "*.o" -delete
 }
 
+
 usage() {
     echo "Usage:"
-    echo "bash configure.sh <install|update|uninstall|installreqs|installpython|help> [nproc]"
-    echo "Subcommands:"
+    echo "bash configure.sh <install|update|uninstall|installreqs|help> [nproc]"
+    echo "Commands:"
     echo "  install"
-    echo "    Installs all dependencies and modules for running ODM"
-    echo "  installruntimedepsonly"
-    echo "    Installs *only* the runtime libraries (used by docker builds). To build from source, use the 'install' command."
-    echo "  installreqs"
-    echo "    Only installs the system requirements and dependencies (does not build SuperBuild or install Python packages)"
-    echo "  installpython"
-    echo "    Installs Python requirements after SuperBuild is compiled"
+    echo "  installruntimedeps"
     echo "  reinstall"
-    echo "    Removes SuperBuild and build modules, then re-installs them. Note this does not update ODM to the latest version. "
     echo "  uninstall"
-    echo "    Removes SuperBuild and build modules. Does not uninstall dependencies"
+    echo "  installreqs"
     echo "  clean"
-    echo "    Cleans the SuperBuild directory by removing temporary files. "
     echo "  help"
-    echo "    Displays this message"
-    echo "[nproc] is an optional argument that can set the number of processes for the make -j tag. By default it uses $(nproc)"
 }
 
-if [[ $1 =~ ^(install|installruntimedepsonly|reinstall|uninstall|installreqs|installpython|clean)$ ]]; then
+if [[ $1 =~ ^(install|installruntimedeps|reinstall|uninstall|installreqs|clean)$ ]]; then
     RUNPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     "$1"
 else
-    echo "Invalid instructions." >&2
+    echo "Invalid command"
     usage
     exit 1
 fi

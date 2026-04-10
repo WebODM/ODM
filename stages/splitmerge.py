@@ -185,11 +185,8 @@ class ODMSplitStage(types.ODM_Stage):
 
                         argv = get_submodel_argv(args, tree.submodels_path, sp_octx.name())
 
-                        # Always invoke run.py through venv python
-                        cmd = ["python3"] + argv
-
                         # Re-run the ODM toolchain on the submodel
-                        system.run(" ".join(map(double_quote, cmd)), env_vars=os.environ.copy())
+                        system.run(" ".join(map(double_quote, map(str, argv))), env_vars=os.environ.copy())
                 else:
                     lre.set_projects([os.path.abspath(os.path.join(p, "..")) for p in submodel_paths])
                     lre.run_toolchain()
@@ -265,7 +262,7 @@ class ODMMergeStage(types.ODM_Stage):
                             os.remove(tree.odm_orthophoto_tif)
 
                         orthophoto_vars = orthophoto.get_orthophoto_vars(args)
-                        orthophoto.merge(all_orthos_and_ortho_cuts, tree.odm_orthophoto_tif, orthophoto_vars, args.merge_skip_blending)
+                        orthophoto.merge(all_orthos_and_ortho_cuts, tree.odm_orthophoto_tif, orthophoto_vars)
                         orthophoto.post_orthophoto_steps(args, merged_bounds_file, tree.odm_orthophoto_tif, tree.orthophoto_tiles, args.orthophoto_resolution,
                             reconstruction, tree, False)
                     elif len(all_orthos_and_ortho_cuts) == 1:

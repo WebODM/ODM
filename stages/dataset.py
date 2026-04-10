@@ -309,6 +309,9 @@ class ODMLoadDatasetStage(types.ODM_Stage):
                                                  tree.odm_georeferencing_gcp_utm,
                                                  tree.odm_georeferencing_model_txt_geo,
                                                  rerun=self.rerun())
+            if reconstruction.gcp is not None and reconstruction.gcp.only_checkpoints():
+                    log.ODM_WARNING("Only checkpoints in this GCP file. Enabling --force-gps")
+                    args.force_gps = True
         else:
             reconstruction.georeference_with_gps(tree.dataset_raw, 
                                                  tree.odm_georeferencing_coords, 

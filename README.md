@@ -1,30 +1,30 @@
-An open source command line toolkit for processing aerial drone imagery. ODM turns simple 2D images into:
+# ODM
+
+![Docker Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODM/publish-docker.yml?branch=master) ![Docker GPU Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODM/publish-docker.yml?branch=master) ![Docker GPU Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODM/publish-windows.yml?branch=master) ![Version](https://img.shields.io/github/v/release/WebODM/ODM) ![License](https://img.shields.io/github/license/WebODM/ODM) ![Contributors](https://img.shields.io/github/contributors/WebODM/ODM) ![Updated](https://img.shields.io/github/last-commit/WebODM/ODM)
+
+A free and open source photogrammetry engine for processing aerial and ground imagery. ODM turns images into:
 
 * Classified Point Clouds
 * 3D Textured Models
-* Georeferenced Orthorectified Imagery
+* Georeferenced Orthophotos
 * Georeferenced Digital Elevation Models
 
 ![images-diag](https://user-images.githubusercontent.com/1174901/96644651-5b205600-12f7-11eb-827b-8f4a3a6f3b21.png)
 
 The application is available for Windows, Mac and Linux and it works from the command line, making it ideal for power users, scripts and for integration with other software.
 
-If you would rather not type commands in a shell and are looking for a friendly user interface, check out [WebODM](https://github.com/WebODM/WebODM).
+If you would rather not type commands in a shell and are looking for a friendly user interface, check out [WebODM](https://webodm.org).
+
 
 ## Quickstart
 
-The easiest way to run ODM is via docker. To install docker, see [docs.docker.com](https://docs.docker.com). Once you have docker installed and [working](https://docs.docker.com/get-started/#test-docker-installation), you can get ODM by running from a Command Prompt / Terminal:
-
-```bash
-docker pull webodm/odm
-```
-
-Run ODM by placing some images (JPEGs, TIFFs or DNGs) in a folder named “images” (for example `C:\Users\youruser\datasets\project\images` or `/home/youruser/datasets/project/images`) and simply run from a Command Prompt / Terminal:
+The easiest way to run ODM is via docker. To install docker, see [docs.docker.com](https://docs.docker.com). Once you have docker installed place some images (JPEGs, TIFFs or DNGs) in a folder named “images” (for example `C:\Users\youruser\datasets\project\images` or `/home/youruser/datasets/project/images`) and run from a terminal:
 
 ```bash
 # Windows
 docker run -ti --rm -v c:/Users/youruser/datasets:/datasets webodm/odm --project-path /datasets project
 ```
+
 ```bash
 # Mac/Linux
 docker run -ti --rm -v /home/youruser/datasets:/datasets webodm/odm --project-path /datasets project
@@ -53,14 +53,13 @@ docker run -ti --rm -v /datasets:/datasets webodm/odm --help
 When the process finishes, the results will be organized as follows:
 
     |-- images/
-        |-- img-1234.jpg
+        |-- DJI_0001.jpg
         |-- ...
     |-- opensfm/
         |-- see mapillary/opensfm repository for more info
     |-- odm_meshing/
         |-- odm_mesh.ply                    # A 3D mesh
     |-- odm_texturing/
-        |-- odm_textured_model.obj          # Textured mesh
         |-- odm_textured_model_geo.obj      # Georeferenced textured mesh
     |-- odm_georeferencing/
         |-- odm_georeferenced_model.laz     # LAZ format point cloud
@@ -96,27 +95,22 @@ run C:\Users\youruser\datasets\project  [--additional --parameters --here]
 
 ## GPU Acceleration
 
-ODM has support for doing SIFT feature extraction on a GPU, which is about 2x faster than the CPU on a typical consumer laptop. To use this feature, you need to use the `webodm/odm:gpu` docker image instead of `webodm/odm:gpu` and you need to pass the `--gpus all` flag:
+ODM has GPU support to speed up certain computations. To enable it, you need to use the `webodm/odm:gpu` docker image and you need to pass the `--gpus all` flag:
 
 ```
-docker run -ti --rm -v c:/Users/youruser/datasets:/datasets --gpus all webodm/odm:gpu --project-path /datasets project --feature-type sift
+docker run -ti --rm -v c:/Users/youruser/datasets:/datasets --gpus all webodm/odm:gpu --project-path /datasets project
 ```
 
 When you run ODM, if the GPU is recognized, in the first few lines of output you should see:
 
 ```
-[INFO]    Writing exif overrides
-[INFO]    Maximum photo dimensions: 4000px
-[INFO]    Found GPU device: Intel(R) OpenCL HD Graphics
-[INFO]    Using GPU for extracting SIFT features
+[INFO]    nvidia-smi detected
 ```
-
-The SIFT GPU implementation is CUDA-based, so should work with most NVIDIA graphics cards of the GTX 9xx Generation or newer.
 
 If you have an NVIDIA card, you can test that docker is recognizing the GPU by running:
 
 ```
-docker run --rm --gpus all nvidia/cuda:10.0-base nvidia-smi
+docker run --rm --gpus all nvidia/cuda:13.0.0-base-ubuntu24.04 nvidia-smi
 ```
 
 If you see an output that looks like this:
@@ -132,79 +126,19 @@ Fri Jul 24 18:51:55 2020
 
 You're in good shape!
 
-See https://github.com/NVIDIA/nvidia-docker and https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker for information on docker/NVIDIA setup.
+See https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html for information on docker/NVIDIA setup.
 
-## Native Install (Ubuntu 24.04)
+### Build Docker Images
 
-You can run ODM natively on Ubuntu 24.04 (although we don't recommend it):  
-
-```bash
-git clone https://github.com/WebODM/ODM
-cd ODM
-bash configure.sh install
-```
-
-You can then process datasets with `./run.sh /datasets/odm_data_aukerman`
-
-## Native Install (MacOS)
-
-> **Warning:** Installation on Mac is currently unmaintained, and may not work out-of-the-box. See this [issue](https://community.opendronemap.org/t/odm-install-on-a-mac-os-14-6-1/25007/3).
-
-You can run ODM natively on Intel/ARM MacOS.
-
-First install:
-
- * Xcode 13 (not 14, there's currently a bug)
- * [Homebrew](https://docs.brew.sh/Installation)
-
-Then Run:
+If you want to rebuild your own docker image, from the `ODM` folder you can type:
 
 ```bash
-git clone https://github.com/WebODM/ODM
-cd ODM
-bash configure_macos.sh install
+docker build -t myodm --no-cache .
 ```
-
-You can then process datasets with `./run.sh /datasets/odm_data_aukerman`
-
-This could be improved in the future. [Helps us create a Homebrew formula](https://github.com/WebODM/ODM/issues/1531).
-
-### Updating a native installation
-
-When updating to a newer version of native ODM, it is recommended that you run:
-
-`bash configure.sh reinstall`
-
-to ensure all the dependent packages and modules get updated.
-
-### Build Docker Images From Source
-
-If you want to rebuild your own docker image (if you have changed the source code, for example), from the ODM folder you can type:
-
-```bash
-docker build -t my_odm_image --no-cache .
-```
-When building your own Docker image, if image size is of importance to you, you should use the ```--squash``` flag, like so:
-
-```bash
-docker build --squash -t my_odm_image .
-```
-
-This will clean up intermediate steps in the Docker build process, resulting in a significantly smaller image (about half the size).
-
-Experimental flags need to be enabled in Docker to use the ```--squash``` flag. To enable this, insert the following into the file `/etc/docker/daemon.json`:
-
-```json
-{
-   "experimental": true
-}
-```
-
-After this, you must restart docker.
 
 ## Video Support
 
-Starting from version 3.0.4, ODM can automatically extract images from video files (.mp4, .mov, .lrv, .ts). Just place one or more video files into the `images` folder and run the program as usual. Subtitles files (.srt) with GPS information are also supported. Place .srt files in the `images` folder, making sure that the filenames match. For example, `my_video.mp4` ==> `my_video.srt` (case-sensitive).
+ODM can automatically extract images from video files (.mp4, .mov, .lrv, .ts). Just place one or more video files into the `images` folder and run the program as usual. Subtitles files (.srt) with GPS information are also supported. Place .srt files in the `images` folder, making sure that the filenames match. For example, `my_video.mp4` ==> `my_video.srt` (case-sensitive).
 
 ## Developers
 
@@ -212,6 +146,7 @@ Help improve our software! We welcome contributions from everyone, whether to ad
 
 
 ### Installation and first run
+
 For Linux users, the easiest way to modify the software is to make sure docker is installed, clone the repository and then run from a shell:
 
 ```bash
@@ -244,7 +179,6 @@ docker exec -ti odmdev bash
 su your_username
 ```
 
-
 If you have questions, join the #devtalk's channel on discord: https://webodm.org/community
 
 1. Try to keep commits clean and simple
@@ -262,7 +196,7 @@ In order to make a clean build, remove `~/.odm-dev-home` and `ODM/.setupdevenv`.
 
 ODM makes use of other awesome open source projects to perform its tasks. Among them we'd like to highlight:
 
- - [OpenSfM](https://github.com/mapillary/OpenSfM)
+ - [OpenSfM](https://github.com/WebODM/OpenSfM)
  - [OpenMVS](https://github.com/cdcseacave/openMVS/)
  - [PDAL](https://github.com/PDAL/PDAL)
  - [Entwine](https://entwine.io/)

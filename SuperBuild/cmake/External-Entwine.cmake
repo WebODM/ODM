@@ -12,8 +12,8 @@ ExternalProject_Add(${_proj_name}
   STAMP_DIR         ${_SB_BINARY_DIR}/stamp
   #--Download step--------------
   DOWNLOAD_DIR      ${SB_DOWNLOAD_DIR}
-  GIT_REPOSITORY    https://github.com/OpenDroneMap/entwine/
-  GIT_TAG           0cf957432f291e841ff1385085dadad933dcba8d
+  GIT_REPOSITORY    https://github.com/WebODM/entwine/
+  GIT_TAG           370
   #--Update/Patch step----------
   UPDATE_COMMAND    ""
   #--Configure step-------------

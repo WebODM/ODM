@@ -121,7 +121,7 @@ class Cropper:
         # Save and close output data source
         out_ds = None
 
-    def create_bounds_geojson(self, pointcloud_path, buffer_distance = 0, decimation_step=40):
+    def create_bounds_geojson(self, pointcloud_path, buffer_distance = 0, decimation_step=40, edge_length=1.0, pc_wkt="EPSG:4326"):
         """
         Compute a buffered polygon around the data extents (not just a bounding box)
         of the given point cloud.
@@ -145,30 +145,18 @@ class Cropper:
             return ''
 
         # Use PDAL to dump boundary information
-        # then read the information back
-
-        boundary_file_path = self.path('boundary.json')
-
-        run('pdal info --boundary --filters.hexbin.edge_length=1 --filters.hexbin.threshold=1 "{0}" > "{1}"'.format(decimated_pointcloud_path,  boundary_file_path))
-        
-        pc_geojson_boundary_feature = None
-
-        with open(boundary_file_path, 'r') as f:
-            json_f = json.loads(f.read())
-            pc_geojson_boundary_feature = json_f['boundary']['boundary_json']
-
-        if pc_geojson_boundary_feature is None: raise RuntimeError("Could not determine point cloud boundaries")
-
-        # Write bounds to GeoJSON
         tmp_bounds_geojson_path = self.path('tmp-bounds.geojson')
-        with open(tmp_bounds_geojson_path, "w") as f:
-            f.write(json.dumps({
-                "type": "FeatureCollection",
-                "features": [{
-                    "type": "Feature",
-                    "geometry": pc_geojson_boundary_feature
-                }]
-            }))
+        if os.path.isfile(tmp_bounds_geojson_path):
+            os.unlink(tmp_bounds_geojson_path)
+
+        run('pdal tindex create --tindex {0} -f GeoJSON --threshold 1 --resolution {1} --t_srs={2} --filespec {3}'.format(
+                        double_quote(tmp_bounds_geojson_path), 
+                        edge_length, 
+                        double_quote(pc_wkt), 
+                        double_quote(decimated_pointcloud_path)))
+    
+        if not os.path.isfile(tmp_bounds_geojson_path): 
+            raise RuntimeError("Could not determine point cloud boundaries")
 
         # Create a convex hull around the boundary
         # as to encompass the entire area (no holes)    
@@ -206,7 +194,9 @@ class Cropper:
             os.remove(bounds_geojson_path)
 
         out_ds = driver.CreateDataSource(bounds_geojson_path)
-        layer = out_ds.CreateLayer("convexhull", geom_type=ogr.wkbPolygon)
+        srs = ogr.osr.SpatialReference()
+        srs.ImportFromWkt(pc_wkt)
+        layer = out_ds.CreateLayer("convexhull", srs=srs, geom_type=ogr.wkbPolygon)
 
         feature_def = layer.GetLayerDefn()
         feature = ogr.Feature(feature_def)
@@ -239,18 +229,19 @@ class Cropper:
             log.ODM_WARNING('Point cloud does not exist, cannot generate GPKG bounds {}'.format(pointcloud_path))
             return ''
 
-        bounds_geojson_path = self.create_bounds_geojson(pointcloud_path, buffer_distance, decimation_step)
 
         summary_file_path = os.path.join(self.storage_dir, '{}.summary.json'.format(self.files_prefix))
         export_summary_json(pointcloud_path, summary_file_path)
         
-        pc_proj4 = None
+        pc_wkt = None
+        edge_length = 1.0
         with open(summary_file_path, 'r') as f:
             json_f = json.loads(f.read())
-            pc_proj4 = json_f['summary']['srs']['proj4']
+            pc_wkt = json_f['summary']['srs']['wkt']
 
-        if pc_proj4 is None: raise RuntimeError("Could not determine point cloud proj4 declaration")
+        if pc_wkt is None: raise RuntimeError("Could not determine point cloud WKT declaration")
 
+        bounds_geojson_path = self.create_bounds_geojson(pointcloud_path, buffer_distance, decimation_step, edge_length=edge_length, pc_wkt=pc_wkt)
         bounds_gpkg_path = os.path.join(self.storage_dir, '{}.bounds.gpkg'.format(self.files_prefix))
 
         if os.path.isfile(bounds_gpkg_path):
@@ -260,10 +251,10 @@ class Cropper:
         kwargs = {
             'input': double_quote(bounds_geojson_path),
             'output': double_quote(bounds_gpkg_path),
-            'proj4': pc_proj4
+            'wkt': double_quote(pc_wkt)
         }
 
-        run('ogr2ogr -overwrite -f GPKG -a_srs "{proj4}" {output} {input}'.format(**kwargs))
+        run('ogr2ogr -overwrite -f GPKG -a_srs {wkt} {output} {input}'.format(**kwargs))
 
         return bounds_gpkg_path
 

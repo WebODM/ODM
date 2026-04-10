@@ -8,8 +8,8 @@ ExternalProject_Add(${_proj_name}
   STAMP_DIR         ${_SB_BINARY_DIR}/stamp
   #--Download step--------------
   DOWNLOAD_DIR      ${SB_DOWNLOAD_DIR}
-  GIT_REPOSITORY    https://github.com/OpenDroneMap/RenderDEM
-  GIT_TAG           main
+  GIT_REPOSITORY    https://github.com/WebODM/RenderDEM
+  GIT_TAG           dc5550a3992a164dd6d3a4bb06561f0720d84394
   #--Update/Patch step----------
   UPDATE_COMMAND    ""
   #--Configure step-------------

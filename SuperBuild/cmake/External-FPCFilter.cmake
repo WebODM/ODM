@@ -2,14 +2,13 @@ set(_proj_name fpcfilter)
 set(_SB_BINARY_DIR "${SB_BINARY_DIR}/${_proj_name}")
 
 ExternalProject_Add(${_proj_name}
-  DEPENDS           gdal
   PREFIX            ${_SB_BINARY_DIR}
   TMP_DIR           ${_SB_BINARY_DIR}/tmp
   STAMP_DIR         ${_SB_BINARY_DIR}/stamp
   #--Download step--------------
   DOWNLOAD_DIR      ${SB_DOWNLOAD_DIR}
-  GIT_REPOSITORY    https://github.com/OpenDroneMap/FPCFilter
-  GIT_TAG           331
+  GIT_REPOSITORY    https://github.com/WebODM/FPCFilter
+  GIT_TAG           bbac1be23832a51a5d23a4f896a4ef43b55eb306
   #--Update/Patch step----------
   UPDATE_COMMAND    ""
   #--Configure step-------------

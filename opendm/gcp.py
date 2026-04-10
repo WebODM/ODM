@@ -79,7 +79,17 @@ class GCPFile:
 
     def entries_count(self):
         return len(self.entries)
-   
+    
+    def checkpoints_count(self):
+        c = 0
+        for entry in self.iter_entries():
+            if entry.is_checkpoint():
+                c += 1
+        return c
+    
+    def only_checkpoints(self):
+        return self.checkpoints_count() == self.entries_count()
+
     def exists(self):
         return bool(self.gcp_path and os.path.exists(self.gcp_path))
 
@@ -237,6 +247,9 @@ class GCPEntry:
     def coords_key(self):
         return "{} {} {}".format(self.x, self.y, self.z)
     
+    def is_checkpoint(self):
+        return self.extras.upper().startswith("CHK-")
+
     def __str__(self):
         return "{} {} {} {} {} {} {}".format(self.x, self.y, self.z, 
                                              self.px, self.py, 
