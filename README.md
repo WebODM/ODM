@@ -1,5 +1,7 @@
 # ODM
 
+![Docker Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODM/publish-docker.yml?branch=master) ![Docker GPU Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODM/publish-docker.yml?branch=master) ![Docker GPU Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODM/publish-windows.yml?branch=master) ![Version](https://img.shields.io/github/v/release/WebODM/ODM) ![License](https://img.shields.io/github/license/WebODM/ODM) ![Contributors](https://img.shields.io/github/contributors/WebODM/ODM) ![Updated](https://img.shields.io/github/last-commit/WebODM/ODM)
+
 A free and open source photogrammetry engine for processing aerial and ground imagery. ODM turns images into:
 
 * Classified Point Clouds
