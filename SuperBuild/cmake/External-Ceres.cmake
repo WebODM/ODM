@@ -11,7 +11,6 @@ ExternalProject_Add(${_proj_name}
   URL               http://ceres-solver.org/ceres-solver-2.2.0.tar.gz
   #--Update/Patch step----------
   UPDATE_COMMAND    ""
-  PATCH_COMMAND    git apply ${CMAKE_MODULE_PATH}/ceres.patch
   #--Configure step-------------
   SOURCE_DIR        ${SB_SOURCE_DIR}/${_proj_name}
   CMAKE_ARGS
