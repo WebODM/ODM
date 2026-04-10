@@ -346,6 +346,6 @@ def get_gps_location(elapsed_time, lat, lng, altitude):
         gps_ifd[piexif.GPSIFD.GPSLongitude] = exiv_lng
         if altitude is not None:
             gps_ifd[piexif.GPSIFD.GPSAltitudeRef] = 0
-            gps_ifd[piexif.GPSIFD.GPSAltitude] = float_to_rational(altitude)
+            gps_ifd[piexif.GPSIFD.GPSAltitude] = float_to_rational(round(altitude * 1000) / 1000)
 
     return gps_ifd
