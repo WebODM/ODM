@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 # Basic check
 import sys
 if sys.version_info.major < 3:
