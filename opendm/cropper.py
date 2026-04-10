@@ -251,10 +251,10 @@ class Cropper:
         kwargs = {
             'input': double_quote(bounds_geojson_path),
             'output': double_quote(bounds_gpkg_path),
-            'wkt': pc_wkt
+            'wkt': double_quote(pc_wkt)
         }
 
-        run('ogr2ogr -overwrite -f GPKG -a_srs "{pc_wkt}" {output} {input}'.format(**kwargs))
+        run('ogr2ogr -overwrite -f GPKG -a_srs {wkt} {output} {input}'.format(**kwargs))
 
         return bounds_gpkg_path
 
