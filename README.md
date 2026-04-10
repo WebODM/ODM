@@ -1,32 +1,28 @@
 # ODM
 
-An open source command line toolkit for processing aerial drone imagery. ODM turns simple 2D images into:
+A free and open source photogrammetry engine for processing aerial and ground imagery. ODM turns images into:
 
 * Classified Point Clouds
 * 3D Textured Models
-* Georeferenced Orthorectified Imagery
+* Georeferenced Orthophotos
 * Georeferenced Digital Elevation Models
 
 ![images-diag](https://user-images.githubusercontent.com/1174901/96644651-5b205600-12f7-11eb-827b-8f4a3a6f3b21.png)
 
 The application is available for Windows, Mac and Linux and it works from the command line, making it ideal for power users, scripts and for integration with other software.
 
-If you would rather not type commands in a shell and are looking for a friendly user interface, check out [WebODM](https://github.com/WebODM/WebODM).
+If you would rather not type commands in a shell and are looking for a friendly user interface, check out [WebODM](https://webodm.org).
+
 
 ## Quickstart
 
-The easiest way to run ODM is via docker. To install docker, see [docs.docker.com](https://docs.docker.com). Once you have docker installed and [working](https://docs.docker.com/get-started/#test-docker-installation), you can get ODM by running from a Command Prompt / Terminal:
-
-```bash
-docker pull webodm/odm
-```
-
-Run ODM by placing some images (JPEGs, TIFFs or DNGs) in a folder named “images” (for example `C:\Users\youruser\datasets\project\images` or `/home/youruser/datasets/project/images`) and simply run from a Command Prompt / Terminal:
+The easiest way to run ODM is via docker. To install docker, see [docs.docker.com](https://docs.docker.com). Once you have docker installed place some images (JPEGs, TIFFs or DNGs) in a folder named “images” (for example `C:\Users\youruser\datasets\project\images` or `/home/youruser/datasets/project/images`) and run from a terminal:
 
 ```bash
 # Windows
 docker run -ti --rm -v c:/Users/youruser/datasets:/datasets webodm/odm --project-path /datasets project
 ```
+
 ```bash
 # Mac/Linux
 docker run -ti --rm -v /home/youruser/datasets:/datasets webodm/odm --project-path /datasets project
@@ -55,14 +51,13 @@ docker run -ti --rm -v /datasets:/datasets webodm/odm --help
 When the process finishes, the results will be organized as follows:
 
     |-- images/
-        |-- img-1234.jpg
+        |-- DJI_0001.jpg
         |-- ...
     |-- opensfm/
         |-- see mapillary/opensfm repository for more info
     |-- odm_meshing/
         |-- odm_mesh.ply                    # A 3D mesh
     |-- odm_texturing/
-        |-- odm_textured_model.obj          # Textured mesh
         |-- odm_textured_model_geo.obj      # Georeferenced textured mesh
     |-- odm_georeferencing/
         |-- odm_georeferenced_model.laz     # LAZ format point cloud
@@ -184,29 +179,12 @@ to ensure all the dependent packages and modules get updated.
 If you want to rebuild your own docker image (if you have changed the source code, for example), from the ODM folder you can type:
 
 ```bash
-docker build -t my_odm_image --no-cache .
+docker build -t myodm --no-cache .
 ```
-When building your own Docker image, if image size is of importance to you, you should use the ```--squash``` flag, like so:
-
-```bash
-docker build --squash -t my_odm_image .
-```
-
-This will clean up intermediate steps in the Docker build process, resulting in a significantly smaller image (about half the size).
-
-Experimental flags need to be enabled in Docker to use the ```--squash``` flag. To enable this, insert the following into the file `/etc/docker/daemon.json`:
-
-```json
-{
-   "experimental": true
-}
-```
-
-After this, you must restart docker.
 
 ## Video Support
 
-Starting from version 3.0.4, ODM can automatically extract images from video files (.mp4, .mov, .lrv, .ts). Just place one or more video files into the `images` folder and run the program as usual. Subtitles files (.srt) with GPS information are also supported. Place .srt files in the `images` folder, making sure that the filenames match. For example, `my_video.mp4` ==> `my_video.srt` (case-sensitive).
+ODM can automatically extract images from video files (.mp4, .mov, .lrv, .ts). Just place one or more video files into the `images` folder and run the program as usual. Subtitles files (.srt) with GPS information are also supported. Place .srt files in the `images` folder, making sure that the filenames match. For example, `my_video.mp4` ==> `my_video.srt` (case-sensitive).
 
 ## Developers
 
@@ -214,6 +192,7 @@ Help improve our software! We welcome contributions from everyone, whether to ad
 
 
 ### Installation and first run
+
 For Linux users, the easiest way to modify the software is to make sure docker is installed, clone the repository and then run from a shell:
 
 ```bash
@@ -246,7 +225,6 @@ docker exec -ti odmdev bash
 su your_username
 ```
 
-
 If you have questions, join the #devtalk's channel on discord: https://webodm.org/community
 
 1. Try to keep commits clean and simple
@@ -264,7 +242,7 @@ In order to make a clean build, remove `~/.odm-dev-home` and `ODM/.setupdevenv`.
 
 ODM makes use of other awesome open source projects to perform its tasks. Among them we'd like to highlight:
 
- - [OpenSfM](https://github.com/mapillary/OpenSfM)
+ - [OpenSfM](https://github.com/WebODM/OpenSfM)
  - [OpenMVS](https://github.com/cdcseacave/openMVS/)
  - [PDAL](https://github.com/PDAL/PDAL)
  - [Entwine](https://entwine.io/)
