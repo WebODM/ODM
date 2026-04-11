@@ -16,24 +16,17 @@ SuperBuild/build/
 SuperBuild/install/
 build/
 
-cmvs.tar.gz
-parallel.tar.bz2
-LAStools.zip
-pcl.tar.gz
-ceres-solver.tar.gz
 *.pyc
-opencv.zip
 settings.yaml
 .setupdevenv
 __pycache__
-*.snap
+
 storage/
 
-
 vcpkg/
+vcpkg-env.zip
 venv/
 python312/
 dist/
 innosetup/
-azuresigning/
 .DS_Store

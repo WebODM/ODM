@@ -26,7 +26,7 @@ parser.add_argument('--build-vcpkg',
                     help='Build VCPKG environment from scratch instead of downloading prebuilt one.')
 parser.add_argument('--vcpkg-archive-url',
                     type=str,
-                    default='https://github.com/OpenDroneMap/windows-deps/releases/download/2.6.0/vcpkg-export.zip',
+                    default='https://github.com/WebODM/windows-deps/releases/download/3.7.0/vcpkg-export.zip',
                     required=False,
                     help='Path to VCPKG export archive')
 parser.add_argument('--signtool-path',
