@@ -17,7 +17,7 @@ ExternalProject_Add(${_proj_name}
   #--Download step--------------
   DOWNLOAD_DIR      ${SB_DOWNLOAD_DIR}
   GIT_REPOSITORY    https://github.com/WebODM/PDAL/
-  GIT_TAG           17df9763f4fcbe351e4a75a346f90c1f72e48bc1
+  GIT_TAG           87c8b2620d3379bd180a8c9f0f3d9709caffbd1a
   #--Update/Patch step----------
   UPDATE_COMMAND    ""
   #--Configure step-------------
