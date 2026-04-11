@@ -8,7 +8,7 @@ ExternalProject_Add(${_proj_name}
   STAMP_DIR         ${_SB_BINARY_DIR}/stamp
   #--Download step--------------
   DOWNLOAD_DIR      ${SB_DOWNLOAD_DIR}
-  URL               https://github.com/WebODM/windows-deps/releases/download/2.5.0/exiftool.zip
+  URL               https://github.com/WebODM/windows-deps/releases/download/v3.7.0/exiftool.zip
   SOURCE_DIR        ${SB_SOURCE_DIR}/${_proj_name}
   UPDATE_COMMAND    ""
   CONFIGURE_COMMAND ""
