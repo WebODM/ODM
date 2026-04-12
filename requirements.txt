@@ -12,9 +12,7 @@ pyodm==1.5.12
 pyproj==3.7.1
 Pysolar==0.13
 PyYAML==6.0.2
-rasterio==1.4.3 ; sys_platform == 'linux'
-rasterio==1.4.3 ; sys_platform == 'darwin'
-https://github.com/WebODM/windows-deps/releases/download/v3.7.0/rasterio-1.4.3-cp312-cp312-win_amd64.whl ; sys_platform == 'win32'
+rasterio==1.4.3
 gdal[numpy]==3.8.4 ; sys_platform == 'linux'
 gdal[numpy]==3.8.4 ; sys_platform == 'darwin'
 https://github.com/WebODM/windows-deps/releases/download/v3.7.0/GDAL-3.8.4-cp312-cp312-win_amd64.whl ; sys_platform == 'win32'
