@@ -164,7 +164,7 @@ def config(argv=None, parser=None):
 
     if parser is None:
         parser = argparse.ArgumentParser(
-            description='ODM is a free and open source photogrammetry engine used to generate maps, point clouds, 3D models and DEMs from aerial and ground images.',
+            description='ODM is a free and open source photogrammetry engine used to generate maps, point clouds, 3D models and DEMs from aerial and ground images. https://github.com/WebODM/ODM',
             usage='%s [options] <dataset name>' % usage_bin)
 
         # Load defaults from settings.yaml
