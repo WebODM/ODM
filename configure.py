@@ -168,7 +168,7 @@ def dist():
     # Download portable python
     if not os.path.isdir("python312"):
         pythonzip_path = os.path.join("SuperBuild", "download", "python312.zip")
-        python_url = "https://github.com/WebODM/windows-deps/releases/download/v3.7.0/python-3.12.10-embed-amd64-less-pth.zip"
+        python_url = "https://github.com/WebODM/windows-deps/releases/download/v3.7.0/python-3.12.9-embed-amd64-less-pth.zip"
         if not os.path.exists(pythonzip_path):
             print("Downloading %s" % python_url)
             with urllib.request.urlopen(python_url) as response, open( pythonzip_path, 'wb') as out_file:
