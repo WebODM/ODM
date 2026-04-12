@@ -45,9 +45,10 @@ parser.add_argument('--postpip',
 
 args = parser.parse_args()
 
-def run(cmd, cwd=os.getcwd()):
+def run(cmd, cwd=os.getcwd(), quiet=False):
     env = os.environ.copy()
-    p = subprocess.Popen(cmd, shell=True, env=env, cwd=cwd)
+    devnull = subprocess.DEVNULL if quiet else None
+    p = subprocess.Popen(cmd, shell=True, env=env, cwd=cwd, stdout=devnull, stderr=devnull)
     retcode = p.wait()
     if retcode != 0:
         raise Exception("Command returned %s" % retcode)
@@ -79,7 +80,7 @@ def build():
     run("pip install setuptools")
     run("venv\\Scripts\\pip install --ignore-installed -r requirements.txt")
     if args.postpip:
-        run(args.postpip)
+        run(args.postpip, quiet=True)
     
     # Download / build VCPKG environment
     if not os.path.isdir("vcpkg"):
