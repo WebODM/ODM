@@ -34,7 +34,8 @@
 import sys
 
 import numpy
-from osgeo import gdal
+import rasterio
+from rasterio.windows import Window
 
 # =============================================================================
 # rgb_to_hsv()
@@ -120,36 +121,31 @@ where src_color is a RGB or RGBA dataset,
 # 	Mainline
 # =============================================================================
 
-argv = gdal.GeneralCmdLineProcessor( sys.argv )
-if argv is None:
-    sys.exit( 0 )
-
 format = 'GTiff'
 src_color_filename = None
 src_greyscale_filename = None
 dst_color_filename = None
 quiet = False
 
-# Parse command line arguments.
 i = 1
-while i < len(argv):
-    arg = argv[i]
+while i < len(sys.argv):
+    arg = sys.argv[i]
 
     if arg == '-of':
         i = i + 1
-        format = argv[i]
+        format = sys.argv[i]
 
     elif arg == '-q' or arg == '-quiet':
         quiet = True
 
     elif src_color_filename is None:
-        src_color_filename = argv[i]
+        src_color_filename = sys.argv[i]
 
     elif src_greyscale_filename is None:
-        src_greyscale_filename = argv[i]
+        src_greyscale_filename = sys.argv[i]
 
     elif dst_color_filename is None:
-        dst_color_filename = argv[i]
+        dst_color_filename = sys.argv[i]
     else:
         Usage()
 
@@ -158,77 +154,53 @@ while i < len(argv):
 if dst_color_filename is None:
     Usage()
 
-datatype = gdal.GDT_Byte
+with rasterio.open(src_greyscale_filename) as hilldataset, \
+     rasterio.open(src_color_filename) as colordataset:
 
-hilldataset = gdal.Open( src_greyscale_filename, gdal.GA_ReadOnly )
-colordataset = gdal.Open( src_color_filename, gdal.GA_ReadOnly )
+    if colordataset.count not in (3, 4):
+        print('Source image does not appear to have three or four bands as required.')
+        sys.exit(1)
 
-#check for 3 or 4 bands in the color file
-if (colordataset.RasterCount != 3 and colordataset.RasterCount != 4):
-    print('Source image does not appear to have three or four bands as required.')
-    sys.exit(1)
+    if colordataset.height != hilldataset.height or colordataset.width != hilldataset.width:
+        print('Color and hillshade must be the same size in pixels.')
+        sys.exit(1)
 
-#define output format, name, size, type and set projection
-out_driver = gdal.GetDriverByName(format)
-outdataset = out_driver.Create(dst_color_filename, colordataset.RasterXSize, \
-                   colordataset.RasterYSize, colordataset.RasterCount, datatype)
-outdataset.SetProjection(hilldataset.GetProjection())
-outdataset.SetGeoTransform(hilldataset.GetGeoTransform())
+    hillbandnodatavalue = hilldataset.nodata
 
-#assign RGB and hillshade bands
-rBand = colordataset.GetRasterBand(1)
-gBand = colordataset.GetRasterBand(2)
-bBand = colordataset.GetRasterBand(3)
-if colordataset.RasterCount == 4:
-    aBand = colordataset.GetRasterBand(4)
-else:
-    aBand = None
+    profile = colordataset.profile.copy()
+    profile.update(
+        driver=format,
+        dtype='uint8',
+        crs=hilldataset.crs,
+        transform=hilldataset.transform,
+    )
 
-hillband = hilldataset.GetRasterBand(1)
-hillbandnodatavalue = hillband.GetNoDataValue()
+    with rasterio.open(dst_color_filename, 'w', **profile) as outdataset:
+        for i in range(hilldataset.height):
+            win = Window(0, i, hilldataset.width, 1)
 
-#check for same file size
-if ((rBand.YSize != hillband.YSize) or (rBand.XSize != hillband.XSize)):
-    print('Color and hillshade must be the same size in pixels.')
-    sys.exit(1)
+            rScanline = colordataset.read(1, window=win)
+            gScanline = colordataset.read(2, window=win)
+            bScanline = colordataset.read(3, window=win)
+            hillScanline = hilldataset.read(1, window=win)
 
-#loop over lines to apply hillshade
-for i in range(hillband.YSize):
-    #load RGB and Hillshade arrays
-    rScanline = rBand.ReadAsArray(0, i, hillband.XSize, 1, hillband.XSize, 1)
-    gScanline = gBand.ReadAsArray(0, i, hillband.XSize, 1, hillband.XSize, 1)
-    bScanline = bBand.ReadAsArray(0, i, hillband.XSize, 1, hillband.XSize, 1)
-    hillScanline = hillband.ReadAsArray(0, i, hillband.XSize, 1, hillband.XSize, 1)
+            hsv = rgb_to_hsv(rScanline, gScanline, bScanline)
 
-    #convert to HSV
-    hsv = rgb_to_hsv( rScanline, gScanline, bScanline )
+            if hillbandnodatavalue is not None:
+                equal_to_nodata = numpy.equal(hillScanline, hillbandnodatavalue)
+                v = numpy.choose(equal_to_nodata, (hillScanline, hsv[2]))
+            else:
+                v = hillScanline
 
-    # if there's nodata on the hillband, use the v value from the color
-    # dataset instead of the hillshade value.
-    if hillbandnodatavalue is not None:
-        equal_to_nodata = numpy.equal(hillScanline, hillbandnodatavalue)
-        v = numpy.choose(equal_to_nodata,(hillScanline,hsv[2]))
-    else:
-        v = hillScanline
+            hsv_adjusted = numpy.asarray([hsv[0], hsv[1], v])
+            dst_color = hsv_to_rgb(hsv_adjusted)
 
-    #replace v with hillshade
-    hsv_adjusted = numpy.asarray( [hsv[0], hsv[1], v] )
+            outdataset.write(dst_color[0], 1, window=win)
+            outdataset.write(dst_color[1], 2, window=win)
+            outdataset.write(dst_color[2], 3, window=win)
+            if colordataset.count == 4:
+                aScanline = colordataset.read(4, window=win)
+                outdataset.write(aScanline, 4, window=win)
 
-    #convert back to RGB
-    dst_color = hsv_to_rgb( hsv_adjusted )
-
-    #write out new RGB bands to output one band at a time
-    outband = outdataset.GetRasterBand(1)
-    outband.WriteArray(dst_color[0], 0, i)
-    outband = outdataset.GetRasterBand(2)
-    outband.WriteArray(dst_color[1], 0, i)
-    outband = outdataset.GetRasterBand(3)
-    outband.WriteArray(dst_color[2], 0, i)
-    if aBand is not None:
-        aScanline = aBand.ReadAsArray(0, i, hillband.XSize, 1, hillband.XSize, 1)
-        outband = outdataset.GetRasterBand(4)
-        outband.WriteArray(aScanline, 0, i)
-
-    #update progress line
-    if not quiet:
-        gdal.TermProgress_nocb( (float(i+1) / hillband.YSize) )
+        if not quiet:
+            print()

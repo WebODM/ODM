@@ -3,6 +3,8 @@ from opendm.system import run
 from opendm import log
 from opendm.point_cloud import export_summary_json
 from osgeo import ogr
+import fiona
+import fiona.crs
 import json, os
 from opendm.concurrency import get_max_memory
 from opendm.utils import double_quote
@@ -248,13 +250,12 @@ class Cropper:
             os.remove(bounds_gpkg_path)
 
         # Convert bounds to GPKG
-        kwargs = {
-            'input': double_quote(bounds_geojson_path),
-            'output': double_quote(bounds_gpkg_path),
-            'wkt': double_quote(pc_wkt)
-        }
-
-        run('ogr2ogr -overwrite -f GPKG -a_srs {wkt} {output} {input}'.format(**kwargs))
+        with fiona.open(bounds_geojson_path, 'r') as src:
+            with fiona.open(bounds_gpkg_path, 'w', driver='GPKG',
+                            crs=fiona.crs.from_string(pc_wkt),
+                            schema=src.schema) as dst:
+                for feature in src:
+                    dst.write(feature)
 
         return bounds_gpkg_path
 
