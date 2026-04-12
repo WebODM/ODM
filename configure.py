@@ -113,8 +113,7 @@ def build():
         if not os.path.isdir(build_dir):
             os.mkdir(build_dir)
 
-        toolchain_file = os.path.join(os.getcwd(), "vcpkg", "scripts", "buildsystems", "vcpkg.cmake")
-        run("cmake .. -DCMAKE_TOOLCHAIN_FILE=\"%s\"" % toolchain_file,  cwd=build_dir)
+        run("cmake ..", cwd=build_dir)
         run("cmake --build . --config Release -j%d" % os.cpu_count(), cwd=build_dir)
 
 def vcpkg_export():

@@ -10,6 +10,10 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
 endif()
 
+if (WIN32)
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "" FORCE)
+endif()
+
 if (APPLE)
     find_program(HOMEBREW_EXECUTABLE brew)
     mark_as_advanced(FORCE HOMEBREW_EXECUTABLE)
