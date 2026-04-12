@@ -21,7 +21,7 @@ def generate_tiles(geotiff, output_dir, max_concurrency, resolution):
     
     log.ODM_INFO("Generating static tiles for %s" % geotiff)
     with StaticTiler(geotiff, output_dir, px_per_tile, tms=True) as tiler:
-        for z in range(z_min, z_max):
+        for z in range(z_min, z_max + 1):
             tiles = tiler.get_tiles_for_zoom(z)
             for tx, ty, tz in tiles:
                 tiler.tile(tz, tx, ty)
