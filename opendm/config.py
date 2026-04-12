@@ -878,14 +878,6 @@ def config(argv=None, parser=None):
                       'but allows datasets to be processed on machines that don\'t have sufficient '
                       'disk space available. Default: %(default)s'))
 
-    parser.add_argument('--pc-rectify',
-                    action=StoreTrue,
-                    nargs=0,
-                    default=False,
-                    help=('Perform ground rectification on the point cloud. This means that wrongly classified ground '
-                          'points will be re-classified and gaps will be filled. Useful for generating DTMs. '
-                          'Default: %(default)s'))
-
     parser.add_argument('--primary-band',
                         metavar='<string>',
                         action=StoreValue,

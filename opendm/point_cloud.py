@@ -298,9 +298,6 @@ def post_point_cloud_steps(args, tree, rerun=False):
                 f.write('Slope: {}\n'.format(args.smrf_slope))
                 f.write('Threshold: {}\n'.format(args.smrf_threshold))
                 f.write('Window: {}\n'.format(args.smrf_window))
-    
-    if args.pc_rectify:
-        commands.rectify(tree.odm_georeferencing_model_laz)
 
     # XYZ point cloud output
     if args.pc_csv:

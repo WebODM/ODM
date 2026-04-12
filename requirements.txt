@@ -14,7 +14,6 @@ rasterio==1.4.3
 gdal[numpy]==3.8.4 ; sys_platform == 'linux'
 gdal[numpy]==3.8.4 ; sys_platform == 'darwin'
 https://github.com/WebODM/windows-deps/releases/download/v3.7.0/GDAL-3.8.4-cp312-cp312-win_amd64.whl ; sys_platform == 'win32'
-scikit-learn==1.7.1
 scikit-image==0.25.2
 scipy==1.16.1
 xmltodict==0.14.2
