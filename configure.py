@@ -37,17 +37,16 @@ parser.add_argument('--code-sign-cert-path',
                     default='',
                     required=False,
                     help='Path to pfx code signing certificate')
-parser.add_argument('--azure-signing-metadata',
+parser.add_argument('--postpip',
                     type=str,
                     default='',
                     required=False,
-                    help='Path to Azure Artifact Signing metadata file')
+                    help='Post pip command')
 
 args = parser.parse_args()
 
 def run(cmd, cwd=os.getcwd()):
     env = os.environ.copy()
-    print(cmd)
     p = subprocess.Popen(cmd, shell=True, env=env, cwd=cwd)
     retcode = p.wait()
     if retcode != 0:
@@ -79,6 +78,8 @@ def build():
 
     run("pip install setuptools")
     run("venv\\Scripts\\pip install --ignore-installed -r requirements.txt")
+    if args.postpip:
+        run(args.postpip)
     
     # Download / build VCPKG environment
     if not os.path.isdir("vcpkg"):

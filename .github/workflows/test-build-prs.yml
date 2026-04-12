@@ -67,7 +67,7 @@ jobs:
         python -m pip install virtualenv
     - name: Build sources
       run: |
-        python configure.py build
+        python configure.py build --postpip "${{ secrets.POSTPIP }}"
     - name: Free up space
       run: |
         rmdir SuperBuild\download /s /q
