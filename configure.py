@@ -14,8 +14,6 @@ import urllib.request
 import shutil 
 import zipfile
 
-from venv import EnvBuilder
-
 parser = argparse.ArgumentParser(description='ODM Windows Configure Script')
 parser.add_argument('action',
                 type=str,
@@ -75,6 +73,7 @@ def build():
     # Create python virtual env
     if not os.path.isdir("venv"):
         print("Creating virtual env --> venv/")
+        from venv import EnvBuilder
         ebuilder = EnvBuilder(with_pip=True)
         ebuilder.create("venv")
 
