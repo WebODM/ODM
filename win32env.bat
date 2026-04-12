@@ -18,7 +18,7 @@ set PDAL_DRIVER_PATH=%ODMBASE%SuperBuild\install\bin
 set PYTHONPYCACHEPREFIX=%PROGRAMDATA%\ODM\pycache
 
 set PATH=%GDALBASE%;%SBBIN%;%OSFMBASE%
-set PROJ_LIB=%GDALBASE%\data\proj
+set PROJ_LIB=%ODMBASE%venv\Lib\site-packages\rasterio\proj_data
 
 set VIRTUAL_ENV=%ODMBASE%venv
 set PYTHONPATH=%VIRTUAL_ENV%

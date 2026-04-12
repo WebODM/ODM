@@ -1,9 +1,11 @@
 import os
 import sys
 import math
+import shutil
 from opendm import log
 from opendm import system
 from opendm import io
+from .static_tiler import StaticTiler
 
 def generate_tiles(geotiff, output_dir, max_concurrency, resolution):
     circumference_earth_cm = 2*math.pi*637_813_700
@@ -11,11 +13,18 @@ def generate_tiles(geotiff, output_dir, max_concurrency, resolution):
     resolution_equator_cm = circumference_earth_cm/px_per_tile
     zoom = math.ceil(math.log(resolution_equator_cm/resolution, 2))
 
-    min_zoom = 5  # 4.89 km/px
-    max_zoom = min(zoom, 23)  # No deeper zoom than 23 (1.86 cm/px at equator)
+    z_min = 5  # 4.89 km/px
+    z_max = min(zoom, 23)  # No deeper zoom than 23 (1.86 cm/px at equator)
 
-    gdal2tiles = os.path.join(os.path.dirname(__file__), "gdal2tiles.py")
-    system.run('%s "%s" --processes %s -z %s-%s -n -w none "%s" "%s"' % (sys.executable, gdal2tiles, max_concurrency, min_zoom, max_zoom, geotiff, output_dir))
+    if os.path.isdir(output_dir):
+        shutil.rmtree(output_dir)
+    
+    log.ODM_INFO("Generating static tiles for %s" % geotiff)
+    with StaticTiler(geotiff, output_dir, px_per_tile, tms=True) as tiler:
+        for z in range(z_min, z_max):
+            tiles = tiler.get_tiles_for_zoom(z)
+            for tx, ty, tz in tiles:
+                tiler.tile(tz, tx, ty)
 
 def generate_orthophoto_tiles(geotiff, output_dir, max_concurrency, resolution):
     try:

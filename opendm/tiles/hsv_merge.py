@@ -7,6 +7,7 @@
 #            instance to apply hillshading to a dem colour relief.
 #  Author:   Frank Warmerdam, warmerdam@pobox.com
 #            Trent Hare (USGS)
+#            Modified by Piero Toffanin
 #
 #******************************************************************************
 #  Copyright (c) 2009, Frank Warmerdam
@@ -179,12 +180,10 @@ with rasterio.open(src_greyscale_filename) as hilldataset, \
         for i in range(hilldataset.height):
             win = Window(0, i, hilldataset.width, 1)
 
-            rScanline = colordataset.read(1, window=win)
-            gScanline = colordataset.read(2, window=win)
-            bScanline = colordataset.read(3, window=win)
+            rgb = colordataset.read([1, 2, 3], window=win)
             hillScanline = hilldataset.read(1, window=win)
 
-            hsv = rgb_to_hsv(rScanline, gScanline, bScanline)
+            hsv = rgb_to_hsv(rgb[0], rgb[1], rgb[2])
 
             if hillbandnodatavalue is not None:
                 equal_to_nodata = numpy.equal(hillScanline, hillbandnodatavalue)
@@ -195,9 +194,7 @@ with rasterio.open(src_greyscale_filename) as hilldataset, \
             hsv_adjusted = numpy.asarray([hsv[0], hsv[1], v])
             dst_color = hsv_to_rgb(hsv_adjusted)
 
-            outdataset.write(dst_color[0], 1, window=win)
-            outdataset.write(dst_color[1], 2, window=win)
-            outdataset.write(dst_color[2], 3, window=win)
+            outdataset.write(dst_color, [1, 2, 3], window=win)
             if colordataset.count == 4:
                 aScanline = colordataset.read(4, window=win)
                 outdataset.write(aScanline, 4, window=win)
