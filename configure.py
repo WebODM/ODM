@@ -77,7 +77,7 @@ def build():
         ebuilder = EnvBuilder(with_pip=True)
         ebuilder.create("venv")
 
-    run("pip install setuptools")
+    run("venv\\Scripts\\pip install setuptools")
     run("venv\\Scripts\\pip install --ignore-installed -r requirements.txt")
     if args.postpip:
         run(args.postpip, quiet=True)
