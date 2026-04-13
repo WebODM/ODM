@@ -69,7 +69,6 @@ rerun_stages = {
     'pc_filter': 'openmvs',
     'pc_las': 'odm_georeferencing',
     'pc_quality': 'opensfm',
-    'pc_rectify': 'odm_georeferencing',
     'pc_sample': 'odm_filterpoints',
     'pc_skip_geometric': 'openmvs',
     'primary_band': 'dataset',
@@ -916,10 +915,6 @@ def config(argv=None, parser=None):
     if args.fast_orthophoto:
       log.ODM_INFO('Fast orthophoto is turned on, automatically setting --skip-3dmodel')
       args.skip_3dmodel = True
-
-    if args.pc_rectify and not args.pc_classify:
-      log.ODM_INFO("Ground rectify is turned on, automatically turning on point cloud classification")
-      args.pc_classify = True
 
     if args.dtm and not args.pc_classify:
       log.ODM_INFO("DTM is turned on, automatically turning on point cloud classification")
