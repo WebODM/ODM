@@ -164,7 +164,7 @@ def config(argv=None, parser=None):
 
     if parser is None:
         parser = argparse.ArgumentParser(
-            description='ODM is a command line toolkit to generate maps, point clouds, 3D models and DEMs from drone, balloon or kite images.',
+            description='ODM is a free and open source photogrammetry engine used to generate maps, point clouds, 3D models and DEMs from aerial and ground images. https://github.com/WebODM/ODM',
             usage='%s [options] <dataset name>' % usage_bin)
 
         # Load defaults from settings.yaml
@@ -877,14 +877,6 @@ def config(argv=None, parser=None):
                       'affects the ability to restart the pipeline from an intermediate stage, '
                       'but allows datasets to be processed on machines that don\'t have sufficient '
                       'disk space available. Default: %(default)s'))
-
-    parser.add_argument('--pc-rectify',
-                    action=StoreTrue,
-                    nargs=0,
-                    default=False,
-                    help=('Perform ground rectification on the point cloud. This means that wrongly classified ground '
-                          'points will be re-classified and gaps will be filled. Useful for generating DTMs. '
-                          'Default: %(default)s'))
 
     parser.add_argument('--primary-band',
                         metavar='<string>',

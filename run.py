@@ -23,6 +23,7 @@ if __name__ == '__main__':
     args = config.config()
 
     log.ODM_INFO('Initializing ODM %s - %s' % (log.odm_version(), system.now()))
+    log.ODM_INFO('Built from github.com/WebODM/ODM')
 
     progressbc.set_project_name(args.name)
     args.project_path = os.path.join(args.project_path, args.name)

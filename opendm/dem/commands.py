@@ -14,7 +14,6 @@ from datetime import datetime
 from opendm.vendor.gdal_fillnodata import main as gdal_fillnodata
 from opendm import log
 
-from .ground_rectification.rectify import run_rectification
 from . import pdal
 
 gdal_proximity = None
@@ -43,24 +42,6 @@ def classify(lasFile, scalar, slope, threshold, window):
         log.ODM_WARNING("Error creating classified file %s" % lasFile)
 
     log.ODM_INFO('Created %s in %s' % (lasFile, datetime.now() - start))
-    return lasFile
-
-def rectify(lasFile, reclassify_threshold=5, min_area=750, min_points=500):
-    start = datetime.now()
-
-    try:
-
-        log.ODM_INFO("Rectifying {} using with [reclassify threshold: {}, min area: {}, min points: {}]".format(lasFile, reclassify_threshold, min_area, min_points))
-        run_rectification(
-            input=lasFile, output=lasFile, \
-            reclassify_plan='median', reclassify_threshold=reclassify_threshold, \
-            extend_plan='surrounding', extend_grid_distance=5, \
-            min_area=min_area, min_points=min_points)
-
-        log.ODM_INFO('Created %s in %s' % (lasFile, datetime.now() - start))
-    except Exception as e:
-        log.ODM_WARNING("Error rectifying ground in file %s: %s" % (lasFile, str(e)))
-
     return lasFile
 
 error = None

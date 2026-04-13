@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.28)
 
 project(ODM-SuperBuild)
 
@@ -8,6 +8,10 @@ set(SB_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "No build type selected, default to Release")
     set(CMAKE_BUILD_TYPE "Release")
+endif()
+
+if (WIN32)
+    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "" FORCE)
 endif()
 
 if (APPLE)

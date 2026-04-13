@@ -78,7 +78,10 @@ class ODMGeoreferencingStage(types.ODM_Stage):
 
                 # Write GML
                 try:
-                    system.run('ogr2ogr -of GML "{}" "{}"'.format(gcp_gml_export_file, gcp_export_file))
+                    with fiona.open(gcp_export_file, 'r') as src:
+                        with fiona.open(gcp_gml_export_file, 'w', driver='GML', crs=src.crs, schema=src.schema) as dst:
+                            for feature in src:
+                                dst.write(feature)
                 except Exception as e:
                     log.ODM_WARNING("Cannot generate ground control points GML file: %s" % str(e))
 
