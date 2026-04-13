@@ -14,8 +14,6 @@ import urllib.request
 import shutil 
 import zipfile
 
-from venv import EnvBuilder
-
 parser = argparse.ArgumentParser(description='ODM Windows Configure Script')
 parser.add_argument('action',
                 type=str,
@@ -26,7 +24,7 @@ parser.add_argument('--build-vcpkg',
                     help='Build VCPKG environment from scratch instead of downloading prebuilt one.')
 parser.add_argument('--vcpkg-archive-url',
                     type=str,
-                    default='https://github.com/OpenDroneMap/windows-deps/releases/download/2.6.0/vcpkg-export.zip',
+                    default='https://github.com/WebODM/windows-deps/releases/download/v3.7.0/vcpkg-export.zip',
                     required=False,
                     help='Path to VCPKG export archive')
 parser.add_argument('--signtool-path',
@@ -39,18 +37,18 @@ parser.add_argument('--code-sign-cert-path',
                     default='',
                     required=False,
                     help='Path to pfx code signing certificate')
-parser.add_argument('--azure-signing-metadata',
+parser.add_argument('--postpip',
                     type=str,
                     default='',
                     required=False,
-                    help='Path to Azure Artifact Signing metadata file')
+                    help='Post pip command')
 
 args = parser.parse_args()
 
-def run(cmd, cwd=os.getcwd()):
+def run(cmd, cwd=os.getcwd(), quiet=False):
     env = os.environ.copy()
-    print(cmd)
-    p = subprocess.Popen(cmd, shell=True, env=env, cwd=cwd)
+    devnull = subprocess.DEVNULL if quiet else None
+    p = subprocess.Popen(cmd, shell=True, env=env, cwd=cwd, stdout=devnull, stderr=devnull)
     retcode = p.wait()
     if retcode != 0:
         raise Exception("Command returned %s" % retcode)
@@ -75,11 +73,14 @@ def build():
     # Create python virtual env
     if not os.path.isdir("venv"):
         print("Creating virtual env --> venv/")
+        from venv import EnvBuilder
         ebuilder = EnvBuilder(with_pip=True)
         ebuilder.create("venv")
 
-    run("pip install setuptools")
+    run("venv\\Scripts\\pip install setuptools")
     run("venv\\Scripts\\pip install --ignore-installed -r requirements.txt")
+    if args.postpip:
+        run(args.postpip, quiet=True)
     
     # Download / build VCPKG environment
     if not os.path.isdir("vcpkg"):
@@ -113,9 +114,8 @@ def build():
         if not os.path.isdir(build_dir):
             os.mkdir(build_dir)
 
-        toolchain_file = os.path.join(os.getcwd(), "vcpkg", "scripts", "buildsystems", "vcpkg.cmake")
-        run("cmake .. -DCMAKE_TOOLCHAIN_FILE=\"%s\"" % toolchain_file,  cwd=build_dir)
-        run("cmake --build . --config Release -j2", cwd=build_dir)
+        run("cmake ..", cwd=build_dir)
+        run("cmake --build . --config Release -j%d" % os.cpu_count(), cwd=build_dir)
 
 def vcpkg_export():
     if not os.path.exists("vcpkg"):
@@ -156,7 +156,7 @@ def dist():
     # Download VC++ runtime
     vcredist_path = os.path.join("SuperBuild", "download", "vc_redist.x64.zip")
     if not os.path.isfile(vcredist_path):
-        vcredist_url = "https://github.com/OpenDroneMap/windows-deps/releases/download/2.5.0/VC_redist.x64.zip"
+        vcredist_url = "https://github.com/WebODM/windows-deps/releases/download/v3.7.0/VC_redist.x64.zip"
         print("Downloading %s" % vcredist_url)
         with urllib.request.urlopen(vcredist_url) as response, open(vcredist_path, 'wb') as out_file:
             shutil.copyfileobj(response, out_file)
@@ -168,7 +168,7 @@ def dist():
     # Download portable python
     if not os.path.isdir("python312"):
         pythonzip_path = os.path.join("SuperBuild", "download", "python312.zip")
-        python_url = "https://github.com/OpenDroneMap/windows-deps/releases/download/2.6.0/python-3.12.10-embed-amd64-less-pth.zip"
+        python_url = "https://github.com/WebODM/windows-deps/releases/download/v3.7.0/python-3.12.9-embed-amd64-less-pth.zip"
         if not os.path.exists(pythonzip_path):
             print("Downloading %s" % python_url)
             with urllib.request.urlopen(python_url) as response, open( pythonzip_path, 'wb') as out_file:
@@ -180,25 +180,10 @@ def dist():
         with zipfile.ZipFile(pythonzip_path) as z:
             z.extractall("python312")
 
-    # Download Artifact Signing Dlib
-    if args.azure_signing_metadata:
-        azure_signing_path = os.path.join("SuperBuild", "download", "microsoft.artifactsigning.client.1.0.115.nupkg")
-        azure_signing_url = "https://www.nuget.org/api/v2/package/Microsoft.ArtifactSigning.Client/1.0.115"
-        if not os.path.exists(azure_signing_path):
-            print("Downloading %s" % azure_signing_url)
-            with urllib.request.urlopen(azure_signing_url) as response, open(azure_signing_path, 'wb') as out_file:
-                shutil.copyfileobj(response, out_file)
-
-        os.mkdir("azuresigning")
-
-        print("Extracting --> azuresigning/")
-        with zipfile.ZipFile(azure_signing_path) as z:
-            z.extractall("azuresigning")
-
     # Download innosetup
     if not os.path.isdir("innosetup"):
         innosetupzip_path = os.path.join("SuperBuild", "download", "innosetup.zip")
-        innosetup_url = "https://github.com/OpenDroneMap/windows-deps/releases/download/2.5.0/innosetup-portable-win32-6.0.5-3.zip"
+        innosetup_url = "https://github.com/WebODM/windows-deps/releases/download/v3.7.0/innosetup-portable-win32-6.0.5-3.zip"
         if not os.path.exists(innosetupzip_path):
             print("Downloading %s" % innosetup_url)
             with urllib.request.urlopen(innosetup_url) as response, open(innosetupzip_path, 'wb') as out_file:
@@ -212,12 +197,8 @@ def dist():
 
     # Run
     cs_flags = '/DSKIP_SIGN=1'
-    if args.signtool_path:
-        if args.azure_signing_metadata:
-            dlib_path = os.path.join("azuresigning", "bin", "x64", "Azure.CodeSigning.Dlib.dll")
-            cs_flags = '"/Ssigntool=$q%s$q sign /v /debug /fd SHA256 /tr http://timestamp.acs.microsoft.com /td SHA256 /dlib $q%s$q /dmdf $q%s$q $f"' % (os.path.abspath(args.signtool_path), os.path.abspath(dlib_path), args.azure_signing_metadata)
-        elif args.code_sign_cert_path:
-            cs_flags = '"/Ssigntool=$q%s$q sign /f $q%s$q /fd SHA1 /t http://timestamp.sectigo.com $f"' % (os.path.abspath(args.signtool_path), args.code_sign_cert_path)
+    if args.signtool_path and args.code_sign_cert_path:
+        cs_flags = '"/Ssigntool=$q%s$q sign /f $q%s$q /fd SHA1 /t http://timestamp.sectigo.com $f"' % (os.path.abspath(args.signtool_path), args.code_sign_cert_path)
     run("innosetup\\iscc /Qp " + cs_flags  + " \"innosetup.iss\"")
 
     print("Done! Setup created in dist/")

@@ -69,7 +69,6 @@ rerun_stages = {
     'pc_filter': 'openmvs',
     'pc_las': 'odm_georeferencing',
     'pc_quality': 'opensfm',
-    'pc_rectify': 'odm_georeferencing',
     'pc_sample': 'odm_filterpoints',
     'pc_skip_geometric': 'openmvs',
     'primary_band': 'dataset',
@@ -164,7 +163,7 @@ def config(argv=None, parser=None):
 
     if parser is None:
         parser = argparse.ArgumentParser(
-            description='ODM is a command line toolkit to generate maps, point clouds, 3D models and DEMs from drone, balloon or kite images.',
+            description='ODM is a free and open source photogrammetry engine used to generate maps, point clouds, 3D models and DEMs from aerial and ground images. https://github.com/WebODM/ODM',
             usage='%s [options] <dataset name>' % usage_bin)
 
         # Load defaults from settings.yaml
@@ -878,14 +877,6 @@ def config(argv=None, parser=None):
                       'but allows datasets to be processed on machines that don\'t have sufficient '
                       'disk space available. Default: %(default)s'))
 
-    parser.add_argument('--pc-rectify',
-                    action=StoreTrue,
-                    nargs=0,
-                    default=False,
-                    help=('Perform ground rectification on the point cloud. This means that wrongly classified ground '
-                          'points will be re-classified and gaps will be filled. Useful for generating DTMs. '
-                          'Default: %(default)s'))
-
     parser.add_argument('--primary-band',
                         metavar='<string>',
                         action=StoreValue,
@@ -924,10 +915,6 @@ def config(argv=None, parser=None):
     if args.fast_orthophoto:
       log.ODM_INFO('Fast orthophoto is turned on, automatically setting --skip-3dmodel')
       args.skip_3dmodel = True
-
-    if args.pc_rectify and not args.pc_classify:
-      log.ODM_INFO("Ground rectify is turned on, automatically turning on point cloud classification")
-      args.pc_classify = True
 
     if args.dtm and not args.pc_classify:
       log.ODM_INFO("DTM is turned on, automatically turning on point cloud classification")

@@ -58,10 +58,10 @@ def dn_to_temperature(photo, image, images_path):
             try:
                 params, image = extract_raw_thermal_image_data(os.path.join(images_path, photo.filename))
                 image = sensor_vals_to_temp(image, **params)
+                image = image.astype("float32")
             except Exception as e:
                 log.ODM_WARNING("Cannot radiometrically calibrate %s: %s" % (photo.filename, str(e)))
 
-            image = image.astype("float32")
             return image
     else:
         image = image.astype("float32")

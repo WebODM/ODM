@@ -42,7 +42,7 @@ if(WIN32)
   # generated with https://github.com/ykhwong/dummy-dll-generator that is 
   # loaded UNLESS the real CUDA DLL is available, since it will
   # be loaded before our dummy DLL.
-  file(DOWNLOAD "https://github.com/WebODM/windows-deps/releases/download/2.5.0/nvcuda_dummy.dll" "${SB_INSTALL_DIR}/bin/nvcuda.dll")
+  file(DOWNLOAD "https://github.com/WebODM/windows-deps/releases/download/v3.7.0/nvcuda_dummy.dll" "${SB_INSTALL_DIR}/bin/nvcuda.dll")
 endif()
 
 ExternalProject_Add(${_proj_name}

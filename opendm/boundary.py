@@ -3,10 +3,8 @@ import fiona.crs
 import os
 import io
 import json
-from opendm import system
 from pyproj import CRS
 from opendm.location import transformer
-from opendm.utils import double_quote
 from osgeo import ogr
 from opendm.shots import get_origin
 
@@ -110,12 +108,11 @@ def export_to_bounds_files(boundary, proj4, bounds_json_file, bounds_gpkg_file):
     
     if os.path.isfile(bounds_gpkg_file):
         os.remove(bounds_gpkg_file)
-    
-    kwargs = {
-        'proj4': proj4,
-        'input': double_quote(bounds_json_file),
-        'output': double_quote(bounds_gpkg_file)
-    }
 
-    system.run('ogr2ogr -overwrite -f GPKG -a_srs "{proj4}" {output} {input}'.format(**kwargs))
+    with fiona.open(bounds_json_file, 'r') as src:
+        with fiona.open(bounds_gpkg_file, 'w', driver='GPKG',
+                        crs=fiona.crs.from_string(proj4),
+                        schema=src.schema) as dst:
+            for feature in src:
+                dst.write(feature)
 
