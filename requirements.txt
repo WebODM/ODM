@@ -27,3 +27,4 @@ matplotlib==3.10.3
 trimesh==4.7.1
 piexif==1.1.3
 rawpy==0.25.0
+joblib==1.5.1
