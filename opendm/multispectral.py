@@ -120,7 +120,7 @@ def dn_to_reflectance(photo, image, use_sun_sensor=True):
     reflectance = radiance * math.pi / irradiance
     reflectance[reflectance < 0.0] = 0.0
     reflectance[reflectance > 1.0] = 1.0
-    return reflectance
+    return reflectance.astype("float32")
 
 def compute_irradiance(photo, use_sun_sensor=True):
     # Thermal (this should never happen, but just in case..)
