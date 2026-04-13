@@ -2,6 +2,8 @@ name: Publish Windows Setup
 
 on:
   push:
+    paths-ignore:
+    - 'README.md'
     branches:
     - master
     tags:
