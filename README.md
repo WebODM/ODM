@@ -20,22 +20,40 @@ If you would rather not type commands in a shell and are looking for a friendly 
 
 ## Quickstart
 
-The easiest way to run ODM is via docker. To install docker, see [docs.docker.com](https://docs.docker.com). Once you have docker installed place some images (JPEGs, TIFFs or DNGs) in a folder named “images” (for example `C:\Users\youruser\datasets\project\images` or `/home/youruser/datasets/project/images`) and run from a terminal:
+### Windows
+
+First download the latest [Windows setup](https://github.com/WebODM/ODM/releases). After installation, open the `ODM Console`, place some images in a folder named `images` (for example `C:\Users\youruser\datasets\project\images`) and run:
+
+```bash
+run c:\Users\youruser\datasets\project
+```
+
+Alternatively, you can also use [docker](https://docs.docker.com):
 
 ```bash
 # Windows
 docker run -ti --rm -v c:/Users/youruser/datasets:/datasets webodm/odm --project-path /datasets project
 ```
 
+### macOS/Linux
+
+First install [docker](https://docs.docker.com). Once you have docker installed, place some images in a folder named `images` (for example `C:\Users\youruser\datasets\project\images` or `/home/youruser/datasets/project/images`) and run from a terminal:
+
 ```bash
 # Mac/Linux
 docker run -ti --rm -v /home/youruser/datasets:/datasets webodm/odm --project-path /datasets project
 ```
 
-You can pass additional parameters by appending them to the command:
+## Arguments
+
+You can pass [additional parameters](https://docs.webodm.org/options-flags/) by appending them to the command:
 
 ```bash
-docker run -ti --rm -v /datasets:/datasets webodm/odm --project-path /datasets project [--additional --parameters --here]
+run c:\Users\youruser\datasets\project [--args]
+```
+
+```bash
+docker run -ti --rm -v /datasets:/datasets webodm/odm --project-path /datasets project [--args]
 ```
 
 For example, to generate a DSM (`--dsm`) and increase the orthophoto resolution (`--orthophoto-resolution 2`) :
@@ -44,7 +62,7 @@ For example, to generate a DSM (`--dsm`) and increase the orthophoto resolution 
 docker run -ti --rm -v /datasets:/datasets webodm/odm --project-path /datasets project --dsm --orthophoto-resolution 2
 ```
 
-For all parameters:
+To see all parameters:
 
 ```bash
 docker run -ti --rm -v /datasets:/datasets webodm/odm --help
@@ -87,17 +105,9 @@ See http://docs.webodm.org for tutorials and more guides.
 
 See https://webodm.org/community to find a community near you.
 
-## Windows Setup
-
-ODM can be installed natively on Windows. Just download the latest setup from the [releases](https://github.com/WebODM/ODM/releases) page. After opening the ODM Console you can process datasets by typing:
-
-```bash
-run C:\Users\youruser\datasets\project  [--additional --parameters --here]
-```
-
 ## GPU Acceleration
 
-ODM has GPU support to speed up certain computations. To enable it, you need to use the `webodm/odm:gpu` docker image and you need to pass the `--gpus all` flag:
+ODM has GPU support to speed up certain computations. On Windows, this is enabled by default. With docker, to enable it, you need to use the `webodm/odm:gpu` docker image and you need to pass the `--gpus all` flag:
 
 ```
 docker run -ti --rm -v c:/Users/youruser/datasets:/datasets --gpus all webodm/odm:gpu --project-path /datasets project
@@ -130,6 +140,8 @@ You're in good shape!
 
 See https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html for information on docker/NVIDIA setup.
 
+You can disable GPU acceleration by using `--no-gpu`.
+
 ### Build Docker Images
 
 If you want to rebuild your own docker image, from the `ODM` folder you can type:
@@ -147,9 +159,11 @@ ODM can automatically extract images from video files (.mp4, .mov, .lrv, .ts). J
 Help improve our software! We welcome contributions from everyone, whether to add new features, improve speed, fix existing bugs or add support for more cameras. Check [contributing guidelines](https://github.com/WebODM/WebODM/blob/master/CONTRIBUTING.md).
 
 
-### Installation and first run
+### Setup Development Environment
 
-For Linux users, the easiest way to modify the software is to make sure docker is installed, clone the repository and then run from a shell:
+Docker is recommended for setting up a development environment. It's fairly easy to setup one with Linux and macOS. On Windows, I could recommend to use WSL.
+
+Clone the repository and then run from a shell:
 
 ```bash
 $ DATA=/path/to/datasets ./start-dev-env.sh
@@ -158,9 +172,20 @@ $ DATA=/path/to/datasets ./start-dev-env.sh
 Where `/path/to/datasets` is a directory where you can place test datasets (it can also point to an empty directory if you don't have test datasets).
 
 Run configure to set up the required third party libraries:
+
 ```bash
 (odmdev) [user:/code] master+* ± bash configure.sh reinstall
 ```
+
+If you get kicked out by the setup, or you accidentally press CTRL+C, you can re-enter by doing:
+
+```bash
+docker start odmdev
+docker exec -ti odmdev bash
+su your_username
+```
+
+(change `your_username` to your username, and if that doesn't work, use "ubuntu")
 
 You can now make changes to the ODM source. When you are ready to test the changes you can simply invoke:
 
@@ -168,10 +193,12 @@ You can now make changes to the ODM source. When you are ready to test the chang
 (odmdev) [user:/code] master+* ± ./run.sh --project-path /datasets mydataset
 ```
 ### Stop dev container
+
 ```bash
  docker  stop odmdev
 ```
-### To come back to dev environement
+
+### Resume dev container
 
 (change `your_username` to your username)
 
