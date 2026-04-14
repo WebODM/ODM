@@ -2,7 +2,7 @@
 
 ![CPU Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODM/publish-docker.yml?branch=master&label=docker%20CPU) ![GPU Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODM/publish-docker.yml?branch=master&label=docker%20GPU) ![Windows Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODM/publish-windows.yml?branch=master&label=windows) ![Version](https://img.shields.io/github/v/release/WebODM/ODM) ![License](https://img.shields.io/github/license/WebODM/ODM) ![Contributors](https://img.shields.io/github/contributors/WebODM/ODM) ![Updated](https://img.shields.io/github/last-commit/WebODM/ODM)
 
-> **📢 ODM continues to be actively developed here at WebODM. Now with NVIDIA GeForce RTX 50 Series support, checkpoints support and tons of improvements!** [Read the announcement](https://webodm.org/blog/announcement/)
+> **📢 Now with NVIDIA GeForce RTX 50 Series support, checkpoints support and tons of improvements!** [Read the announcement](https://webodm.org/blog/announcement/)
 
 A free and open source photogrammetry engine for processing aerial and ground imagery. ODM turns images into:
 
