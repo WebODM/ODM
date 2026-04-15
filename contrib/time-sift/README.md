@@ -1,12 +1,12 @@
 # Plugin Time-SIFT
 
-This script does Time-SIFT processing with ODM. Time-SIFT is a method for multi-temporal analysis without the need to co-registrate the data.
+This script does Time-SIFT processing with ODX. Time-SIFT is a method for multi-temporal analysis without the need to co-registrate the data.
 
 >  D. Feurer, F. Vinatier, Joining multi-epoch archival aerial images in a single SfM block allows 3-D change detection with almost exclusively image information, ISPRS Journal of Photogrammetry and Remote Sensing, Volume 146, 2018, Pages 495-506, ISSN 0924-2716, doi: 10.1016/j.isprsjprs.2018.10.016
 (https://doi.org/10.1016/j.isprsjprs.2018.10.016)
 
 ## Requirements
-* ODM ! :-) 
+* ODX ! :-) 
 * subprocess
 * json
 * os
@@ -34,8 +34,8 @@ You can then use [CloudCompare](https://cloudcompare.org/) to compute distance b
 
 ### Your own data
 In your dataset directory (usually ```datasets```, but you can have chosen another name) you have to prepare a Time-SIFT project directory (default name : ```time-sift-block```, *can be tuned via a parameter*) that contains :
-   * ```images/``` : a subdirectory with all images of all epochs. This directory name is fixed as it is the one expected by ODM
-   * ```images_epochs.txt``` : a file that has the same format as the file used for the split and merge ODM function. This file name *can be tuned via a parameter*.
+   * ```images/``` : a subdirectory with all images of all epochs. This directory name is fixed as it is the one expected by ODX
+   * ```images_epochs.txt``` : a file that has the same format as the file used for the split and merge ODX function. This file name *can be tuned via a parameter*.
 
 The ```images_epochs.txt``` file has two columns, the first column contains image names and the second contains the epoch name as follows
 ```

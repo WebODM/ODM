@@ -31,7 +31,7 @@ jobs:
       id: docker_meta
       uses: crazy-max/ghaction-docker-meta@v1
       with:
-        images: webodm/odm
+        images: webodm/odx
         tag-semver: |
           {{version}}
     - name: Set Swap Space
@@ -48,7 +48,7 @@ jobs:
         push: true
         no-cache: true
         tags: |
-          webodm/odm:latest-amd64
+          webodm/odx:latest-amd64
         provenance: false
   build-arm64:
     runs-on: ubuntu-24.04-arm
@@ -81,7 +81,7 @@ jobs:
         push: true
         no-cache: true
         tags: |
-          webodm/odm:latest-arm64
+          webodm/odx:latest-arm64
         provenance: false
 
   create-manifest:
@@ -95,12 +95,12 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Create and push multi-platform manifest
       run: |
-        docker pull --platform linux/amd64 webodm/odm:latest-amd64
-        docker pull --platform linux/arm64 webodm/odm:latest-arm64
-        docker manifest create webodm/odm:latest \
-          webodm/odm:latest-amd64 \
-          webodm/odm:latest-arm64
-        docker manifest push webodm/odm:latest
+        docker pull --platform linux/amd64 webodm/odx:latest-amd64
+        docker pull --platform linux/arm64 webodm/odx:latest-arm64
+        docker manifest create webodm/odx:latest \
+          webodm/odx:latest-amd64 \
+          webodm/odx:latest-arm64
+        docker manifest push webodm/odx:latest
     
     # Trigger NodeODM build, OATS test
     - name: Dispatch Build Event

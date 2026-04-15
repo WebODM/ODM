@@ -131,7 +131,7 @@ def add_raster_meta_tags(raster, reconstruction, tree, embed_gcp_meta=True):
             with rasterio.open(raster, 'r+') as rst:
                 if mean_capture_dt is not None:
                     rst.update_tags(TIFFTAG_DATETIME=mean_capture_dt)
-                rst.update_tags(TIFFTAG_SOFTWARE='ODM {}'.format(log.odm_version()))
+                rst.update_tags(TIFFTAG_SOFTWARE='ODX {}'.format(log.odm_version()))
 
             if embed_gcp_meta:
                 # Embed GCP info in 2D results via

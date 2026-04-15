@@ -17,7 +17,7 @@ from common import loadMesh
 def main():
 
     if len(sys.argv) < 5 or sys.argv[-2] != '--':
-        sys.exit('Please provide the ODM project path.')
+        sys.exit('Please provide the ODX project path.')
 
     projectHome = sys.argv[-1]
 

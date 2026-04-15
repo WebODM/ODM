@@ -14,7 +14,7 @@ from common import loadMesh
 def main():
 
     if len(sys.argv) < 7 or sys.argv[-4] != '--':
-        sys.exit('Please provide the ODM project path, camera waypoints (xyz format), and number of frames.')
+        sys.exit('Please provide the ODX project path, camera waypoints (xyz format), and number of frames.')
 
     projectHome = sys.argv[-3]
     waypointFile = sys.argv[-2]

@@ -41,7 +41,7 @@ RUN apt-get update -y \
  && apt-get install -y ffmpeg libtbbmalloc2
 # Install shared libraries that we depend on via APT, but *not*
 # the -dev packages to save space!
-# Also run a smoke test on ODM and OpenSfM
+# Also run a smoke test on ODX and OpenSfM
 RUN bash configure.sh installruntimedeps \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \

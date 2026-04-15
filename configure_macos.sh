@@ -82,7 +82,7 @@ uninstall() {
 }
 
 reinstall() {
-    echo "Reinstalling ODM modules"
+    echo "Reinstalling ODX modules"
     uninstall
     install
 }

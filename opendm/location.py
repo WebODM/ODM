@@ -6,7 +6,7 @@ from osgeo import osr
 def extract_utm_coords(photos, images_path, output_coords_file):
     """
     Create a coordinate file containing the GPS positions of all cameras 
-    to be used later in the ODM toolchain for automatic georeferecing
+    to be used later in the ODX toolchain for automatic georeferecing
     :param photos ([ODM_Photo]) list of photos
     :param images_path (str) path to dataset images
     :param output_coords_file (str) path to output coordinates file

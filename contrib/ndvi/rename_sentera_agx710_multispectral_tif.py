@@ -25,10 +25,10 @@ def parse_args():
 
 
 def rename_sentera_agx710_layers(name):
-    """ Only rename Geotif  built from Sentera AGX710 images with ODM """
+    """ Only rename Geotif  built from Sentera AGX710 images with ODX """
     if raster.RasterCount != 7:
         raise ImportError(F'File {name} does not have 7 layers as a regular\
-             Geotif  built from Sentera AGX710 images with ODM')
+             Geotif  built from Sentera AGX710 images with ODX')
 
     if 'RedGreenBlue' in raster.GetRasterBand(1).GetDescription() and \
             'RedEdgeGarbageNIR' in raster.GetRasterBand(2).GetDescription():

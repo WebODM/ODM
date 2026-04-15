@@ -1,4 +1,4 @@
-Licensing for portions of ODM are as follows:
+Licensing for portions of ODX are as follows:
 * Jhead - None - http://www.sentex.net/~mwandel/jhead/
 * libjpeg - GPLv2 - http://sourceforge.net/projects/libjpeg/
 * Boost - Boost Software License, Version 1.0 - http://www.boost.org/LICENSE_1_0.txt
@@ -16,6 +16,6 @@ Licensing for portions of ODM are as follows:
 * Flann - BSD2 - http://opensource.org/licenses/bsd-license.php
 * Eigen - MPL2 - http://www.mozilla.org/MPL/2.0
 * Qhull - http://www.qhull.org/COPYING.txt
-* libext - https://github.com/WebODM/ODM/blob/gh-pages/licenses/libext_copyright.txt
-* libx11 - https://github.com/WebODM/ODM/blob/gh-pages/licenses/libx11_copyright.txt
+* libext - https://github.com/WebODM/ODX/blob/gh-pages/licenses/libext_copyright.txt
+* libx11 - https://github.com/WebODM/ODX/blob/gh-pages/licenses/libx11_copyright.txt
 * MVS Texturing - BSD - https://github.com/nmoehrle/mvs-texturing/blob/master/LICENSE.txt

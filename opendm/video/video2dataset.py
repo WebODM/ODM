@@ -227,7 +227,7 @@ class Video2Dataset:
         # Set the EXIF metadata
         exif_dict = {
             "0th": {
-                piexif.ImageIFD.Software: "ODM",
+                piexif.ImageIFD.Software: "ODX",
                 piexif.ImageIFD.DateTime: elapsed_time_str,
                 piexif.ImageIFD.XResolution: (frame.shape[1], 1),
                 piexif.ImageIFD.YResolution: (frame.shape[0], 1),

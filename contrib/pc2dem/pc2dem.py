@@ -10,7 +10,7 @@ import argparse
 import multiprocessing
 from opendm.dem import commands
 
-parser = argparse.ArgumentParser(description='Generate DEMs from point clouds using ODM\'s algorithm.')
+parser = argparse.ArgumentParser(description='Generate DEMs from point clouds using ODX\'s algorithm.')
 parser.add_argument('point_cloud',
                 type=str,
                 help='Path to point cloud file (.las, .laz, .ply)')

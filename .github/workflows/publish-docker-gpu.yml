@@ -33,7 +33,7 @@ jobs:
         platforms: linux/amd64
         push: true
         no-cache: true
-        tags: webodm/odm:gpu
+        tags: webodm/odx:gpu
     # Trigger NodeODM build
     - name: Dispatch NodeODM Build Event
       id: nodeodm_dispatch

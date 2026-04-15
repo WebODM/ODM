@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(ODM-SuperBuild)
+project(ODX-SuperBuild)
 
 # Setup SuperBuild root location
 set(SB_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})

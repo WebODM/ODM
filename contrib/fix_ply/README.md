@@ -1,8 +1,8 @@
 # Fix Ply
 
-Use to translate a modified ply into a compatible format for subsequent steps in ODM. Via Jaime Chacoff, https://community.opendronemap.org/t/edited-point-cloud-with-cloudcompare-wont-rerun-from-odm-meshing/21449/6
+Use to translate a modified ply into a compatible format for subsequent steps in ODX. Via Jaime Chacoff, https://community.opendronemap.org/t/edited-point-cloud-with-cloudcompare-wont-rerun-from-odm-meshing/21449/6
 
-The basic idea is to process through ODM until the point cloud is created, use a 3rd party tool, like CloudCompare to edit the point cloud, and then continue processing in OpenDroneMap.
+The basic idea is to process through ODX until the point cloud is created, use a 3rd party tool, like CloudCompare to edit the point cloud, and then continue processing in OpenDroneMap.
 
 This useful bit of python will convert the PLY exported from CloudCompare back into a compatible format for continued processing in OpenDroneMap.
 

@@ -2,7 +2,7 @@
 
 Resize a dataset (and optional GCP file).
 
-Resizes images, keeps Exif data. The EXIF width and height attributes will be updated accordingly also. ODM GCP files are scaled also.
+Resizes images, keeps Exif data. The EXIF width and height attributes will be updated accordingly also. ODX GCP files are scaled also.
 
 Usage:
 

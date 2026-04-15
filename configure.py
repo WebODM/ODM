@@ -14,7 +14,7 @@ import urllib.request
 import shutil 
 import zipfile
 
-parser = argparse.ArgumentParser(description='ODM Windows Configure Script')
+parser = argparse.ArgumentParser(description='ODX Windows Configure Script')
 parser.add_argument('action',
                 type=str,
                 choices=["build", "clean", "dist", "vcpkg_export"],

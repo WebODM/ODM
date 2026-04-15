@@ -22,7 +22,7 @@ default_image_list = "img_list.txt"
 parser = argparse.ArgumentParser(description='Orthorectification Tool')
 parser.add_argument('dataset',
                 type=str,
-                help='Path to ODM dataset')
+                help='Path to ODX dataset')
 parser.add_argument('--dem',
                 type=str,
                 default=default_dem_path,

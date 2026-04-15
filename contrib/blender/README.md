@@ -1,6 +1,6 @@
 # Blender scripts
 # odm_photo
-Renders photos from ODM generated texture models.
+Renders photos from ODX generated texture models.
 Currently can produce 360 panoramic photos and 360 3D panoramic (VR) photos.
 NB: the default resolution for 360 photos is 6000x3000 (maximum supported by Facebook).
 
@@ -24,7 +24,7 @@ Output is `<project-path>/odm_photo/odm_photo_vr_L.jpg` and `<project-path>/odm_
 **NB: argument order matters!**
 
 # odm_video
-Renders videos from ODM generated texture models.
+Renders videos from ODX generated texture models.
 Currently can produce 360 panoramic videos.
 NB: the default resolution is 4096x2048 (maximum supported by Facebook).
 

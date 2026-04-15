@@ -174,7 +174,7 @@ class ODMSplitStage(types.ODM_Stage):
                 # Remove invalid submodels
                 submodel_paths = [p for p in submodel_paths if not p in remove_paths]
 
-                # Run ODM toolchain for each submodel
+                # Run ODX toolchain for each submodel
                 if local_workflow:
                     for sp in submodel_paths:
                         sp_octx = OSFMContext(sp)
@@ -185,7 +185,7 @@ class ODMSplitStage(types.ODM_Stage):
 
                         argv = get_submodel_argv(args, tree.submodels_path, sp_octx.name())
 
-                        # Re-run the ODM toolchain on the submodel
+                        # Re-run the ODX toolchain on the submodel
                         system.run(" ".join(map(double_quote, map(str, argv))), env_vars=os.environ.copy())
                 else:
                     lre.set_projects([os.path.abspath(os.path.join(p, "..")) for p in submodel_paths])
