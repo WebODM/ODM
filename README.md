@@ -1,6 +1,6 @@
 # ODX
 
-![CPU Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODX/publish-docker.yml?branch=master&label=docker%20CPU) ![GPU Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODX/publish-docker.yml?branch=master&label=docker%20GPU) ![Windows Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODX/publish-windows.yml?branch=master&label=windows) ![Version](https://img.shields.io/github/v/release/WebODM/ODX) ![License](https://img.shields.io/github/license/WebODM/ODX) ![Contributors](https://img.shields.io/github/contributors/WebODM/ODX) ![Updated](https://img.shields.io/github/last-commit/WebODM/ODX)
+![CPU Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODX/publish-docker.yml?branch=master&label=docker%20CPU) ![GPU Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODX/publish-docker-gpu.yml?branch=master&label=docker%20GPU) ![Windows Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODX/publish-windows.yml?branch=master&label=windows) ![Version](https://img.shields.io/github/v/release/WebODM/ODX) ![License](https://img.shields.io/github/license/WebODM/ODX) ![Contributors](https://img.shields.io/github/contributors/WebODM/ODX) ![Updated](https://img.shields.io/github/last-commit/WebODM/ODX)
 
 > **📢 Now with NVIDIA GeForce RTX 50 Series support, checkpoints support and tons of improvements!** [Read the announcement](https://webodm.org/blog/announcement/)
 
