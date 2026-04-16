@@ -23,8 +23,8 @@ if [ "$1" = "--setup" ]; then
     echo "Adding $2 to /etc/shadow"
     echo "$2:x:14871::::::" >> /etc/shadow
     echo "$2   ALL=(ALL)   NOPASSWD:ALL" >> /etc/sudoers
-    echo "odm   ALL=(ALL)   NOPASSWD:ALL" >> /etc/sudoers
-    echo "echo '' && echo '' && echo '' && echo '###################################' && echo 'ODM Dev Environment Ready. Hack on!' && echo '###################################' && echo '' && cd /code" > $HOME/.bashrc
+    echo "odx   ALL=(ALL)   NOPASSWD:ALL" >> /etc/sudoers
+    echo "echo '' && echo '' && echo '' && echo '###################################' && echo 'ODX Dev Environment Ready. Hack on!' && echo '###################################' && echo '' && cd /code" > $HOME/.bashrc
 
     # Install qt creator
     if hash qtcreator 2>/dev/null; then
@@ -42,7 +42,7 @@ if [ "$1" = "--setup" ]; then
     
     if [ -e "$HOME/liquidprompt" ]; then
         echo "source $HOME/liquidprompt/liquidprompt" >> $HOME/.bashrc
-        echo "export LP_PS1_PREFIX='(odmdev)'" >> $HOME/.bashrc
+        echo "export LP_PS1_PREFIX='(odxdev)'" >> $HOME/.bashrc
     fi
 
     # Colors
@@ -98,15 +98,15 @@ if [[ ! -z $IMAGE ]]; then
 fi
 export PORT="${PORT:=3000}"
 export QTC="${QTC:=NO}"
-export IMAGE="${IMAGE:=webodm/nodeodm}"
+export IMAGE="${IMAGE:=webodm/nodeodx}"
 export GPU="${GPU:=NO}"
 
 if [ -z "$DATA" ]; then
     echo "Usage: DATA=/path/to/datasets [VARS] $0"
     echo
     echo "VARS:"
-    echo "	DATA	Path to directory that contains datasets for testing. The directory will be mounted in /datasets. If you don't have any, simply set it to a folder outside the ODM repository."
-    echo "	PORT	Port to expose for NodeODM (default: $PORT)"
+    echo "	DATA	Path to directory that contains datasets for testing. The directory will be mounted in /datasets. If you don't have any, simply set it to a folder outside the ODX repository."
+    echo "	PORT	Port to expose for NodeODX (default: $PORT)"
     echo "	IMAGE	Docker image to use (default: $IMAGE)"
     echo "	GPU	Enable GPU support (default: $GPU)"
     echo "	QTC	When set to YES, installs QT Creator for C++ development (default: $QTC)"
@@ -121,8 +121,8 @@ echo "QT Creator: $QTC"
 echo "Image: $IMAGE"
 echo "GPU: $GPU"
 
-if [ ! -e "$HOME"/.odm-dev-home ]; then
-    mkdir -p "$HOME"/.odm-dev-home
+if [ ! -e "$HOME"/.odx-dev-home ]; then
+    mkdir -p "$HOME"/.odx-dev-home
 fi
 
 USER_ID=$(id -u)
@@ -141,5 +141,5 @@ if [[ "$GPU" != "NO" ]]; then
 fi
 
 xhost + || true
-docker run -ti --entrypoint bash --name odmdev --user root -v $(pwd):/code -v "$DATA":/datasets -p $PORT:3000 $GPU_FLAGS --privileged -e DISPLAY -e LANG=C.UTF-8 -e LC_ALL=C.UTF-8 -v="/tmp/.X11-unix:/tmp/.X11-unix:rw" -v="$HOME/.odm-dev-home:/home/$USER" $IMAGE -c "/code/start-dev-env.sh --setup $USER $USER_ID $GROUP_ID $QTC"
+docker run -ti --entrypoint bash --name odxdev --user root -v $(pwd):/code -v "$DATA":/datasets -p $PORT:3000 $GPU_FLAGS --privileged -e DISPLAY -e LANG=C.UTF-8 -e LC_ALL=C.UTF-8 -v="/tmp/.X11-unix:/tmp/.X11-unix:rw" -v="$HOME/.odx-dev-home:/home/$USER" $IMAGE -c "/code/start-dev-env.sh --setup $USER $USER_ID $GROUP_ID $QTC"
 exit 0

@@ -166,7 +166,7 @@ class ODMGeoreferencingStage(types.ODM_Stage):
                     if os.path.getsize(gcp_geojson_zip_export_file) <= 65535:
                         log.ODM_INFO("Embedding GCP info in point cloud")
                         params += [
-                            '--writers.las.vlrs="{\\\"filename\\\": \\\"%s\\\", \\\"user_id\\\": \\\"ODM\\\", \\\"record_id\\\": 2, \\\"description\\\": \\\"Ground Control Points (zip)\\\"}"' % gcp_geojson_zip_export_file.replace(os.sep, "/")
+                            '--writers.las.vlrs="{\\\"filename\\\": \\\"%s\\\", \\\"user_id\\\": \\\"ODX\\\", \\\"record_id\\\": 2, \\\"description\\\": \\\"Ground Control Points (zip)\\\"}"' % gcp_geojson_zip_export_file.replace(os.sep, "/")
                         ]
                     else:
                         log.ODM_WARNING("Cannot embed GCP info in point cloud, %s is too large" % gcp_geojson_zip_export_file)

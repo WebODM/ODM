@@ -20,7 +20,7 @@ except ImportError:
 
 class LocalRemoteExecutor:
     """
-    A class for performing OpenSfM reconstructions and full ODM pipeline executions
+    A class for performing OpenSfM reconstructions and full ODX pipeline executions
     using a mix of local and remote processing. Tasks are executed locally one at a time
     and remotely until a node runs out of available slots for processing. This allows us
     to use the processing power of the current machine as well as offloading tasks to a 
@@ -476,7 +476,7 @@ class ToolchainTask(Task):
             submodels_path = os.path.abspath(self.path(".."))
             argv = get_submodel_argv(config.config(), submodels_path, submodel_name)
 
-            # Re-run the ODM toolchain on the submodel
+            # Re-run the ODX toolchain on the submodel
             system.run(" ".join(map(double_quote, map(str, argv))), env_vars=os.environ.copy())
 
             # This will only get executed if the command above succeeds

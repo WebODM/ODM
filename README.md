@@ -1,17 +1,17 @@
-# ODM
+# ODX
 
-![CPU Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODM/publish-docker.yml?branch=master&label=docker%20CPU) ![GPU Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODM/publish-docker-gpu.yml?branch=master&label=docker%20GPU) ![Windows Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODM/publish-windows.yml?branch=master&label=windows) ![Version](https://img.shields.io/github/v/release/WebODM/ODM) ![License](https://img.shields.io/github/license/WebODM/ODM) ![Contributors](https://img.shields.io/github/contributors/WebODM/ODM) ![Updated](https://img.shields.io/github/last-commit/WebODM/ODM)
+![CPU Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODX/publish-docker.yml?branch=master&label=docker%20CPU) ![GPU Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODX/publish-docker-gpu.yml?branch=master&label=docker%20GPU) ![Windows Build](https://img.shields.io/github/actions/workflow/status/WebODM/ODX/publish-windows.yml?branch=master&label=windows) ![Version](https://img.shields.io/github/v/release/WebODM/ODX) ![License](https://img.shields.io/github/license/WebODM/ODX) ![Contributors](https://img.shields.io/github/contributors/WebODM/ODX) ![Updated](https://img.shields.io/github/last-commit/WebODM/ODX)
 
 > **📢 Now with NVIDIA GeForce RTX 50 Series support, checkpoints support and tons of improvements!** [Read the announcement](https://webodm.org/blog/announcement/)
 
-A free and open source photogrammetry engine for processing aerial and ground imagery. ODM turns images into:
+A free and open source photogrammetry engine for processing aerial and ground imagery. ODX turns images into:
 
 * Classified Point Clouds
 * 3D Textured Models
 * Georeferenced Orthophotos
 * Georeferenced Digital Elevation Models
 
-![ODM Pipeline](https://user-images.githubusercontent.com/1174901/96613039-7de94500-12cc-11eb-9975-ca67b188b0d3.png)
+![ODX Pipeline](https://user-images.githubusercontent.com/1174901/96613039-7de94500-12cc-11eb-9975-ca67b188b0d3.png)
 
 The application is available for Windows, Mac and Linux and it works from the command line, making it ideal for power users, scripts and for integration with other software.
 
@@ -22,7 +22,7 @@ If you would rather not type commands in a shell and are looking for a friendly 
 
 ### Windows
 
-First download the latest [Windows setup](https://github.com/WebODM/ODM/releases). After installation, open the `ODM Console`, place some images in a folder named `images` (for example `C:\Users\youruser\datasets\project\images`) and run:
+First download the latest [Windows setup](https://github.com/WebODM/ODX/releases). After installation, open the `ODX Console`, place some images in a folder named `images` (for example `C:\Users\youruser\datasets\project\images`) and run:
 
 ```bash
 run c:\Users\youruser\datasets\project
@@ -32,7 +32,7 @@ Alternatively, you can also use [docker](https://docs.docker.com):
 
 ```bash
 # Windows
-docker run -ti --rm -v c:/Users/youruser/datasets:/datasets webodm/odm --project-path /datasets project
+docker run -ti --rm -v c:/Users/youruser/datasets:/datasets webodm/odx --project-path /datasets project
 ```
 
 ### macOS/Linux
@@ -41,7 +41,7 @@ First install [docker](https://docs.docker.com). Once you have docker installed,
 
 ```bash
 # Mac/Linux
-docker run -ti --rm -v /home/youruser/datasets:/datasets webodm/odm --project-path /datasets project
+docker run -ti --rm -v /home/youruser/datasets:/datasets webodm/odx --project-path /datasets project
 ```
 
 ## Arguments
@@ -53,19 +53,19 @@ run c:\Users\youruser\datasets\project [--args]
 ```
 
 ```bash
-docker run -ti --rm -v /datasets:/datasets webodm/odm --project-path /datasets project [--args]
+docker run -ti --rm -v /datasets:/datasets webodm/odx --project-path /datasets project [--args]
 ```
 
 For example, to generate a DSM (`--dsm`) and increase the orthophoto resolution (`--orthophoto-resolution 2`) :
 
 ```bash
-docker run -ti --rm -v /datasets:/datasets webodm/odm --project-path /datasets project --dsm --orthophoto-resolution 2
+docker run -ti --rm -v /datasets:/datasets webodm/odx --project-path /datasets project --dsm --orthophoto-resolution 2
 ```
 
 To see all parameters:
 
 ```bash
-docker run -ti --rm -v /datasets:/datasets webodm/odm --help
+docker run -ti --rm -v /datasets:/datasets webodm/odx --help
 ```
 
 ## Viewing Results
@@ -86,16 +86,16 @@ When the process finishes, the results will be organized as follows:
     |-- odm_orthophoto/
         |-- odm_orthophoto.tif              # Orthophoto GeoTiff
 
-You can use the following free and open source software to open the files generated in ODM:
+You can use the following free and open source software to open the files generated in ODX:
  * .tif (GeoTIFF): [QGIS](http://www.qgis.org/)
  * .laz (Compressed LAS): [CloudCompare](https://www.cloudcompare.org/)
  * .obj (Wavefront OBJ), .ply (Stanford Triangle Format): [MeshLab](http://www.meshlab.net/)
 
-**Note!** Opening the .tif files generated by ODM in programs such as Photoshop or GIMP might not work (they are GeoTIFFs, not plain TIFFs). Use [QGIS](http://www.qgis.org/) instead.
+**Note!** Opening the .tif files generated by ODX in programs such as Photoshop or GIMP might not work (they are GeoTIFFs, not plain TIFFs). Use [QGIS](http://www.qgis.org/) instead.
 
 ## API
 
-ODM can be made accessible from a network via [NodeODM](https://github.com/WebODM/NodeODM).
+ODX can be made accessible from a network via [NodeODX](https://github.com/WebODM/NodeODX).
 
 ## Documentation
 
@@ -107,13 +107,13 @@ See https://webodm.org/community to find a community near you.
 
 ## GPU Acceleration
 
-ODM has GPU support to speed up certain computations. On Windows, this is enabled by default. With docker, to enable it, you need to use the `webodm/odm:gpu` docker image and you need to pass the `--gpus all` flag:
+ODX has GPU support to speed up certain computations. On Windows, this is enabled by default. With docker, to enable it, you need to use the `webodm/odx:gpu` docker image and you need to pass the `--gpus all` flag:
 
 ```
-docker run -ti --rm -v c:/Users/youruser/datasets:/datasets --gpus all webodm/odm:gpu --project-path /datasets project
+docker run -ti --rm -v c:/Users/youruser/datasets:/datasets --gpus all webodm/odx:gpu --project-path /datasets project
 ```
 
-When you run ODM, if the GPU is recognized, in the first few lines of output you should see:
+When you run ODX, if the GPU is recognized, in the first few lines of output you should see:
 
 ```
 [INFO]    nvidia-smi detected
@@ -144,15 +144,15 @@ You can disable GPU acceleration by using `--no-gpu`.
 
 ### Build Docker Images
 
-If you want to rebuild your own docker image, from the `ODM` folder you can type:
+If you want to rebuild your own docker image, from the `ODX` folder you can type:
 
 ```bash
-docker build -t myodm --no-cache .
+docker build -t myodx --no-cache .
 ```
 
 ## Video Support
 
-ODM can automatically extract images from video files (.mp4, .mov, .lrv, .ts). Just place one or more video files into the `images` folder and run the program as usual. Subtitles files (.srt) with GPS information are also supported. Place .srt files in the `images` folder, making sure that the filenames match. For example, `my_video.mp4` ==> `my_video.srt` (case-sensitive).
+ODX can automatically extract images from video files (.mp4, .mov, .lrv, .ts). Just place one or more video files into the `images` folder and run the program as usual. Subtitles files (.srt) with GPS information are also supported. Place .srt files in the `images` folder, making sure that the filenames match. For example, `my_video.mp4` ==> `my_video.srt` (case-sensitive).
 
 ## Developers
 
@@ -174,28 +174,28 @@ Where `/path/to/datasets` is a directory where you can place test datasets (it c
 Run configure to set up the required third party libraries:
 
 ```bash
-(odmdev) [user:/code] master+* ± bash configure.sh reinstall
+(odxdev) [user:/code] master+* ± bash configure.sh reinstall
 ```
 
 If you get kicked out by the setup, or you accidentally press CTRL+C, you can re-enter by doing:
 
 ```bash
-docker start odmdev
-docker exec -ti odmdev bash
+docker start odxdev
+docker exec -ti odxdev bash
 su your_username
 ```
 
 (change `your_username` to your username, and if that doesn't work, use "ubuntu")
 
-You can now make changes to the ODM source. When you are ready to test the changes you can simply invoke:
+You can now make changes to the ODX source. When you are ready to test the changes you can simply invoke:
 
 ```bash
-(odmdev) [user:/code] master+* ± ./run.sh --project-path /datasets mydataset
+(odxdev) [user:/code] master+* ± ./run.sh --project-path /datasets mydataset
 ```
 ### Stop dev container
 
 ```bash
- docker  stop odmdev
+ docker  stop odxdev
 ```
 
 ### Resume dev container
@@ -203,8 +203,8 @@ You can now make changes to the ODM source. When you are ready to test the chang
 (change `your_username` to your username)
 
 ```bash
-docker start odmdev
-docker exec -ti odmdev bash
+docker start odxdev
+docker exec -ti odxdev bash
 su your_username
 ```
 
@@ -216,14 +216,14 @@ If you have questions, join the #devtalk's channel on discord: https://webodm.or
 
 ### Troubleshooting
 
-The dev environment makes use of `webodm/nodeodm` by default. You may want to run 
-`docker pull webodm/nodeodm` before running `./start-dev-env.sh` to avoid using an old cached version.
+The dev environment makes use of `webodm/nodeodx` by default. You may want to run 
+`docker pull webodm/nodeodx` before running `./start-dev-env.sh` to avoid using an old cached version.
 
-In order to make a clean build, remove `~/.odm-dev-home` and `ODM/.setupdevenv`.
+In order to make a clean build, remove `~/.odm-dev-home` and `ODX/.setupdevenv`.
 
 ## Credits
 
-ODM makes use of other awesome open source projects to perform its tasks. Among them we'd like to highlight:
+ODX makes use of other awesome open source projects to perform its tasks. Among them we'd like to highlight:
 
  - [OpenSfM](https://github.com/WebODM/OpenSfM)
  - [OpenMVS](https://github.com/cdcseacave/openMVS/)

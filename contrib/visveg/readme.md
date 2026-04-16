@@ -4,7 +4,7 @@ This script produces a Vegetation Index raster from a RGB orthophoto (odm_orthop
 
 ## Requirements
 * rasterio (pip install rasterio)
-* numpy python package (included in ODM build)
+* numpy python package (included in ODX build)
 
 ## Usage
 ```

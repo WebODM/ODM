@@ -24,7 +24,7 @@ from stages.odm_postprocess import ODMPostProcess
 class ODMApp:
     def __init__(self, args):
         """
-        Initializes the application and defines the ODM application pipeline stages
+        Initializes the application and defines the application pipeline stages
         """
         json_log_paths = [os.path.join(args.project_path, "log.json")]
 
@@ -100,9 +100,9 @@ class ODMApp:
             elif code == 137 or code == 3221226505:
                 log.ODM_ERROR("Whoops! You ran out of memory! Add more RAM to your computer, if you're using docker configure it to use more memory, for WSL2 make use of .wslconfig (https://docs.microsoft.com/en-us/windows/wsl/wsl-config#configure-global-options-with-wslconfig), resize your images, lower the quality settings or process the images using a cloud provider (e.g. https://webodm.net).")
             elif code == 132:
-                log.ODM_ERROR("Oh no! It looks like your CPU is not supported (is it fairly old?). You can still use ODM, but you will need to build your own docker image. See https://github.com/WebODM/ODM#build-from-source")
+                log.ODM_ERROR("Oh no! It looks like your CPU is not supported (is it fairly old?). You can still use ODX, but you will need to build your own docker image. See https://github.com/WebODM/ODX#build-from-source")
             elif code == 3:
-                log.ODM_ERROR("ODM can't find a program that is required for processing to run! Did you do a custom build of ODM? (cool!) Make sure that all programs required by ODM are in the right place and are built correctly.")
+                log.ODM_ERROR("Can't find a program that is required for processing to run! Did you do a custom build of ODX? (cool!) Make sure that all programs required by ODX are in the right place and are built correctly.")
             else:
                 log.ODM_ERROR("The program exited with a strange error code. Please report it")
 

@@ -4,7 +4,7 @@ This script produces a NDVI raster from a CIR orthophoto (odm_orthophoto.tif in 
 
 ## Requirements
 * python_gdal package from apt
-* numpy python package (included in ODM build)
+* numpy python package (included in ODX build)
 
 ## Usage
 ```

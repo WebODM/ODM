@@ -1,5 +1,5 @@
 #!/bin/bash
-#GPL2 jmenezes ODM extract exif lon/lat project to utm with proj4; 2017-05-28
+#GPL2 jmenezes ODX extract exif lon/lat project to utm with proj4; 2017-05-28
 # line 23  tab bugfix 2017-07-11
 # apt-get install exiftool geotiff-bin
 if [ $# -lt 2 ]; then

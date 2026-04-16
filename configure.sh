@@ -11,7 +11,7 @@ check_version(){
       ;;
     *)
       echo "You are not on a supported Ubuntu version (detected: $UBUNTU_VERSION)"
-      echo "It might be possible to run ODM on a newer version of Ubuntu, however, you cannot rely on this script."
+      echo "It might be possible to run ODX on a newer version of Ubuntu, however, you cannot rely on this script."
       exit 1
       ;;
   esac

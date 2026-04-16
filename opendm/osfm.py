@@ -247,7 +247,7 @@ class OSFMContext:
                 matcher_neighbors = 3
 
             config = [
-                "report_name: ODM",
+                "report_name: ODX",
                 "report_version: %s" % log.odm_version(),
                 "use_exif_size: no",
                 "flann_algorithm: KDTREE", # more stable, faster than KMEANS

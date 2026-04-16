@@ -23,7 +23,7 @@ overwrite = True
 
 def main():
     if len(sys.argv) < 2:
-        sys.exit('Please provide the ODM project path.')
+        sys.exit('Please provide the ODX project path.')
 
     projectHome = sys.argv[1]
 
@@ -72,7 +72,7 @@ def main():
 
 def contour(projectHome):
     """
-    Creates a contour map based on the ODM project DEM model.
+    Creates a contour map based on the ODX project DEM model.
     """
     print 'Creating contour map'
 

@@ -2,22 +2,22 @@
 
 ![image](https://user-images.githubusercontent.com/1951843/111536715-fc91c380-8740-11eb-844c-5b7960186391.png)
 
-This tool is capable of orthorectifying individual images (or all images) from an existing ODM reconstruction.
+This tool is capable of orthorectifying individual images (or all images) from an existing ODX reconstruction.
 
 ![image](https://user-images.githubusercontent.com/1951843/111529183-3ad6b500-8738-11eb-9960-b1aa676f863b.png)
 
 ## Usage
 
-After running a reconstruction using ODM:
+After running a reconstruction using ODX:
 
 ```
-docker run -ti --rm -v /home/youruser/datasets:/datasets webodm/odm --project-path /datasets project
+docker run -ti --rm -v /home/youruser/datasets:/datasets webodm/odx --project-path /datasets project
 ```
 
 You can run the orthorectification module by running:
 
 ```
-docker run -ti --rm -v /home/youruser/datasets:/datasets --entrypoint /code/contrib/orthorectify/run.sh webodm/odm /datasets/project
+docker run -ti --rm -v /home/youruser/datasets:/datasets --entrypoint /code/contrib/orthorectify/run.sh webodm/odx /datasets/project
 ```
 
 This will start the orthorectification process for all images in the dataset. See additional flags you can pass at the end of the command above:
@@ -33,7 +33,7 @@ usage: orthorectify.py [-h] [--dem DEM] [--no-alpha NO_ALPHA]
 Orthorectification Tool
 
 positional arguments:
-  dataset               Path to ODM dataset
+  dataset               Path to ODX dataset
 
 optional arguments:
   -h, --help            show this help message and exit

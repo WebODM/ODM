@@ -163,7 +163,7 @@ def config(argv=None, parser=None):
 
     if parser is None:
         parser = argparse.ArgumentParser(
-            description='ODM is a free and open source photogrammetry engine used to generate maps, point clouds, 3D models and DEMs from aerial and ground images. https://github.com/WebODM/ODM',
+            description='ODX is a free and open source photogrammetry engine used to generate maps, point clouds, 3D models and DEMs from aerial and ground images. https://github.com/WebODM/ODX',
             usage='%s [options] <dataset name>' % usage_bin)
 
         # Load defaults from settings.yaml
@@ -764,7 +764,7 @@ def config(argv=None, parser=None):
 
     parser.add_argument('--version',
                         action='version',
-                        version='ODM {0}'.format(__version__),
+                        version='ODX {0}'.format(__version__),
                         help='Displays version number and exits. ')
 
     parser.add_argument('--video-limit',
@@ -890,7 +890,7 @@ def config(argv=None, parser=None):
                     action=StoreTrue,
                     nargs=0,
                     default=False,
-                    help=('When processing multispectral datasets, ODM will automatically align the images for each band. '
+                    help=('When processing multispectral datasets, automatically align the images for each band. '
                           'If the images have been postprocessed and are already aligned, use this option. '
                           'Default: %(default)s'))
 

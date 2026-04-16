@@ -172,7 +172,7 @@ class ODMMvsTexStage(types.ODM_Stage):
                 progress += progress_per_run
                 self.update_progress(progress)
             else:
-                log.ODM_WARNING('Found a valid ODM Texture file in: %s'
+                log.ODM_WARNING('Found a valid texture file in: %s'
                                 % odm_textured_model_obj)
         
         if args.optimize_disk_space:
