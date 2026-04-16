@@ -95,7 +95,7 @@ You can use the following free and open source software to open the files genera
 
 ## API
 
-ODX can be made accessible from a network via [NodeODM](https://github.com/WebODM/NodeODM).
+ODX can be made accessible from a network via [NodeODX](https://github.com/WebODM/NodeODX).
 
 ## Documentation
 
@@ -216,8 +216,8 @@ If you have questions, join the #devtalk's channel on discord: https://webodm.or
 
 ### Troubleshooting
 
-The dev environment makes use of `webodm/nodeodm` by default. You may want to run 
-`docker pull webodm/nodeodm` before running `./start-dev-env.sh` to avoid using an old cached version.
+The dev environment makes use of `webodm/nodeodx` by default. You may want to run 
+`docker pull webodm/nodeodx` before running `./start-dev-env.sh` to avoid using an old cached version.
 
 In order to make a clean build, remove `~/.odm-dev-home` and `ODX/.setupdevenv`.
 

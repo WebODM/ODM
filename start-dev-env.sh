@@ -98,7 +98,7 @@ if [[ ! -z $IMAGE ]]; then
 fi
 export PORT="${PORT:=3000}"
 export QTC="${QTC:=NO}"
-export IMAGE="${IMAGE:=webodm/nodeodm}"
+export IMAGE="${IMAGE:=webodm/nodeodx}"
 export GPU="${GPU:=NO}"
 
 if [ -z "$DATA" ]; then
@@ -106,7 +106,7 @@ if [ -z "$DATA" ]; then
     echo
     echo "VARS:"
     echo "	DATA	Path to directory that contains datasets for testing. The directory will be mounted in /datasets. If you don't have any, simply set it to a folder outside the ODX repository."
-    echo "	PORT	Port to expose for NodeODM (default: $PORT)"
+    echo "	PORT	Port to expose for NodeODX (default: $PORT)"
     echo "	IMAGE	Docker image to use (default: $IMAGE)"
     echo "	GPU	Enable GPU support (default: $GPU)"
     echo "	QTC	When set to YES, installs QT Creator for C++ development (default: $QTC)"
