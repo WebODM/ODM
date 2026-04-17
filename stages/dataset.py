@@ -221,7 +221,7 @@ class ODMLoadDatasetStage(types.ODM_Stage):
 
                     if len(sky_images) > 0:
                         log.ODM_INFO("Automatically generating sky masks for %s images" % len(sky_images))
-                        model = ai.get_model("skyremoval", "https://github.com/OpenDroneMap/SkyRemoval/releases/download/v1.0.5/model.zip", "v1.0.5")
+                        model = ai.get_model("skyremoval", "https://github.com/WebODM/ODX/releases/download/v3.7.1/skyremoval.zip", "v1.0.5")
                         if model is not None:
                             sf = SkyFilter(model=model)
 
@@ -262,7 +262,7 @@ class ODMLoadDatasetStage(types.ODM_Stage):
 
                     if len(bg_images) > 0:
                         log.ODM_INFO("Automatically generating background masks for %s images" % len(bg_images))
-                        model = ai.get_model("bgremoval", "https://github.com/OpenDroneMap/ODM/releases/download/v2.9.0/u2net.zip", "v2.9.0")
+                        model = ai.get_model("bgremoval", "https://github.com/WebODM/ODX/releases/download/v3.7.1/u2net.zip", "v2.9.0")
                         if model is not None:
                             bg = BgFilter(model=model)
 
