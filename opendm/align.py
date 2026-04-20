@@ -226,7 +226,7 @@ def transform_point_cloud_geocoords(
         writer["pipeline"][0]["vlrs"] = [
             {
                 "filename": gcp_geojson_zip.replace(os.sep, "/"),
-                "user_id": "ODM",
+                "user_id": "ODX",
                 "record_id": 2,
                 "description": "Ground Control Points (zip)",
             }
