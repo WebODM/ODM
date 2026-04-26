@@ -40,7 +40,7 @@ rerun_stages = {
     'force_gps': 'opensfm',
     'gcp': 'dataset',
     'geo': 'dataset',
-    'gltf': 'mvs_texturing',
+    'gltf': 'odm_postprocess',
     'gps_accuracy': 'dataset',
     'gps_z_offset': 'dataset',
     'help': None,

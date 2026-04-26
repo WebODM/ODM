@@ -8,7 +8,6 @@ from opendm import types
 from opendm.multispectral import get_primary_band_name
 from opendm.photo import find_largest_photo_dim
 from opendm.objpacker import obj_pack
-from opendm.gltf import obj2glb
 
 class ODMMvsTexStage(types.ODM_Stage):
     def process(self, args, outputs):
@@ -129,16 +128,6 @@ class ODMMvsTexStage(types.ODM_Stage):
                         '{maxTextureSize} '.format(**kwargs))
 
                 if r['primary'] and (not r['nadir'] or args.skip_3dmodel):
-                    # GlTF?
-                    if args.gltf:
-                        log.ODM_INFO("Generating glTF Binary")
-                        odm_textured_model_glb = os.path.join(r['out_dir'], tree.odm_textured_model_glb)
-            
-                        try:
-                            obj2glb(odm_textured_model_obj, odm_textured_model_glb, rtc=reconstruction.get_proj_offset(), _info=log.ODM_INFO)
-                        except Exception as e:
-                            log.ODM_WARNING(str(e))
-
                     # Single material?
                     if args.texturing_single_material:
                         log.ODM_INFO("Packing to single material")
