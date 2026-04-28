@@ -29,7 +29,7 @@ def replace_nvm_images(src_nvm_file, img_map, dst_nvm_file):
         if new_filename is not None:
             entries.append("%s %s" % (os.path.join(dir_name, new_filename), " ".join(p)))
         else:
-            log.ODM_WARNING("Cannot find %s in image map for %s" % (file_name, dst_nvm_file)) 
+            log.WARNING("Cannot find %s in image map for %s" % (file_name, dst_nvm_file)) 
     
     if num_images != len(entries):
         raise Exception("Cannot write %s, not all band images have been matched" % dst_nvm_file)

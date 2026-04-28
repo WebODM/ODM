@@ -19,12 +19,12 @@ class BgFilter():
     def __init__(self, model):
         self.model = model
 
-        log.ODM_INFO(' ?> Using provider %s' % provider)
+        log.INFO(' ?> Using provider %s' % provider)
         self.load_model()
 
     
     def load_model(self):
-        log.ODM_INFO(' -> Loading the model')
+        log.INFO(' -> Loading the model')
 
         self.session = ort.InferenceSession(self.model, providers=[provider])
 

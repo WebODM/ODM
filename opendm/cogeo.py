@@ -15,10 +15,10 @@ def convert_to_cogeo(src_path, blocksize=256, max_workers=1, compression="DEFLAT
     """
 
     if not os.path.isfile(src_path):
-        log.ODM_WARNING("Cannot convert to cogeo: %s (file does not exist)" % src_path)
+        log.WARNING("Cannot convert to cogeo: %s (file does not exist)" % src_path)
         return False
 
-    log.ODM_INFO("Optimizing %s as Cloud Optimized GeoTIFF" % src_path)
+    log.INFO("Optimizing %s as Cloud Optimized GeoTIFF" % src_path)
 
     
     tmpfile = io.related_file_path(src_path, postfix='_cogeo')
@@ -47,7 +47,7 @@ def convert_to_cogeo(src_path, blocksize=256, max_workers=1, compression="DEFLAT
                 "--config GDAL_NUM_THREADS {threads} "
                 "\"{src_path}\" \"{tmpfile}\" ".format(**kwargs))
     except Exception as e:
-        log.ODM_WARNING("Cannot create Cloud Optimized GeoTIFF: %s" % str(e))
+        log.WARNING("Cannot create Cloud Optimized GeoTIFF: %s" % str(e))
 
     if os.path.isfile(tmpfile):
         shutil.move(src_path, swapfile) # Move to swap location
@@ -55,7 +55,7 @@ def convert_to_cogeo(src_path, blocksize=256, max_workers=1, compression="DEFLAT
         try:
             shutil.move(tmpfile, src_path)
         except IOError as e:
-            log.ODM_WARNING("Cannot move %s to %s: %s" % (tmpfile, src_path, str(e)))
+            log.WARNING("Cannot move %s to %s: %s" % (tmpfile, src_path, str(e)))
             shutil.move(swapfile, src_path) # Attempt to restore
 
         if os.path.isfile(swapfile):

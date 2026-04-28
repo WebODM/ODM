@@ -48,17 +48,17 @@ def ply_info(input_ply):
 
 
 def split(input_point_cloud, outdir, filename_template, capacity, dims=None):
-    log.ODM_INFO("Splitting point cloud filtering in chunks of {} vertices".format(capacity))
+    log.INFO("Splitting point cloud filtering in chunks of {} vertices".format(capacity))
 
     if not os.path.exists(input_point_cloud):
-        log.ODM_ERROR("{} does not exist, cannot split point cloud. The program will now exit.".format(input_point_cloud))
+        log.ERROR("{} does not exist, cannot split point cloud. The program will now exit.".format(input_point_cloud))
         sys.exit(1)
 
     if not os.path.exists(outdir):
         system.mkdir_p(outdir)
 
     if len(os.listdir(outdir)) != 0:
-        log.ODM_ERROR("%s already contains some files. The program will now exit.".format(outdir))
+        log.ERROR("%s already contains some files. The program will now exit.".format(outdir))
         sys.exit(1)
 
     cmd = 'pdal split -i "%s" -o "%s" --capacity %s ' % (input_point_cloud, os.path.join(outdir, filename_template), capacity)
@@ -78,7 +78,7 @@ def filter(input_point_cloud, output_point_cloud, output_stats, standard_deviati
     Filters a point cloud
     """
     if not os.path.exists(input_point_cloud):
-        log.ODM_ERROR("{} does not exist. The program will now exit.".format(input_point_cloud))
+        log.ERROR("{} does not exist. The program will now exit.".format(input_point_cloud))
         sys.exit(1)
 
     args = [
@@ -88,17 +88,17 @@ def filter(input_point_cloud, output_point_cloud, output_stats, standard_deviati
     ]
 
     if sample_radius > 0:
-        log.ODM_INFO("Sampling points around a %sm radius" % sample_radius)
+        log.INFO("Sampling points around a %sm radius" % sample_radius)
         args.append('--radius %s' % sample_radius)
 
     meank = 16
-    log.ODM_INFO("Filtering {} (statistical, meanK {}, standard deviation {})".format(input_point_cloud, meank, standard_deviation))
+    log.INFO("Filtering {} (statistical, meanK {}, standard deviation {})".format(input_point_cloud, meank, standard_deviation))
     args.append('--meank %s' % meank)
     args.append('--std %s' % standard_deviation)
     args.append('--stats "%s"' % output_stats)
     
     if boundary is not None:
-        log.ODM_INFO("Boundary {}".format(boundary))
+        log.INFO("Boundary {}".format(boundary))
         fd, boundary_json_file = tempfile.mkstemp(suffix='.boundary.json')
         os.close(fd)
         with open(boundary_json_file, 'w') as f:
@@ -108,12 +108,12 @@ def filter(input_point_cloud, output_point_cloud, output_stats, standard_deviati
     system.run('"%s" %s' % (context.fpcfilter_path, " ".join(args)))
 
     if not os.path.exists(output_point_cloud):
-        log.ODM_WARNING("{} not found, filtering has failed.".format(output_point_cloud))
+        log.WARNING("{} not found, filtering has failed.".format(output_point_cloud))
 
 
 def get_spacing(stats_file, resolution_fallback=5.0):
     def fallback():
-        log.ODM_WARNING("Cannot read %s, falling back to resolution estimate" % stats_file)
+        log.WARNING("Cannot read %s, falling back to resolution estimate" % stats_file)
         return (resolution_fallback / 100.0) / 2.0
 
     if not os.path.isfile(stats_file):
@@ -190,11 +190,11 @@ def get_extent(input_point_cloud):
 def merge(input_point_cloud_files, output_file, rerun=False):
     num_files = len(input_point_cloud_files)
     if num_files == 0:
-        log.ODM_WARNING("No input point cloud files to process")
+        log.WARNING("No input point cloud files to process")
         return
 
     if io.file_exists(output_file):
-        log.ODM_WARNING("Removing previous point cloud: %s" % output_file)
+        log.WARNING("Removing previous point cloud: %s" % output_file)
         os.remove(output_file)
 
     kwargs = {
@@ -211,11 +211,11 @@ def fast_merge_ply(input_point_cloud_files, output_file):
 
     num_files = len(input_point_cloud_files)
     if num_files == 0:
-        log.ODM_WARNING("No input point cloud files to process")
+        log.WARNING("No input point cloud files to process")
         return
     
     if io.file_exists(output_file):
-        log.ODM_WARNING("Removing previous point cloud: %s" % output_file)
+        log.WARNING("Removing previous point cloud: %s" % output_file)
         os.remove(output_file)
     
     vertex_count = sum([ply_info(pcf)['vertex_count'] for pcf in input_point_cloud_files])
@@ -261,7 +261,7 @@ def fast_merge_ply(input_point_cloud_files, output_file):
 def merge_ply(input_point_cloud_files, output_file, dims=None):
     num_files = len(input_point_cloud_files)
     if num_files == 0:
-        log.ODM_WARNING("No input point cloud files to process")
+        log.WARNING("No input point cloud files to process")
         return
 
     cmd = [
@@ -281,7 +281,7 @@ def post_point_cloud_steps(args, tree, rerun=False):
         pc_classify_marker = os.path.join(tree.odm_georeferencing, 'pc_classify_done.txt')
 
         if not io.file_exists(pc_classify_marker) or rerun:
-            log.ODM_INFO("Classifying {} using Simple Morphological Filter (1/2)".format(tree.odm_georeferencing_model_laz))
+            log.INFO("Classifying {} using Simple Morphological Filter (1/2)".format(tree.odm_georeferencing_model_laz))
             commands.classify(tree.odm_georeferencing_model_laz,
                                 args.smrf_scalar, 
                                 args.smrf_slope, 
@@ -289,7 +289,7 @@ def post_point_cloud_steps(args, tree, rerun=False):
                                 args.smrf_window
                             )
 
-            log.ODM_INFO("Classifying {} using OpenPointClass (2/2)".format(tree.odm_georeferencing_model_laz))
+            log.INFO("Classifying {} using OpenPointClass (2/2)".format(tree.odm_georeferencing_model_laz))
             classify(tree.odm_georeferencing_model_laz, args.max_concurrency)
 
             with open(pc_classify_marker, 'w') as f:
@@ -301,7 +301,7 @@ def post_point_cloud_steps(args, tree, rerun=False):
 
     # XYZ point cloud output
     if args.pc_csv:
-        log.ODM_INFO("Creating CSV file (XYZ format)")
+        log.INFO("Creating CSV file (XYZ format)")
         
         if not io.file_exists(tree.odm_georeferencing_xyz_file) or rerun:
             system.run("pdal translate -i \"{}\" "
@@ -312,11 +312,11 @@ def post_point_cloud_steps(args, tree, rerun=False):
                     tree.odm_georeferencing_model_laz,
                     tree.odm_georeferencing_xyz_file))
         else:
-            log.ODM_WARNING("Found existing CSV file %s" % tree.odm_georeferencing_xyz_file)
+            log.WARNING("Found existing CSV file %s" % tree.odm_georeferencing_xyz_file)
 
     # LAS point cloud output
     if args.pc_las:
-        log.ODM_INFO("Creating LAS file")
+        log.INFO("Creating LAS file")
         
         if not io.file_exists(tree.odm_georeferencing_model_las) or rerun:
             system.run("pdal translate -i \"{}\" "
@@ -324,16 +324,16 @@ def post_point_cloud_steps(args, tree, rerun=False):
                     tree.odm_georeferencing_model_laz,
                     tree.odm_georeferencing_model_las))
         else:
-            log.ODM_WARNING("Found existing LAS file %s" % tree.odm_georeferencing_model_las)
+            log.WARNING("Found existing LAS file %s" % tree.odm_georeferencing_model_las)
 
     # EPT point cloud output
     if args.pc_ept:
-        log.ODM_INFO("Creating Entwine Point Tile output")
+        log.INFO("Creating Entwine Point Tile output")
         entwine.build([tree.odm_georeferencing_model_laz], tree.entwine_pointcloud, max_concurrency=args.max_concurrency, rerun=rerun)
 
     # COPC point clouds
     if args.pc_copc:
-        log.ODM_INFO("Creating Cloud Optimized Point Cloud (COPC)")
+        log.INFO("Creating Cloud Optimized Point Cloud (COPC)")
 
         copc_output = io.related_file_path(tree.odm_georeferencing_model_laz, postfix=".copc")
         entwine.build_copc([tree.odm_georeferencing_model_laz], copc_output, convert_rgb_8_to_16=True)

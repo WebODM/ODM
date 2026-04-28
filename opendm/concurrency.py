@@ -92,7 +92,7 @@ def parallel_map(func, items, max_workers=1, single_thread_fallback=True):
         if error is not None and single_thread_fallback:
             # Try to reprocess using a single thread
             # in case this was a memory error
-            log.ODM_WARNING("Failed to run process in parallel, retrying with a single thread...")
+            log.WARNING("Failed to run process in parallel, retrying with a single thread...")
             use_single_thread = True
     else:
         use_single_thread = True

@@ -36,7 +36,7 @@ class ODMSplitStage(types.ODM_Stage):
             if reconstruction.has_geotagged_photos():
                 outputs['large'] = True
             else:
-                log.ODM_WARNING('Could not perform split-merge as GPS information in photos or image_groups.txt is missing.')
+                log.WARNING('Could not perform split-merge as GPS information in photos or image_groups.txt is missing.')
 
         if outputs['large']:
             # If we have a cluster address, we'll use a distributed workflow
@@ -49,9 +49,9 @@ class ODMSplitStage(types.ODM_Stage):
                 orig_max_concurrency = args.max_concurrency
                 if not local_workflow:
                     args.max_concurrency = max(1, args.max_concurrency - 1)
-                    log.ODM_INFO("Setting max-concurrency to %s to better handle remote splits" % args.max_concurrency)
+                    log.INFO("Setting max-concurrency to %s to better handle remote splits" % args.max_concurrency)
 
-                log.ODM_INFO("Large dataset detected (%s photos) and split set at %s. Preparing split merge." % (len(photos), args.split))
+                log.INFO("Large dataset detected (%s photos) and split set at %s. Preparing split merge." % (len(photos), args.split))
                 multiplier = (1.0 / len(reconstruction.multi_camera)) if reconstruction.multi_camera else 1.0
 
                 config = [
@@ -75,12 +75,12 @@ class ODMSplitStage(types.ODM_Stage):
                 # Create submodels
                 if not io.dir_exists(tree.submodels_path) or self.rerun():
                     if io.dir_exists(tree.submodels_path):
-                        log.ODM_WARNING("Removing existing submodels directory: %s" % tree.submodels_path)
+                        log.WARNING("Removing existing submodels directory: %s" % tree.submodels_path)
                         shutil.rmtree(tree.submodels_path)
 
                     octx.run("create_submodels")
                 else:
-                    log.ODM_WARNING("Submodels directory already exist at: %s" % tree.submodels_path)
+                    log.WARNING("Submodels directory already exist at: %s" % tree.submodels_path)
 
                 # Find paths of all submodels
                 mds = metadataset.MetaDataSet(tree.opensfm)
@@ -96,16 +96,16 @@ class ODMSplitStage(types.ODM_Stage):
                         submodel_gcp_file = os.path.abspath(sp_octx.path("..", "gcp_list.txt"))
 
                         if reconstruction.gcp.make_filtered_copy(submodel_gcp_file, submodel_images_dir):
-                            log.ODM_INFO("Copied filtered GCP file to %s" % submodel_gcp_file)
+                            log.INFO("Copied filtered GCP file to %s" % submodel_gcp_file)
                             io.copy(submodel_gcp_file, os.path.abspath(sp_octx.path("gcp_list.txt")))
                         else:
-                            log.ODM_INFO("No GCP will be copied for %s, not enough images in the submodel are referenced by the GCP" % sp_octx.name())
+                            log.INFO("No GCP will be copied for %s, not enough images in the submodel are referenced by the GCP" % sp_octx.name())
                     
                     # Copy GEO file if needed (one for each submodel project directory)
                     if tree.odm_geo_file is not None and os.path.isfile(tree.odm_geo_file):
                         geo_dst_path = os.path.abspath(sp_octx.path("..", "geo.txt"))
                         io.copy(tree.odm_geo_file, geo_dst_path)
-                        log.ODM_INFO("Copied GEO file to %s" % geo_dst_path)
+                        log.INFO("Copied GEO file to %s" % geo_dst_path)
 
                     # If this is a multispectral dataset,
                     # we need to link the multispectral images
@@ -121,12 +121,12 @@ class ODMSplitStage(types.ODM_Stage):
                                     system.link_file(os.path.join(tree.dataset_raw, p.filename), submodel_images_dir)
 
                 # Reconstruct each submodel
-                log.ODM_INFO("Dataset has been split into %s submodels. Reconstructing each submodel..." % len(submodel_paths))
+                log.INFO("Dataset has been split into %s submodels. Reconstructing each submodel..." % len(submodel_paths))
                 self.update_progress(25)
 
                 if local_workflow:
                     for sp in submodel_paths:
-                        log.ODM_INFO("Reconstructing %s" % sp)
+                        log.INFO("Reconstructing %s" % sp)
                         local_sp_octx = OSFMContext(sp)
                         local_sp_octx.create_tracks(self.rerun())
                         local_sp_octx.reconstruct(args.rolling_shutter, not args.sfm_no_partial, self.rerun())
@@ -155,11 +155,11 @@ class ODMSplitStage(types.ODM_Stage):
                         main_recon = sp_octx.path('reconstruction.json')
 
                         if io.file_exists(main_recon) and io.file_exists(unaligned_recon) and not self.rerun():
-                            log.ODM_INFO("Submodel %s has already been aligned." % sp_octx.name())
+                            log.INFO("Submodel %s has already been aligned." % sp_octx.name())
                             continue
 
                         if not io.file_exists(aligned_recon):
-                            log.ODM_WARNING("Submodel %s does not have an aligned reconstruction (%s). "
+                            log.WARNING("Submodel %s does not have an aligned reconstruction (%s). "
                                             "This could mean that the submodel could not be reconstructed "
                                             " (are there enough features to reconstruct it?). Skipping." % (sp_octx.name(), aligned_recon))
                             remove_paths.append(sp)
@@ -169,7 +169,7 @@ class ODMSplitStage(types.ODM_Stage):
                             shutil.move(main_recon, unaligned_recon)
 
                         shutil.move(aligned_recon, main_recon)
-                        log.ODM_INFO("%s is now %s" % (aligned_recon, main_recon))
+                        log.INFO("%s is now %s" % (aligned_recon, main_recon))
 
                 # Remove invalid submodels
                 submodel_paths = [p for p in submodel_paths if not p in remove_paths]
@@ -179,9 +179,9 @@ class ODMSplitStage(types.ODM_Stage):
                     for sp in submodel_paths:
                         sp_octx = OSFMContext(sp)
 
-                        log.ODM_INFO("========================")
-                        log.ODM_INFO("Processing %s" % sp_octx.name()) 
-                        log.ODM_INFO("========================")
+                        log.INFO("========================")
+                        log.INFO("Processing %s" % sp_octx.name()) 
+                        log.INFO("========================")
 
                         argv = get_submodel_argv(args, tree.submodels_path, sp_octx.name())
 
@@ -196,9 +196,9 @@ class ODMSplitStage(types.ODM_Stage):
 
                 octx.touch(split_done_file)
             else:
-                log.ODM_WARNING('Found a split done file in: %s' % split_done_file)
+                log.WARNING('Found a split done file in: %s' % split_done_file)
         else:
-            log.ODM_INFO("Normal dataset, will process all at once.")
+            log.INFO("Normal dataset, will process all at once.")
             self.progress = 0.0
 
 
@@ -221,9 +221,9 @@ class ODMMergeStage(types.ODM_Stage):
                         point_cloud.merge(all_point_clouds, tree.odm_georeferencing_model_laz, rerun=self.rerun())
                         point_cloud.post_point_cloud_steps(args, tree, self.rerun())
                     except Exception as e:
-                        log.ODM_WARNING("Could not merge point cloud: %s (skipping)" % str(e))
+                        log.WARNING("Could not merge point cloud: %s (skipping)" % str(e))
                 else:
-                    log.ODM_WARNING("Found merged point cloud in %s" % tree.odm_georeferencing_model_laz)
+                    log.WARNING("Found merged point cloud in %s" % tree.odm_georeferencing_model_laz)
                 
             
             self.update_progress(25)
@@ -232,14 +232,14 @@ class ODMMergeStage(types.ODM_Stage):
             merged_bounds_file = os.path.join(tree.odm_georeferencing, 'odm_georeferenced_model.bounds.gpkg')
             if not io.file_exists(merged_bounds_file) or self.rerun():
                 all_bounds = get_submodel_paths(tree.submodels_path, 'odm_georeferencing', 'odm_georeferenced_model.bounds.gpkg')
-                log.ODM_INFO("Merging all crop bounds: %s" % all_bounds)
+                log.INFO("Merging all crop bounds: %s" % all_bounds)
                 if len(all_bounds) > 0:
                     # Calculate a new crop area
                     # based on the convex hull of all crop areas of all submodels
                     # (without a buffer, otherwise we are double-cropping)
                     Cropper.merge_bounds(all_bounds, merged_bounds_file, 0)
                 else:
-                    log.ODM_WARNING("No bounds found for any submodel.")
+                    log.WARNING("No bounds found for any submodel.")
 
             # Merge orthophotos
             if args.merge in ['all', 'orthophoto']:
@@ -253,7 +253,7 @@ class ODMMergeStage(types.ODM_Stage):
                     )
 
                     if len(all_orthos_and_ortho_cuts) > 1:
-                        log.ODM_INFO("Found %s submodels with valid orthophotos and cutlines" % len(all_orthos_and_ortho_cuts))
+                        log.INFO("Found %s submodels with valid orthophotos and cutlines" % len(all_orthos_and_ortho_cuts))
                         
                         # TODO: histogram matching via rasterio
                         # currently parts have different color tones
@@ -267,12 +267,12 @@ class ODMMergeStage(types.ODM_Stage):
                             reconstruction, tree, False)
                     elif len(all_orthos_and_ortho_cuts) == 1:
                         # Simply copy
-                        log.ODM_WARNING("A single orthophoto/cutline pair was found between all submodels.")
+                        log.WARNING("A single orthophoto/cutline pair was found between all submodels.")
                         shutil.copyfile(all_orthos_and_ortho_cuts[0][0], tree.odm_orthophoto_tif)
                     else:
-                        log.ODM_WARNING("No orthophoto/cutline pairs were found in any of the submodels. No orthophoto will be generated.")
+                        log.WARNING("No orthophoto/cutline pairs were found in any of the submodels. No orthophoto will be generated.")
                 else:
-                    log.ODM_WARNING("Found merged orthophoto in %s" % tree.odm_orthophoto_tif)
+                    log.WARNING("Found merged orthophoto in %s" % tree.odm_orthophoto_tif)
 
             self.update_progress(75)
 
@@ -284,7 +284,7 @@ class ODMMergeStage(types.ODM_Stage):
                 dem_file = tree.path("odm_dem", dem_filename)
                 if not io.file_exists(dem_file) or self.rerun():
                     all_dems = get_submodel_paths(tree.submodels_path, "odm_dem", dem_filename)
-                    log.ODM_INFO("Merging %ss" % human_name)
+                    log.INFO("Merging %ss" % human_name)
                     
                     # Merge
                     dem_vars = utils.get_dem_vars(args)
@@ -301,7 +301,7 @@ class ODMMergeStage(types.ODM_Stage):
                         # Crop
                         if args.crop > 0 or args.boundary:
                             Cropper.crop(merged_bounds_file, dem_file, dem_vars, keep_original=not args.optimize_disk_space)
-                        log.ODM_INFO("Created %s" % dem_file)
+                        log.INFO("Created %s" % dem_file)
                         
                         if args.tiles:
                             generate_dem_tiles(dem_file, tree.path("%s_tiles" % human_name.lower()), args.max_concurrency, args.dem_resolution)
@@ -311,10 +311,10 @@ class ODMMergeStage(types.ODM_Stage):
                         if args.cog:
                             convert_to_cogeo(dem_file, max_workers=args.max_concurrency)
                     else:
-                        log.ODM_WARNING("Cannot merge %s, %s was not created" % (human_name, dem_file))
+                        log.WARNING("Cannot merge %s, %s was not created" % (human_name, dem_file))
                 
                 else:
-                    log.ODM_WARNING("Found merged %s in %s" % (human_name, dem_filename))
+                    log.WARNING("Found merged %s in %s" % (human_name, dem_filename))
 
             if args.merge in ['all', 'dem'] and args.dsm:
                 merge_dems("dsm.tif", "DSM")
@@ -331,25 +331,25 @@ class ODMMergeStage(types.ODM_Stage):
             geojson_shots = tree.path(tree.odm_report, "shots.geojson")
             if not io.file_exists(geojson_shots) or self.rerun():
                 geojson_shots_files = get_submodel_paths(tree.submodels_path, "odm_report", "shots.geojson")
-                log.ODM_INFO("Merging %s shots.geojson files" % len(geojson_shots_files))
+                log.INFO("Merging %s shots.geojson files" % len(geojson_shots_files))
                 merge_geojson_shots(geojson_shots_files, geojson_shots)
             else:
-                log.ODM_WARNING("Found merged shots.geojson in %s" % tree.odm_report)
+                log.WARNING("Found merged shots.geojson in %s" % tree.odm_report)
 
             # Merge cameras
             cameras_json = tree.path("cameras.json")
             if not io.file_exists(cameras_json) or self.rerun():
                 cameras_json_files = get_submodel_paths(tree.submodels_path, "cameras.json")
-                log.ODM_INFO("Merging %s cameras.json files" % len(cameras_json_files))
+                log.INFO("Merging %s cameras.json files" % len(cameras_json_files))
                 merge_cameras(cameras_json_files, cameras_json)
             else:
-                log.ODM_WARNING("Found merged cameras.json in %s" % tree.root_path)
+                log.WARNING("Found merged cameras.json in %s" % tree.root_path)
 
             # Stop the pipeline short by skipping to the postprocess stage.
             # Afterwards, we're done.
             self.next_stage = self.last_stage()
         else:
-            log.ODM_INFO("Normal dataset, nothing to merge.")
+            log.INFO("Normal dataset, nothing to merge.")
             self.progress = 0.0
 
         

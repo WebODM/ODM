@@ -87,14 +87,14 @@ def cap_resolution(resolution, reconstruction_json, gsd_error_estimate = 0.1, gs
     if gsd is not None:
         gsd = gsd * (1 - gsd_error_estimate) * gsd_scaling
         if gsd > resolution or ignore_resolution:
-            log.ODM_WARNING('Maximum resolution set to {} * (GSD - {}%) '
+            log.WARNING('Maximum resolution set to {} * (GSD - {}%) '
                             '({:.2f} cm / pixel, requested resolution was {:.2f} cm / pixel)'
                             .format(gsd_scaling, gsd_error_estimate * 100, gsd, resolution))
             return gsd
         else:
             return resolution
     else:
-        log.ODM_WARNING('Cannot calculate GSD, using requested resolution of {:.2f}'.format(resolution))
+        log.WARNING('Cannot calculate GSD, using requested resolution of {:.2f}'.format(resolution))
         return resolution
 
 
@@ -127,7 +127,7 @@ def opensfm_reconstruction_average_gsd(reconstruction_json, use_all_shots=False)
             shot_height = shot_origin[2]
             focal_ratio = camera.get('focal', camera.get('focal_x'))
             if not focal_ratio:
-                log.ODM_WARNING("Cannot parse focal values from %s. This is likely an unsupported camera model." % reconstruction_json)
+                log.WARNING("Cannot parse focal values from %s. This is likely an unsupported camera model." % reconstruction_json)
                 return None
             
             shot_origin[2] = 0
@@ -144,7 +144,7 @@ def opensfm_reconstruction_average_gsd(reconstruction_json, use_all_shots=False)
     if len(gsds) > 0:
         mean = np.mean(gsds)
         if mean < 0:
-            log.ODM_WARNING("Negative GSD estimated, this might indicate a flipped Z-axis.")
+            log.WARNING("Negative GSD estimated, this might indicate a flipped Z-axis.")
         return abs(mean)
     
     return None

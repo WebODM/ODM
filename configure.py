@@ -123,10 +123,10 @@ def vcpkg_export():
         exit(1)
 
     pkgs = vcpkg_requirements()
-    out = "vcpkg-export-%s" % odm_version().replace(".", "")
+    out = "vcpkg-export-%s" % get_version().replace(".", "")
     run("vcpkg\\vcpkg export %s --output=%s --zip" % (" ".join(pkgs), out))
 
-def odm_version():
+def get_version():
     with open("VERSION") as f:
         return f.read().split("\n")[0].strip()
 

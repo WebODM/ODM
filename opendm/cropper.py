@@ -23,10 +23,10 @@ class Cropper:
     @staticmethod
     def crop(gpkg_path, geotiff_path, gdal_options, keep_original=True, warp_options=[]):
         if not os.path.exists(gpkg_path) or not os.path.exists(geotiff_path):
-            log.ODM_WARNING("Either {} or {} does not exist, will skip cropping.".format(gpkg_path, geotiff_path))
+            log.WARNING("Either {} or {} does not exist, will skip cropping.".format(gpkg_path, geotiff_path))
             return geotiff_path
 
-        log.ODM_INFO("Cropping %s" % geotiff_path)
+        log.INFO("Cropping %s" % geotiff_path)
 
         # Rename original file
         # path/to/odm_orthophoto.tif --> path/to/odm_orthophoto.original.tif
@@ -64,7 +64,7 @@ class Cropper:
                 os.remove(original_geotiff)
 
         except Exception as e:
-            log.ODM_WARNING('Something went wrong while cropping: {}'.format(e))
+            log.WARNING('Something went wrong while cropping: {}'.format(e))
             
             # Revert rename
             os.replace(original_geotiff, geotiff_path)
@@ -131,7 +131,7 @@ class Cropper:
         @return filename to GeoJSON containing the polygon
         """
         if not os.path.exists(pointcloud_path):
-            log.ODM_WARNING('Point cloud does not exist, cannot generate bounds {}'.format(pointcloud_path))
+            log.WARNING('Point cloud does not exist, cannot generate bounds {}'.format(pointcloud_path))
             return ''
 
         # Do decimation prior to extracting boundary information
@@ -143,7 +143,7 @@ class Cropper:
             "--filters.decimation.step={} ".format(pointcloud_path, decimated_pointcloud_path, decimation_step))
 
         if not os.path.exists(decimated_pointcloud_path):
-            log.ODM_WARNING('Could not decimate point cloud, thus cannot generate GPKG bounds {}'.format(decimated_pointcloud_path))
+            log.WARNING('Could not decimate point cloud, thus cannot generate GPKG bounds {}'.format(decimated_pointcloud_path))
             return ''
 
         # Use PDAL to dump boundary information
@@ -188,7 +188,7 @@ class Cropper:
             if tmp.Area() > 0:
                 convexhull = tmp
             else:
-                log.ODM_WARNING("Very small crop area detected, we will not smooth it.")
+                log.WARNING("Very small crop area detected, we will not smooth it.")
 
         # Save to a new file
         bounds_geojson_path = self.path('bounds.geojson')
@@ -228,7 +228,7 @@ class Cropper:
         @return filename to Geopackage containing the polygon
         """
         if not os.path.exists(pointcloud_path):
-            log.ODM_WARNING('Point cloud does not exist, cannot generate GPKG bounds {}'.format(pointcloud_path))
+            log.WARNING('Point cloud does not exist, cannot generate GPKG bounds {}'.format(pointcloud_path))
             return ''
 
 

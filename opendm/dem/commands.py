@@ -39,9 +39,9 @@ def classify(lasFile, scalar, slope, threshold, window):
     try:
         pdal.run_pdaltranslate_smrf(lasFile, lasFile, scalar, slope, threshold, window)
     except:
-        log.ODM_WARNING("Error creating classified file %s" % lasFile)
+        log.WARNING("Error creating classified file %s" % lasFile)
 
-    log.ODM_INFO('Created %s in %s' % (lasFile, datetime.now() - start))
+    log.INFO('Created %s in %s' % (lasFile, datetime.now() - start))
     return lasFile
 
 error = None
@@ -89,7 +89,7 @@ def create_dem(input_point_cloud, dem_type, output_type='max', radiuses=['0.56']
     if len(tiles) == 0:
         raise system.ExitException("No DEM tiles were generated, something went wrong")
 
-    log.ODM_INFO("Generated %s tiles" % len(tiles))
+    log.INFO("Generated %s tiles" % len(tiles))
 
     # Sort tiles by decreasing radius
     tiles.sort(key=lambda t: float(t['radius']), reverse=True)
@@ -177,12 +177,12 @@ def create_dem(input_point_cloud, dem_type, output_type='max', radiuses=['0.56']
     for t in tiles:
         if os.path.exists(t['filename']): os.remove(t['filename'])
 
-    log.ODM_INFO('Completed %s in %s' % (output_file, datetime.now() - start))
+    log.INFO('Completed %s in %s' % (output_file, datetime.now() - start))
 
 
 def compute_euclidean_map(geotiff_path, output_path, overwrite=False):
     if not os.path.exists(geotiff_path):
-        log.ODM_WARNING("Cannot compute euclidean map (file does not exist: %s)" % geotiff_path)
+        log.WARNING("Cannot compute euclidean map (file does not exist: %s)" % geotiff_path)
         return
 
     nodata = -9999
@@ -193,7 +193,7 @@ def compute_euclidean_map(geotiff_path, output_path, overwrite=False):
         if os.path.isfile(output_path):
             os.remove(output_path)
 
-        log.ODM_INFO("Computing euclidean distance: %s" % output_path)
+        log.INFO("Computing euclidean distance: %s" % output_path)
 
         if gdal_proximity is not None:
             try:
@@ -204,17 +204,17 @@ def compute_euclidean_map(geotiff_path, output_path, overwrite=False):
                                 '-co', 'COMPRESS=DEFLATE',
                             ])
             except Exception as e:
-                log.ODM_WARNING("Cannot compute euclidean distance: %s" % str(e))
+                log.WARNING("Cannot compute euclidean distance: %s" % str(e))
 
             if os.path.exists(output_path):
                 return output_path
             else:
-                log.ODM_WARNING("Cannot compute euclidean distance file: %s" % output_path)
+                log.WARNING("Cannot compute euclidean distance file: %s" % output_path)
         else:
-            log.ODM_WARNING("Cannot compute euclidean map, gdal_proximity is missing")
+            log.WARNING("Cannot compute euclidean map, gdal_proximity is missing")
             
     else:
-        log.ODM_INFO("Found a euclidean distance map: %s" % output_path)
+        log.INFO("Found a euclidean distance map: %s" % output_path)
         return output_path
 
 
@@ -239,7 +239,7 @@ def median_smoothing(geotiff_path, output_path, window_size=512, num_workers=1, 
                 '--co BIGTIFF=IF_SAFER '
                 '--co COMPRESS=DEFLATE '.format(**kwargs), env_vars={'OMP_NUM_THREADS': num_workers})
 
-    log.ODM_INFO('Completed smoothing to create %s in %s' % (output_path, datetime.now() - start))
+    log.INFO('Completed smoothing to create %s in %s' % (output_path, datetime.now() - start))
     return output_path
 
 

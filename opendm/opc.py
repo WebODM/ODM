@@ -22,10 +22,10 @@ def classify(point_cloud, max_threads=8):
                 os.remove(point_cloud)
                 os.rename(tmp_output, point_cloud)
             else:
-                log.ODM_WARNING("Cannot classify using OpenPointClass (no output generated)")
+                log.WARNING("Cannot classify using OpenPointClass (no output generated)")
         else:
-            log.ODM_WARNING("Cannot download/access model from %s" % (model_url))
+            log.WARNING("Cannot download/access model from %s" % (model_url))
 
     except Exception as e:
-        log.ODM_WARNING("Cannot classify using OpenPointClass: %s" % str(e))
+        log.WARNING("Cannot classify using OpenPointClass: %s" % str(e))
 

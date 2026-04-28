@@ -43,7 +43,7 @@ class ODMReport(types.ODM_Stage):
 
         if not os.path.exists(tree.odm_report): system.mkdir_p(tree.odm_report)
 
-        log.ODM_INFO("Exporting shots.geojson")
+        log.INFO("Exporting shots.geojson")
 
         shots_geojson = os.path.join(tree.odm_report, "shots.geojson")
         if not io.file_exists(shots_geojson) or self.rerun():
@@ -54,7 +54,7 @@ class ODMReport(types.ODM_Stage):
                 if io.file_exists(tree.odm_georeferencing_alignment_matrix):
                     with open(tree.odm_georeferencing_alignment_matrix, 'r') as f:
                         a_matrix = np_from_json(f.read())
-                        log.ODM_INFO("Aligning shots to %s" % a_matrix)
+                        log.INFO("Aligning shots to %s" % a_matrix)
 
                 shots = get_geojson_shots_from_opensfm(tree.opensfm_reconstruction, utm_srs=reconstruction.get_proj_srs(), utm_offset=reconstruction.georef.utm_offset(), a_matrix=a_matrix)
             else:
@@ -65,27 +65,27 @@ class ODMReport(types.ODM_Stage):
                 with open(shots_geojson, "w") as fout:
                     fout.write(json.dumps(shots))
 
-                log.ODM_INFO("Wrote %s" % shots_geojson)
+                log.INFO("Wrote %s" % shots_geojson)
             else:
-                log.ODM_WARNING("Cannot extract shots")
+                log.WARNING("Cannot extract shots")
         else:
-            log.ODM_WARNING('Found a valid shots file in: %s' % shots_geojson)
+            log.WARNING('Found a valid shots file in: %s' % shots_geojson)
 
         camera_mappings = os.path.join(tree.odm_report, "camera_mappings.npz")
         if not io.file_exists(camera_mappings) or self.rerun():
             src_cm = os.path.join(tree.opensfm, "camera_mappings.npz")
             if io.file_exists(src_cm):
                 shutil.copy(src_cm, camera_mappings)
-                log.ODM_INFO("Copied %s --> %s" % (src_cm, camera_mappings))
+                log.INFO("Copied %s --> %s" % (src_cm, camera_mappings))
             else:
-                log.ODM_WARNING("Cannot copy camera mappings")
+                log.WARNING("Cannot copy camera mappings")
         else:
-            log.ODM_WARNING("Found a valid camera mappings file in: %s" % camera_mappings)
+            log.WARNING("Found a valid camera mappings file in: %s" % camera_mappings)
         
         
         if args.skip_report:
             # Stop right here
-            log.ODM_WARNING("Skipping report generation as requested")
+            log.WARNING("Skipping report generation as requested")
             return
 
         # Augment OpenSfM stats file with our own stats
@@ -119,7 +119,7 @@ class ODMReport(types.ODM_Stage):
                         pc_info_file = os.path.join(tree.odm_filterpoints, "point_cloud.info.json")
                         odm_stats['point_cloud_statistics'] = generate_point_cloud_stats(ply_pc, pc_info_file, self.rerun())
                     else:
-                        log.ODM_WARNING("No point cloud found")
+                        log.WARNING("No point cloud found")
 
                 odm_stats['point_cloud_statistics']['dense'] = not args.fast_orthophoto
 
@@ -139,9 +139,9 @@ class ODMReport(types.ODM_Stage):
                 with open(odm_stats_json, 'w') as f:
                     f.write(json.dumps(odm_stats))
             else:
-                log.ODM_WARNING("Cannot generate report, OpenSfM stats are missing")
+                log.WARNING("Cannot generate report, OpenSfM stats are missing")
         else:
-            log.ODM_WARNING("Reading existing stats %s" % odm_stats_json)
+            log.WARNING("Reading existing stats %s" % odm_stats_json)
             with open(odm_stats_json, 'r') as f:
                 odm_stats = json.loads(f.read())
 
@@ -204,7 +204,7 @@ class ODMReport(types.ODM_Stage):
                         resized_dem_file = io.related_file_path(dem_file, postfix=".preview")
                         system.run("gdal_translate -outsize {} 0 \"{}\" \"{}\" --config GDAL_CACHEMAX {}%".format(image_target_size, dem_file, resized_dem_file, get_max_memory()))
 
-                        log.ODM_INFO("Computing raster stats for %s" % resized_dem_file)
+                        log.INFO("Computing raster stats for %s" % resized_dem_file)
                         dem_stats = get_raster_stats(resized_dem_file)
                         if len(dem_stats) > 0:
                             odm_stats[dem + '_statistics'] = dem_stats[0]
@@ -216,8 +216,8 @@ class ODMReport(types.ODM_Stage):
                             if os.path.isfile(f):
                                 os.remove(f)
             else:
-                log.ODM_WARNING("Cannot generate overlap diagram, cannot compute point cloud bounds")
+                log.WARNING("Cannot generate overlap diagram, cannot compute point cloud bounds")
         else:
-            log.ODM_WARNING("Cannot generate overlap diagram, point cloud stats missing")
+            log.WARNING("Cannot generate overlap diagram, point cloud stats missing")
 
         octx.export_report(os.path.join(tree.odm_report, "report.pdf"), odm_stats, self.rerun())

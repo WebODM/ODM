@@ -21,7 +21,7 @@ def extract_utm_coords(photos, images_path, output_coords_file):
     reference_photo = None
     for photo in photos:
         if photo.latitude is None or photo.longitude is None:
-            log.ODM_WARNING("GPS position not available for %s" % photo.filename)
+            log.WARNING("GPS position not available for %s" % photo.filename)
             continue
         
         if utm_zone is None:
@@ -145,7 +145,7 @@ def parse_srs_header(header):
         else:
             raise RuntimeError('Could not parse coordinates. Bad SRS supplied: %s' % header)
     except RuntimeError as e:
-        log.ODM_ERROR('Uh oh! There seems to be a problem with your coordinates/GCP file.\n\n'
+        log.ERROR('Uh oh! There seems to be a problem with your coordinates/GCP file.\n\n'
                             'The line: %s\n\n'
                             'Is not valid. Projections that are valid include:\n'
                             ' - EPSG:*****\n'

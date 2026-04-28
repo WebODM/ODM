@@ -21,7 +21,7 @@ def save_images_database(photos, database_file):
     with open(database_file, 'w') as f:
         f.write(json.dumps([p.__dict__ for p in photos]))
     
-    log.ODM_INFO("Wrote images database: %s" % database_file)
+    log.INFO("Wrote images database: %s" % database_file)
 
 def load_images_database(database_file):
     # Empty is used to create types.ODM_Photo class
@@ -31,7 +31,7 @@ def load_images_database(database_file):
 
     result = []
 
-    log.ODM_INFO("Loading images database: %s" % database_file)
+    log.INFO("Loading images database: %s" % database_file)
 
     with open(database_file, 'r') as f:
         photos_json = json.load(f)
@@ -57,7 +57,7 @@ class ODMLoadDatasetStage(types.ODM_Stage):
                 with open(tree.benchmarking, 'a') as b:
                     b.write('ODX Benchmarking file created %s\nNumber of Cores: %s\n\n' % (system.now(), context.num_cores))
             except Exception as e:
-                log.ODM_WARNING("Cannot write benchmark file: %s" % str(e))
+                log.WARNING("Cannot write benchmark file: %s" % str(e))
 
         def valid_filename(filename, supported_extensions):
             (pathfn, ext) = os.path.splitext(filename)
@@ -88,7 +88,7 @@ class ODMLoadDatasetStage(types.ODM_Stage):
                 if not " " in mask:
                     return mask
                 else:
-                    log.ODM_WARNING("Image mask {} has a space. Spaces are currently not supported for image masks.".format(mask))
+                    log.WARNING("Image mask {} has a space. Spaces are currently not supported for image masks.".format(mask))
         
 
 
@@ -98,7 +98,7 @@ class ODMLoadDatasetStage(types.ODM_Stage):
         # define paths and create working directories
         system.mkdir_p(tree.odm_georeferencing)
 
-        log.ODM_INFO('Loading dataset from: %s' % images_dir)
+        log.INFO('Loading dataset from: %s' % images_dir)
 
         # check if we rerun cell or not
         images_database_file = os.path.join(tree.root_path, 'images.json')
@@ -114,13 +114,13 @@ class ODMLoadDatasetStage(types.ODM_Stage):
                 # If we're re-running the pipeline, and frames have been extracted during a previous run
                 # we need to remove those before re-extracting them
                 if len(video_files) > 0 and os.path.exists(frames_db_file) and self.rerun():
-                    log.ODM_INFO("Re-run, removing previously extracted video frames")
+                    log.INFO("Re-run, removing previously extracted video frames")
                     frames = []
                     try:
                         with open(frames_db_file, 'r') as f:
                             frames = json.loads(f.read())
                     except Exception as e:
-                        log.ODM_WARNING("Cannot check previous video extraction: %s" % str(e))
+                        log.WARNING("Cannot check previous video extraction: %s" % str(e))
 
                     for f in frames:
                         fp = os.path.join(images_dir, f)
@@ -128,7 +128,7 @@ class ODMLoadDatasetStage(types.ODM_Stage):
                             os.remove(fp)
                 
                 if len(video_files) > 0:
-                    log.ODM_INFO("Found video files (%s), extracting frames" % len(video_files))
+                    log.INFO("Found video files (%s), extracting frames" % len(video_files))
 
                     try:
                         params = Parameters({
@@ -149,7 +149,7 @@ class ODMLoadDatasetStage(types.ODM_Stage):
                         with open(frames_db_file, 'w') as f:
                             f.write(json.dumps([os.path.basename(f) for f in frames]))
                     except Exception as e:
-                        log.ODM_WARNING("Could not extract video frames: %s" % str(e))
+                        log.WARNING("Could not extract video frames: %s" % str(e))
 
             files, rejects = get_images(images_dir)
             if files:
@@ -165,7 +165,7 @@ class ODMLoadDatasetStage(types.ODM_Stage):
                     
                 photos = []
                 with open(tree.dataset_list, 'w') as dataset_list:
-                    log.ODM_INFO("Loading %s images" % len(path_files))
+                    log.INFO("Loading %s images" % len(path_files))
                     for f in path_files:
                         try:
                             p = types.ODM_Photo(f)
@@ -173,11 +173,11 @@ class ODMLoadDatasetStage(types.ODM_Stage):
                             photos.append(p)
                             dataset_list.write(photos[-1].filename + '\n')
                         except PhotoCorruptedException:
-                            log.ODM_WARNING("%s seems corrupted and will not be used" % os.path.basename(f))
+                            log.WARNING("%s seems corrupted and will not be used" % os.path.basename(f))
 
                 # Check if a geo file is available
                 if tree.odm_geo_file is not None and os.path.isfile(tree.odm_geo_file):
-                    log.ODM_INFO("Found image geolocation file")
+                    log.INFO("Found image geolocation file")
                     gf = GeoFile(tree.odm_geo_file)
                     updated = 0
                     for p in photos:
@@ -186,21 +186,21 @@ class ODMLoadDatasetStage(types.ODM_Stage):
                             p.update_with_geo_entry(entry)
                             p.compute_opk()
                             updated += 1
-                    log.ODM_INFO("Updated %s image positions" % updated)
+                    log.INFO("Updated %s image positions" % updated)
                 # Warn if a file path is specified but it does not exist
                 elif tree.odm_geo_file is not None and not os.path.isfile(tree.odm_geo_file):
-                    log.ODM_WARNING("Image geolocation file %s does not exist" % tree.odm_geo_file) 
+                    log.WARNING("Image geolocation file %s does not exist" % tree.odm_geo_file) 
 
                 # GPSDOP override if we have GPS accuracy information (such as RTK)
                 if 'gps_accuracy_is_set' in args:
-                    log.ODM_INFO("Forcing GPS DOP to %s for all images" % args.gps_accuracy)
+                    log.INFO("Forcing GPS DOP to %s for all images" % args.gps_accuracy)
 
                     for p in photos:
                         p.override_gps_dop(args.gps_accuracy)
                 
                 # Override projection type
                 if args.camera_lens != "auto":
-                    log.ODM_INFO("Setting camera lens to %s for all images" % args.camera_lens)
+                    log.INFO("Setting camera lens to %s for all images" % args.camera_lens)
 
                     for p in photos:
                         p.override_camera_projection(args.camera_lens)
@@ -220,7 +220,7 @@ class ODMLoadDatasetStage(types.ODM_Stage):
                             sky_images.append({'file': os.path.join(images_dir, p.filename), 'p': p})
 
                     if len(sky_images) > 0:
-                        log.ODM_INFO("Automatically generating sky masks for %s images" % len(sky_images))
+                        log.INFO("Automatically generating sky masks for %s images" % len(sky_images))
                         model = ai.get_model("skyremoval", "https://github.com/WebODM/ODX/releases/download/v3.7.1/skyremoval.zip", "v1.0.5")
                         if model is not None:
                             sf = SkyFilter(model=model)
@@ -232,19 +232,19 @@ class ODMLoadDatasetStage(types.ODM_Stage):
                                     # Check and set
                                     if mask_file is not None and os.path.isfile(mask_file):
                                         item['p'].set_mask(os.path.basename(mask_file))
-                                        log.ODM_INFO("Wrote %s" % os.path.basename(mask_file))
+                                        log.INFO("Wrote %s" % os.path.basename(mask_file))
                                     else:
-                                        log.ODM_WARNING("Cannot generate mask for %s" % item['file'])
+                                        log.WARNING("Cannot generate mask for %s" % item['file'])
                                 except Exception as e:
-                                    log.ODM_WARNING("Cannot generate mask for %s: %s" % (item['file'], str(e)))
+                                    log.WARNING("Cannot generate mask for %s: %s" % (item['file'], str(e)))
 
                             parallel_map(parallel_sky_filter, sky_images, max_workers=args.max_concurrency)
 
-                            log.ODM_INFO("Sky masks generation completed!")
+                            log.INFO("Sky masks generation completed!")
                         else:
-                            log.ODM_WARNING("Cannot load AI model (you might need to be connected to the internet?)")
+                            log.WARNING("Cannot load AI model (you might need to be connected to the internet?)")
                     else:
-                        log.ODM_INFO("No sky masks will be generated (masks already provided, or images are nadir)")
+                        log.INFO("No sky masks will be generated (masks already provided, or images are nadir)")
 
                 # End sky removal
 
@@ -261,7 +261,7 @@ class ODMLoadDatasetStage(types.ODM_Stage):
                             bg_images.append({'file': os.path.join(images_dir, p.filename), 'p': p})
 
                     if len(bg_images) > 0:
-                        log.ODM_INFO("Automatically generating background masks for %s images" % len(bg_images))
+                        log.INFO("Automatically generating background masks for %s images" % len(bg_images))
                         model = ai.get_model("bgremoval", "https://github.com/WebODM/ODX/releases/download/v3.7.1/u2net.zip", "v2.9.0")
                         if model is not None:
                             bg = BgFilter(model=model)
@@ -273,19 +273,19 @@ class ODMLoadDatasetStage(types.ODM_Stage):
                                     # Check and set
                                     if mask_file is not None and os.path.isfile(mask_file):
                                         item['p'].set_mask(os.path.basename(mask_file))
-                                        log.ODM_INFO("Wrote %s" % os.path.basename(mask_file))
+                                        log.INFO("Wrote %s" % os.path.basename(mask_file))
                                     else:
-                                        log.ODM_WARNING("Cannot generate mask for %s" % img)
+                                        log.WARNING("Cannot generate mask for %s" % img)
                                 except Exception as e:
-                                    log.ODM_WARNING("Cannot generate mask for %s: %s" % (img, str(e)))
+                                    log.WARNING("Cannot generate mask for %s: %s" % (img, str(e)))
 
                             parallel_map(parallel_bg_filter, bg_images, max_workers=args.max_concurrency)
 
-                            log.ODM_INFO("Background masks generation completed!")
+                            log.INFO("Background masks generation completed!")
                         else:
-                            log.ODM_WARNING("Cannot load AI model (you might need to be connected to the internet?)")
+                            log.WARNING("Cannot load AI model (you might need to be connected to the internet?)")
                     else:
-                        log.ODM_INFO("No background masks will be generated (masks already provided)")
+                        log.INFO("No background masks will be generated (masks already provided)")
 
                 # End bg removal
 
@@ -297,7 +297,7 @@ class ODMLoadDatasetStage(types.ODM_Stage):
             # We have an images database, just load it
             photos = load_images_database(images_database_file)
 
-        log.ODM_INFO('Found %s usable images' % len(photos))
+        log.INFO('Found %s usable images' % len(photos))
         log.logger.log_json_images(len(photos))
 
         # Create reconstruction object
@@ -310,7 +310,7 @@ class ODMLoadDatasetStage(types.ODM_Stage):
                                                  tree.odm_georeferencing_model_txt_geo,
                                                  rerun=self.rerun())
             if reconstruction.gcp is not None and reconstruction.gcp.only_checkpoints():
-                    log.ODM_WARNING("Only checkpoints in this GCP file. Enabling --force-gps")
+                    log.WARNING("Only checkpoints in this GCP file. Enabling --force-gps")
                     args.force_gps = True
         else:
             reconstruction.georeference_with_gps(tree.dataset_raw, 
@@ -327,24 +327,24 @@ class ODMLoadDatasetStage(types.ODM_Stage):
                 outputs['boundary'] = boundary.load_boundary(args.boundary, reconstruction.get_proj_srs())
             else:
                 args.boundary = None
-                log.ODM_WARNING("Reconstruction is not georeferenced, but boundary file provided (will ignore boundary file)")
+                log.WARNING("Reconstruction is not georeferenced, but boundary file provided (will ignore boundary file)")
 
         # If sfm-algorithm is triangulation, check if photos have OPK
         if args.sfm_algorithm == 'triangulation':
             for p in photos:
                 if not p.has_opk():
-                    log.ODM_WARNING("No omega/phi/kappa angles found in input photos (%s), switching sfm-algorithm to incremental" % p.filename)
+                    log.WARNING("No omega/phi/kappa angles found in input photos (%s), switching sfm-algorithm to incremental" % p.filename)
                     args.sfm_algorithm = 'incremental'
                     break
         
         # Rolling shutter cannot be done in non-georeferenced datasets
         if args.rolling_shutter and not reconstruction.is_georeferenced():
-            log.ODM_WARNING("Reconstruction is not georeferenced, disabling rolling shutter correction")
+            log.WARNING("Reconstruction is not georeferenced, disabling rolling shutter correction")
             args.rolling_shutter = False
         
         # GPS Z offset
         if 'gps_z_offset_is_set' in args:
-            log.ODM_INFO("Adjusting GPS Z offset by %s for all images" % args.gps_z_offset)
+            log.INFO("Adjusting GPS Z offset by %s for all images" % args.gps_z_offset)
 
             for p in photos:
                 p.adjust_z_offset(args.gps_z_offset)

@@ -305,6 +305,6 @@ def obj2glb(input_obj, output_glb, rtc=(None, None), draco_compression=True, _in
                 os.remove(output_glb)
                 os.rename(compressed_glb, output_glb)
         except Exception as e:
-            log.ODM_WARNING("Cannot compress GLB with draco: %s" % str(e))
+            log.WARNING("Cannot compress GLB with draco: %s" % str(e))
             
 

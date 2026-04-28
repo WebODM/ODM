@@ -47,7 +47,7 @@ class OSFMContext:
         if not io.file_exists(tracks_file) or rerun:
             self.run('create_tracks')
         else:
-            log.ODM_WARNING('Found a valid OpenSfM tracks file in: %s' % tracks_file)
+            log.WARNING('Found a valid OpenSfM tracks file in: %s' % tracks_file)
 
     def reconstruct(self, rolling_shutter_correct=False, merge_partial=False, rerun=False):
         reconstruction_file = os.path.join(self.opensfm_project_path, 'reconstruction.json')
@@ -56,7 +56,7 @@ class OSFMContext:
             if merge_partial:
                 self.check_merge_partial_reconstructions()
         else:
-            log.ODM_WARNING('Found a valid OpenSfM reconstruction file in: %s' % reconstruction_file)
+            log.WARNING('Found a valid OpenSfM reconstruction file in: %s' % reconstruction_file)
 
         # Check that a reconstruction file has been created
         if not self.reconstructed():
@@ -72,7 +72,7 @@ class OSFMContext:
             if not io.file_exists(rs_file) or rerun:
                 self.run('rs_correct')
 
-                log.ODM_INFO("Re-running the reconstruction pipeline")
+                log.INFO("Re-running the reconstruction pipeline")
 
                 self.match_features(True)
                 self.create_tracks(True)
@@ -80,7 +80,7 @@ class OSFMContext:
 
                 self.touch(rs_file)
             else:
-                log.ODM_WARNING("Rolling shutter correction already applied")
+                log.WARNING("Rolling shutter correction already applied")
 
     def check_merge_partial_reconstructions(self):
         if self.reconstructed():
@@ -89,8 +89,8 @@ class OSFMContext:
             tracks_manager = data.load_tracks_manager()
 
             if len(reconstructions) > 1:
-                log.ODM_WARNING("Multiple reconstructions detected (%s), this might be an indicator that some areas did not have sufficient overlap" % len(reconstructions))
-                log.ODM_INFO("Attempting merge")
+                log.WARNING("Multiple reconstructions detected (%s), this might be an indicator that some areas did not have sufficient overlap" % len(reconstructions))
+                log.INFO("Attempting merge")
 
                 merged = Reconstruction()
                 merged.set_reference(reconstructions[0].reference)
@@ -100,7 +100,7 @@ class OSFMContext:
                         # Should never happen
                         continue
 
-                    log.ODM_INFO("Merging reconstruction %s" % ix_r)
+                    log.INFO("Merging reconstruction %s" % ix_r)
 
                     for camera in rec.cameras.values():
                         merged.add_camera(camera)
@@ -110,7 +110,7 @@ class OSFMContext:
                             new_point = merged.create_point(point.id, point.coordinates)
                             new_point.color = point.color
                         except RuntimeError as e:
-                            log.ODM_WARNING("Cannot merge shot id %s (%s)" % (shot.id, str(e)))
+                            log.WARNING("Cannot merge shot id %s (%s)" % (shot.id, str(e)))
                             continue
 
                     for shot in rec.shots.values():
@@ -118,7 +118,7 @@ class OSFMContext:
                         try:
                             obsdict = tracks_manager.get_shot_observations(shot.id)
                         except RuntimeError:
-                            log.ODM_WARNING("Shot id %s missing from tracks_manager!" % shot.id)
+                            log.WARNING("Shot id %s missing from tracks_manager!" % shot.id)
                             continue
                         for track_id, obs in obsdict.items():
                             if track_id in merged.points:
@@ -143,7 +143,7 @@ class OSFMContext:
                 photos = get_photos_by_band(reconstruction.multi_camera, args.primary_band)
                 if len(photos) < 1:
                     raise Exception("Not enough images in selected band %s" % args.primary_band.lower())
-                log.ODM_INFO("Reconstruction will use %s images from %s band" % (len(photos), args.primary_band.lower()))
+                log.INFO("Reconstruction will use %s images from %s band" % (len(photos), args.primary_band.lower()))
             else:
                 photos = reconstruction.photos
 
@@ -164,7 +164,7 @@ class OSFMContext:
             
             # check 0 altitude images percentage when has_alt is True
             if has_alt and num_zero_alt / len(photos) > 0.05:
-                log.ODM_WARNING("More than 5% of images have zero altitude, this might be an indicator that the images have no altitude information")
+                log.WARNING("More than 5% of images have zero altitude, this might be an indicator that the images have no altitude information")
                 has_alt = False
 
             # check for image_groups.txt (split-merge)
@@ -175,7 +175,7 @@ class OSFMContext:
             if io.file_exists(image_groups_file):
                 dst_groups_file = os.path.join(self.opensfm_project_path, "image_groups.txt")
                 io.copy(image_groups_file, dst_groups_file)
-                log.ODM_INFO("Copied %s to %s" % (image_groups_file, dst_groups_file))
+                log.INFO("Copied %s to %s" % (image_groups_file, dst_groups_file))
         
             # check for cameras
             if args.cameras:
@@ -183,9 +183,9 @@ class OSFMContext:
                     camera_overrides = camera.get_opensfm_camera_models(args.cameras)
                     with open(os.path.join(self.opensfm_project_path, "camera_models_overrides.json"), 'w') as f:
                         f.write(json.dumps(camera_overrides))
-                    log.ODM_INFO("Wrote camera_models_overrides.json to OpenSfM directory")
+                    log.INFO("Wrote camera_models_overrides.json to OpenSfM directory")
                 except Exception as e:
-                    log.ODM_WARNING("Cannot set camera_models_overrides.json: %s" % str(e))
+                    log.WARNING("Cannot set camera_models_overrides.json: %s" % str(e))
 
             # Check image masks
             masks = []
@@ -194,7 +194,7 @@ class OSFMContext:
                     masks.append((p.filename, os.path.join(images_path, p.mask)))
             
             if masks:
-                log.ODM_INFO("Found %s image masks" % len(masks))
+                log.INFO("Found %s image masks" % len(masks))
                 with open(os.path.join(self.opensfm_project_path, "mask_list.txt"), 'w') as f:
                     for fname, mask in masks:
                         f.write("{} {}\n".format(fname, mask))
@@ -215,7 +215,7 @@ class OSFMContext:
             if max_dims is not None:
                 w, h = max_dims
                 max_dim = max(w, h)
-                log.ODM_INFO("Maximum photo dimensions: %spx" % str(max_dim))
+                log.INFO("Maximum photo dimensions: %spx" % str(max_dim))
 
                 lower_limit = 320
                 upper_limit = 4480
@@ -229,9 +229,9 @@ class OSFMContext:
                 
                 factor = min(1, feature_quality_scale[args.feature_quality] * multiplier)
                 feature_process_size = min(upper_limit, max(lower_limit, int(max_dim * factor)))
-                log.ODM_INFO("Photo dimensions for feature extraction: %ipx" % feature_process_size)
+                log.INFO("Photo dimensions for feature extraction: %ipx" % feature_process_size)
             else:
-                log.ODM_WARNING("Cannot compute max image dimensions, going with defaults")
+                log.WARNING("Cannot compute max image dimensions, going with defaults")
 
             # create config file for OpenSfM
             if args.matcher_neighbors > 0:
@@ -248,7 +248,7 @@ class OSFMContext:
 
             config = [
                 "report_name: ODX",
-                "report_version: %s" % log.odm_version(),
+                "report_version: %s" % log.get_version(),
                 "use_exif_size: no",
                 "flann_algorithm: KDTREE", # more stable, faster than KMEANS
                 "feature_process_size: %s" % feature_process_size,
@@ -271,7 +271,7 @@ class OSFMContext:
                 if not reconstruction.is_georeferenced():
                     config.append("matching_order_neighbors: %s" % args.matcher_order)
                 else:
-                    log.ODM_WARNING("Georeferenced reconstruction, ignoring --matcher-order")
+                    log.WARNING("Georeferenced reconstruction, ignoring --matcher-order")
 
             if args.camera_lens != 'auto':
                 config.append("camera_projection_type: %s" % args.camera_lens.upper())
@@ -286,20 +286,20 @@ class OSFMContext:
             }
 
             if not has_gps and not 'matcher_type_is_set' in args:
-                log.ODM_INFO("No GPS information, using BOW matching by default (you can override this by setting --matcher-type explicitly)")
+                log.INFO("No GPS information, using BOW matching by default (you can override this by setting --matcher-type explicitly)")
                 matcher_type = "bow"
 
             if matcher_type == "bow":
                 # Cannot use anything other than HAHOG with BOW
                 if feature_type != "HAHOG":
-                    log.ODM_WARNING("Using BOW matching, will use HAHOG feature type, not SIFT")
+                    log.WARNING("Using BOW matching, will use HAHOG feature type, not SIFT")
                     feature_type = "HAHOG"
             
             config.append("matcher_type: %s" % osfm_matchers[matcher_type])
 
             # GPU acceleration?
             if feature_type == "SIFT":
-                log.ODM_INFO("Checking for GPU as using SIFT for extracting features")
+                log.INFO("Checking for GPU as using SIFT for extracting features")
                 if has_gpu(args) and max_dims is not None:
                     w, h = max_dims
                     if w > h:
@@ -310,16 +310,16 @@ class OSFMContext:
                         h = int(feature_process_size)
                     
                     if has_popsift_and_can_handle_texsize(w, h):
-                        log.ODM_INFO("Using GPU for extracting SIFT features")
+                        log.INFO("Using GPU for extracting SIFT features")
                         feature_type = "SIFT_GPU"
                         self.gpu_sift_feature_extraction = True
                     else:
-                        log.ODM_INFO("Using CPU for extracting SIFT features as texture size is too large or GPU SIFT is not available")
+                        log.INFO("Using CPU for extracting SIFT features as texture size is too large or GPU SIFT is not available")
             
             config.append("feature_type: %s" % feature_type)
 
             if has_alt:
-                log.ODM_INFO("Altitude data detected, enabling it for GPS alignment")
+                log.INFO("Altitude data detected, enabling it for GPS alignment")
                 config.append("use_altitude_tag: yes")
 
             gcp_path = reconstruction.gcp.gcp_path
@@ -329,7 +329,7 @@ class OSFMContext:
                 config.append("align_method: orientation_prior")
             
             if args.use_hybrid_bundle_adjustment:
-                log.ODM_INFO("Enabling hybrid bundle adjustment")
+                log.INFO("Enabling hybrid bundle adjustment")
                 config.append("bundle_interval: 100")          # Bundle after adding 'bundle_interval' cameras
                 config.append("bundle_new_points_ratio: 1.2")  # Bundle when (new points) / (bundled points) > bundle_new_points_ratio
                 config.append("local_bundle_radius: 1")        # Max image graph distance for images to be included in local bundle adjustment
@@ -348,7 +348,7 @@ class OSFMContext:
             config = config + append_config
 
             # write config file
-            log.ODM_INFO(config)
+            log.INFO(config)
             config_filename = self.get_config_file_path()
             with open(config_filename, 'w') as fout:
                 fout.write("\n".join(config))
@@ -357,7 +357,7 @@ class OSFMContext:
             if reconstruction.is_georeferenced():
                 self.write_reference_lla(reconstruction.georef.utm_east_offset, reconstruction.georef.utm_north_offset, reconstruction.georef.proj4())
         else:
-            log.ODM_WARNING("%s already exists, not rerunning OpenSfM setup" % list_path)
+            log.WARNING("%s already exists, not rerunning OpenSfM setup" % list_path)
 
     def get_config_file_path(self):
         return os.path.join(self.opensfm_project_path, 'config.yaml')
@@ -378,7 +378,7 @@ class OSFMContext:
         metadata_dir = self.path("exif")
 
         if io.dir_exists(metadata_dir) and not rerun:
-            log.ODM_WARNING("%s already exists, not rerunning photo to metadata" % metadata_dir)
+            log.WARNING("%s already exists, not rerunning photo to metadata" % metadata_dir)
             return
         
         if io.dir_exists(metadata_dir):
@@ -428,7 +428,7 @@ class OSFMContext:
                 # for various reasons, so before giving up
                 # we try to fallback to CPU
                 if hasattr(self, 'gpu_sift_feature_extraction'):
-                    log.ODM_WARNING("GPU SIFT extraction failed, maybe the graphics card is not supported? Attempting fallback to CPU")
+                    log.WARNING("GPU SIFT extraction failed, maybe the graphics card is not supported? Attempting fallback to CPU")
                     self.update_config({'feature_type': "SIFT"})
                     if os.path.exists(features_dir):
                         shutil.rmtree(features_dir)
@@ -436,7 +436,7 @@ class OSFMContext:
                 else:
                     raise e
         else:
-            log.ODM_WARNING('Detect features already done: %s exists' % features_dir)
+            log.WARNING('Detect features already done: %s exists' % features_dir)
 
         self.match_features(rerun)
 
@@ -445,12 +445,12 @@ class OSFMContext:
         if not io.dir_exists(matches_dir) or rerun:
             self.run('match_features')
         else:
-            log.ODM_WARNING('Match features already done: %s exists' % matches_dir)
+            log.WARNING('Match features already done: %s exists' % matches_dir)
 
     def align_reconstructions(self, rerun):
         alignment_file = self.path('alignment_done.txt')
         if not io.file_exists(alignment_file) or rerun:
-            log.ODM_INFO("Aligning submodels...")
+            log.INFO("Aligning submodels...")
             meta_data = metadataset.MetaDataSet(self.opensfm_project_path)
             reconstruction_shots = tools.load_reconstruction_shots(meta_data)
             transformations = tools.align_reconstructions(reconstruction_shots,
@@ -460,7 +460,7 @@ class OSFMContext:
 
             self.touch(alignment_file)
         else:
-            log.ODM_WARNING('Found a alignment done progress file in: %s' % alignment_file)
+            log.WARNING('Found a alignment done progress file in: %s' % alignment_file)
 
     def touch(self, file):
         with open(file, 'w') as fout:
@@ -476,12 +476,12 @@ class OSFMContext:
                 with open(output, 'w') as fout:
                     fout.write(json.dumps(camera.get_cameras_from_opensfm(reconstruction_file), indent=4))
             except Exception as e:
-                log.ODM_WARNING("Cannot export cameras to %s. %s." % (output, str(e)))
+                log.WARNING("Cannot export cameras to %s. %s." % (output, str(e)))
         else:
-            log.ODM_INFO("Already extracted cameras")
+            log.INFO("Already extracted cameras")
     
     def convert_and_undistort(self, rerun=False, imageFilter=None, image_list=None, runId="nominal"):
-        log.ODM_INFO("Undistorting %s ..." % self.opensfm_project_path)
+        log.INFO("Undistorting %s ..." % self.opensfm_project_path)
         done_flag_file = self.path("undistorted", "%s_done.txt" % runId)
 
         if not io.file_exists(done_flag_file) or rerun:
@@ -495,7 +495,7 @@ class OSFMContext:
             
             self.touch(done_flag_file)
         else:
-            log.ODM_WARNING("Already undistorted (%s)" % runId)
+            log.WARNING("Already undistorted (%s)" % runId)
 
     def restore_reconstruction_backup(self):
         if os.path.exists(self.recon_backup_file()):
@@ -504,13 +504,13 @@ class OSFMContext:
             if os.path.exists(self.recon_file()):
                 os.remove(self.recon_file())
             os.replace(self.recon_backup_file(), self.recon_file())
-            log.ODM_INFO("Restored reconstruction.json")
+            log.INFO("Restored reconstruction.json")
 
     def backup_reconstruction(self):
         if os.path.exists(self.recon_backup_file()):
             os.remove(self.recon_backup_file())
             
-        log.ODM_INFO("Backing up reconstruction")
+        log.INFO("Backing up reconstruction")
         shutil.copyfile(self.recon_file(), self.recon_backup_file())
 
     def recon_backup_file(self):
@@ -531,7 +531,7 @@ class OSFMContext:
             for shot_id in sids:
                 secondary_photos = p2s.get(shot_id)
                 if secondary_photos is None:
-                    log.ODM_WARNING("Cannot find secondary photos for %s" % shot_id)
+                    log.WARNING("Cannot find secondary photos for %s" % shot_id)
                     continue
 
                 for p in secondary_photos:
@@ -543,31 +543,31 @@ class OSFMContext:
 
     def update_config(self, cfg_dict):
         cfg_file = self.get_config_file_path()
-        log.ODM_INFO("Updating %s" % cfg_file)
+        log.INFO("Updating %s" % cfg_file)
         if os.path.exists(cfg_file):
             try:
                 with open(cfg_file) as fin:
                     cfg = yaml.safe_load(fin)
                 for k, v in cfg_dict.items():
                     cfg[k] = v
-                    log.ODM_INFO("%s: %s" % (k, v))
+                    log.INFO("%s: %s" % (k, v))
                 with open(cfg_file, 'w') as fout:
                     fout.write(yaml.dump(cfg, default_flow_style=False))
             except Exception as e:
-                log.ODM_WARNING("Cannot update configuration file %s: %s" % (cfg_file, str(e)))
+                log.WARNING("Cannot update configuration file %s: %s" % (cfg_file, str(e)))
         else:
-            log.ODM_WARNING("Tried to update configuration, but %s does not exist." % cfg_file)
+            log.WARNING("Tried to update configuration, but %s does not exist." % cfg_file)
 
     def export_stats(self, rerun=False):
-        log.ODM_INFO("Export reconstruction stats")
+        log.INFO("Export reconstruction stats")
         stats_path = self.path("stats", "stats.json")
         if not os.path.exists(stats_path) or rerun:
             self.run("compute_statistics --diagram_max_points 100000")
         else:
-            log.ODM_WARNING("Found existing reconstruction stats %s" % stats_path)
+            log.WARNING("Found existing reconstruction stats %s" % stats_path)
 
     def export_report(self, report_path, odm_stats, rerun=False):
-        log.ODM_INFO("Exporting report to %s" % report_path)
+        log.INFO("Exporting report to %s" % report_path)
 
         osfm_report_path = self.path("stats", "report.pdf")
         if not os.path.exists(report_path) or rerun:
@@ -581,9 +581,9 @@ class OSFMContext:
                     os.unlink(report_path)
                 shutil.move(osfm_report_path, report_path)
             else:
-                log.ODM_WARNING("Report could not be generated")
+                log.WARNING("Report could not be generated")
         else:
-            log.ODM_WARNING("Report %s already exported" % report_path)
+            log.WARNING("Report %s already exported" % report_path)
     
     def write_reference_lla(self, offset_x, offset_y, proj4):
         reference_lla = self.path("reference_lla.json")
@@ -598,7 +598,7 @@ class OSFMContext:
                 'altitude': 0.0
             }, indent=4))
         
-        log.ODM_INFO("Wrote reference_lla.json")
+        log.INFO("Wrote reference_lla.json")
 
     def ground_control_points(self, proj4):
         """
@@ -614,7 +614,7 @@ class OSFMContext:
             with open(gcp_stats_file) as f:
                 gcps_stats = json.loads(f.read())
         except:
-            log.ODM_INFO("Cannot parse %s" % gcp_stats_file)
+            log.INFO("Cannot parse %s" % gcp_stats_file)
 
         if not gcps_stats:
             return []
@@ -704,7 +704,7 @@ def get_submodel_argv(args, submodels_path = None, submodel_name = None):
                 if isinstance(args_dict[k], dict):
                     args_dict[k] = json.dumps(args_dict[k])
             except ValueError as e:
-                log.ODM_WARNING("Cannot parse/read JSON: {}".format(str(e)))
+                log.WARNING("Cannot parse/read JSON: {}".format(str(e)))
 
     # Handle crop (cannot be zero for split/merge)
     if "crop" in set_keys:
@@ -768,7 +768,7 @@ def get_submodel_paths(submodels_path, *paths):
             if os.path.exists(p):
                 result.append(p)
             else:
-                log.ODM_WARNING("Missing %s from submodel %s" % (p, f))
+                log.WARNING("Missing %s from submodel %s" % (p, f))
 
     return result
 
@@ -792,7 +792,7 @@ def get_all_submodel_paths(submodels_path, *all_paths):
             for ap in all_paths:
                 p = os.path.join(submodels_path, f, ap) 
                 if not os.path.exists(p):
-                    log.ODM_WARNING("Missing %s from submodel %s" % (p, f))
+                    log.WARNING("Missing %s from submodel %s" % (p, f))
                     all_found = False
 
             if all_found:

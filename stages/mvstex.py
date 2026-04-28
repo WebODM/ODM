@@ -18,7 +18,7 @@ class ODMMvsTexStage(types.ODM_Stage):
         max_texture_size = 8 * 1024 # default
 
         if max_dim > 8000:
-            log.ODM_INFO("Large input images (%s pixels), increasing maximum texture size." % max_dim)
+            log.INFO("Large input images (%s pixels), increasing maximum texture size." % max_dim)
             max_texture_size *= 3
 
         class nonloc:
@@ -72,7 +72,7 @@ class ODMMvsTexStage(types.ODM_Stage):
             unaligned_obj = io.related_file_path(odm_textured_model_obj, postfix="_unaligned")
 
             if not io.file_exists(odm_textured_model_obj) or self.rerun():
-                log.ODM_INFO('Writing MVS Textured file in: %s'
+                log.INFO('Writing MVS Textured file in: %s'
                               % odm_textured_model_obj)
 
                 if os.path.isfile(unaligned_obj):
@@ -112,7 +112,7 @@ class ODMMvsTexStage(types.ODM_Stage):
 
                 # mvstex creates a tmp directory, so make sure it is empty
                 if io.dir_exists(mvs_tmp_dir):
-                    log.ODM_INFO("Removing old tmp directory {}".format(mvs_tmp_dir))
+                    log.INFO("Removing old tmp directory {}".format(mvs_tmp_dir))
                     shutil.rmtree(mvs_tmp_dir)
 
                 # run texturing binary
@@ -130,15 +130,15 @@ class ODMMvsTexStage(types.ODM_Stage):
                 if r['primary'] and (not r['nadir'] or args.skip_3dmodel):
                     # Single material?
                     if args.texturing_single_material:
-                        log.ODM_INFO("Packing to single material")
+                        log.INFO("Packing to single material")
 
                         packed_dir = os.path.join(r['out_dir'], 'packed')
                         if io.dir_exists(packed_dir):
-                            log.ODM_INFO("Removing old packed directory {}".format(packed_dir))
+                            log.INFO("Removing old packed directory {}".format(packed_dir))
                             shutil.rmtree(packed_dir)
                         
                         try:
-                            obj_pack(os.path.join(r['out_dir'], tree.odm_textured_model_obj), packed_dir, _info=log.ODM_INFO)
+                            obj_pack(os.path.join(r['out_dir'], tree.odm_textured_model_obj), packed_dir, _info=log.INFO)
                             
                             # Move packed/* into texturing folder
                             system.delete_files(r['out_dir'], (".vec", ))
@@ -146,7 +146,7 @@ class ODMMvsTexStage(types.ODM_Stage):
                             if os.path.isdir(packed_dir):
                                 os.rmdir(packed_dir)
                         except Exception as e:
-                            log.ODM_WARNING(str(e))
+                            log.WARNING(str(e))
 
 
                 # Backward compatibility: copy odm_textured_model_geo.mtl to odm_textured_model.mtl
@@ -161,7 +161,7 @@ class ODMMvsTexStage(types.ODM_Stage):
                 progress += progress_per_run
                 self.update_progress(progress)
             else:
-                log.ODM_WARNING('Found a valid texture file in: %s'
+                log.WARNING('Found a valid texture file in: %s'
                                 % odm_textured_model_obj)
         
         if args.optimize_disk_space:

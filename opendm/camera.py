@@ -64,7 +64,7 @@ def get_opensfm_camera_models(cameras):
             for k in keys:
                 if not k in valid_fields:
                     camera.pop(k)
-                    log.ODM_WARNING("Invalid camera key ignored: %s" % k)
+                    log.WARNING("Invalid camera key ignored: %s" % k)
 
             result[osfm_camera_id] = camera
         return result

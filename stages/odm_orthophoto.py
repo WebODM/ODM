@@ -24,7 +24,7 @@ class ODMOrthoPhotoStage(types.ODM_Stage):
         system.mkdir_p(tree.odm_orthophoto)
 
         if args.skip_orthophoto:
-            log.ODM_WARNING("--skip-orthophoto is set, no orthophoto will be generated")
+            log.WARNING("--skip-orthophoto is set, no orthophoto will be generated")
             return
 
         if not io.file_exists(tree.odm_orthophoto_tif) or self.rerun():
@@ -103,7 +103,7 @@ class ODMOrthoPhotoStage(types.ODM_Stage):
                 kwargs['ortho'] = tree.odm_orthophoto_tif # Render directly to final file
 
             # run odm_orthophoto
-            log.ODM_INFO('Creating GeoTIFF')
+            log.INFO('Creating GeoTIFF')
             system.run('"{odm_ortho_bin}" -inputFiles {models} '
                        '-logFile "{log}" -outputFile "{ortho}" -resolution {res} -verbose '
                        '-outputCornerFile "{corners}" {bands} {depth_idx} {inpaint} '
@@ -130,7 +130,7 @@ class ODMOrthoPhotoStage(types.ODM_Stage):
                                             os.path.join(tree.odm_orthophoto, "odm_orthophoto_cut.tif"),
                                             blend_distance=20, only_max_coords_feature=True)
                     else:
-                        log.ODM_INFO("Not a submodel run, skipping mask raster generation")
+                        log.INFO("Not a submodel run, skipping mask raster generation")
 
                 orthophoto.post_orthophoto_steps(args, bounds_file_path, tree.odm_orthophoto_tif, tree.orthophoto_tiles, resolution, 
                     reconstruction, tree, not outputs["large"])
@@ -145,12 +145,12 @@ class ODMOrthoPhotoStage(types.ODM_Stage):
             else:
                 if io.file_exists(tree.odm_orthophoto_render):
                     pseudogeo.add_pseudo_georeferencing(tree.odm_orthophoto_render)
-                    log.ODM_INFO("Renaming %s --> %s" % (tree.odm_orthophoto_render, tree.odm_orthophoto_tif))
+                    log.INFO("Renaming %s --> %s" % (tree.odm_orthophoto_render, tree.odm_orthophoto_tif))
                     os.replace(tree.odm_orthophoto_render, tree.odm_orthophoto_tif)
                 else:
-                    log.ODM_WARNING("Could not generate an orthophoto (it did not render)")
+                    log.WARNING("Could not generate an orthophoto (it did not render)")
         else:
-            log.ODM_WARNING('Found a valid orthophoto in: %s' % tree.odm_orthophoto_tif)
+            log.WARNING('Found a valid orthophoto in: %s' % tree.odm_orthophoto_tif)
 
         if io.file_exists(tree.odm_orthophoto_render):
             os.remove(tree.odm_orthophoto_render)

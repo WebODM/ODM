@@ -16,10 +16,10 @@ def has_popsift_and_can_handle_texsize(width, height):
         compute_major, compute_minor = get_cuda_compute_version(0)
         if compute_major < 3 or (compute_major == 3 and compute_minor < 5):
             # Not supported
-            log.ODM_INFO("CUDA compute platform is not supported (detected: %s.%s but we need at least 3.5)" % (compute_major, compute_minor))
+            log.INFO("CUDA compute platform is not supported (detected: %s.%s but we need at least 3.5)" % (compute_major, compute_minor))
             return False
     except Exception as e:
-        log.ODM_WARNING(str(e))
+        log.WARNING(str(e))
         return False
 
 @lru_cache(maxsize=None)
@@ -60,24 +60,24 @@ def get_cuda_compute_version(device_id = 0):
 
 def has_gpu(args):
     if gpu_disabled_by_user_env():
-        log.ODM_INFO("Disabling GPU features (ODM_NO_GPU is set)")
+        log.INFO("Disabling GPU features (ODM_NO_GPU is set)")
         return False
     if args.no_gpu:
-        log.ODM_INFO("Disabling GPU features (--no-gpu is set)")
+        log.INFO("Disabling GPU features (--no-gpu is set)")
         return False
 
     if sys.platform == 'win32':
         nvcuda_path = os.path.join(os.environ.get('SYSTEMROOT'), 'system32', 'nvcuda.dll')
         if os.path.isfile(nvcuda_path):
-            log.ODM_INFO("CUDA drivers detected")
+            log.INFO("CUDA drivers detected")
             return True
         else:
-            log.ODM_INFO("No CUDA drivers detected")
+            log.INFO("No CUDA drivers detected")
             return False
     else:
         if shutil.which('nvidia-smi') is not None:
-            log.ODM_INFO("nvidia-smi detected")
+            log.INFO("nvidia-smi detected")
             return True
         else:
-            log.ODM_INFO("No nvidia-smi detected")
+            log.INFO("No nvidia-smi detected")
             return False

@@ -23,7 +23,7 @@ def match_single(regexes, line, dtype=int):
                 res = match.group(1)
                 return transform(res)
     except Exception as e:
-        log.ODM_WARNING("Cannot parse SRT line \"%s\": %s", (line, str(e)))
+        log.WARNING("Cannot parse SRT line \"%s\": %s", (line, str(e)))
 
     return None
 

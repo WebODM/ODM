@@ -62,7 +62,7 @@ class ODM_Reconstruction(object):
             filter_missing = False
             for band in band_photos:
                 if len(band_photos[band]) < img_per_band:
-                    log.ODM_WARNING("Multi-camera setup detected, but band \"%s\" (identified from \"%s\") has only %s images (instead of %s), perhaps images are missing or are corrupted." % (band, band_photos[band][0].filename, len(band_photos[band]), len(band_photos[max_band_name])))
+                    log.WARNING("Multi-camera setup detected, but band \"%s\" (identified from \"%s\") has only %s images (instead of %s), perhaps images are missing or are corrupted." % (band, band_photos[band][0].filename, len(band_photos[band]), len(band_photos[max_band_name])))
                     filter_missing = True
             
             if filter_missing:
@@ -78,13 +78,13 @@ class ODM_Reconstruction(object):
                     if len(p2s[filename]) < max_files_per_band:
                         photos_to_remove = p2s[filename] + [p for p in self.photos if p.filename == filename]
                         for photo in photos_to_remove:
-                            log.ODM_WARNING("Excluding %s" % photo.filename)
+                            log.WARNING("Excluding %s" % photo.filename)
 
                             self.photos = [p for p in self.photos if p != photo]
                             for i in range(len(mc)):
                                 mc[i]['photos'] = [p for p in mc[i]['photos'] if p != photo]
                 
-                log.ODM_INFO("New image count: %s" % len(self.photos))
+                log.INFO("New image count: %s" % len(self.photos))
 
             # We enforce a normalized band order for all bands that we can identify
             # and rely on the manufacturer's band_indexes as a fallback for all others
@@ -115,13 +115,13 @@ class ODM_Reconstruction(object):
 
             for band_name in band_indexes:
                 if band_name.upper() not in normalized_band_order:
-                    log.ODM_WARNING(f"Cannot identify order for {band_name} band, using manufacturer suggested index instead")
+                    log.WARNING(f"Cannot identify order for {band_name} band, using manufacturer suggested index instead")
 
             # Sort
             mc.sort(key=lambda x: normalized_band_order.get(x['name'].upper(), '9' + band_indexes[x['name']]))
 
             for c, d in enumerate(mc):
-                log.ODM_INFO(f"Band {c + 1}: {d['name']}")
+                log.INFO(f"Band {c + 1}: {d['name']}")
             
             return mc
 
@@ -156,7 +156,7 @@ class ODM_Reconstruction(object):
                             bands_to_remove.append(bands[b])
 
             if len(bands_to_remove) > 0:
-                log.ODM_WARNING("Redundant bands detected, probably because RGB images are mixed with single band images. We will trim some bands as needed")
+                log.WARNING("Redundant bands detected, probably because RGB images are mixed with single band images. We will trim some bands as needed")
 
                 for band_to_remove in bands_to_remove:
                     self.multi_camera = [b for b in self.multi_camera if b['name'] != band_to_remove]
@@ -164,7 +164,7 @@ class ODM_Reconstruction(object):
                     self.photos = [p for p in self.photos if p.band_name != band_to_remove]
                     photos_after = len(self.photos)
 
-                    log.ODM_WARNING("Skipping %s band (%s images)" % (band_to_remove, photos_before - photos_after))
+                    log.WARNING("Skipping %s band (%s images)" % (band_to_remove, photos_before - photos_after))
 
     def is_georeferenced(self):
         return self.georef is not None
@@ -197,10 +197,10 @@ class ODM_Reconstruction(object):
                     raise RuntimeError("Could not project GCP file to UTM. Please double check your GCP file for mistakes.")
                 
                 for re in rejected_entries:
-                    log.ODM_WARNING("GCP line ignored (image not found): %s" % str(re))
+                    log.WARNING("GCP line ignored (image not found): %s" % str(re))
                 
                 if utm_gcp.entries_count() > 0:
-                    log.ODM_INFO("%s GCP points will be used for georeferencing" % utm_gcp.entries_count())
+                    log.INFO("%s GCP points will be used for georeferencing" % utm_gcp.entries_count())
                 else:
                     raise RuntimeError("A GCP file was provided, but no valid GCP entries could be used. Note that the GCP file is case sensitive (\".JPG\" is not the same as \".jpg\").")
                 
@@ -217,18 +217,18 @@ class ODM_Reconstruction(object):
                     coords_header = gcp.wgs84_utm_zone()
                     f.write(coords_header + "\n")
                     f.write("{} {}\n".format(x_off, y_off))
-                    log.ODM_INFO("Generated coords file from GCP: %s" % coords_header)
+                    log.INFO("Generated coords file from GCP: %s" % coords_header)
                 
                 # Deprecated: This is mostly for backward compatibility and should be
                 # be removed at some point
                 shutil.copyfile(output_coords_file, output_model_txt_geo)
-                log.ODM_INFO("Wrote %s" % output_model_txt_geo)
+                log.INFO("Wrote %s" % output_model_txt_geo)
             else:
-                log.ODM_WARNING("GCP file does not exist: %s" % gcp_file)
+                log.WARNING("GCP file does not exist: %s" % gcp_file)
                 return
         else:
-            log.ODM_INFO("Coordinates file already exist: %s" % output_coords_file)
-            log.ODM_INFO("GCP file already exist: %s" % output_gcp_file)
+            log.INFO("Coordinates file already exist: %s" % output_coords_file)
+            log.INFO("GCP file already exist: %s" % output_gcp_file)
             self.gcp = GCPFile(output_gcp_file)
         
         self.georef = ODM_GeoRef.FromCoordsFile(output_coords_file)
@@ -239,7 +239,7 @@ class ODM_Reconstruction(object):
             if not io.file_exists(output_coords_file) or rerun:
                 location.extract_utm_coords(self.photos, images_path, output_coords_file)
             else:
-                log.ODM_INFO("Coordinates file already exist: %s" % output_coords_file)
+                log.INFO("Coordinates file already exist: %s" % output_coords_file)
             
             # Deprecated: This is mostly for backward compatibility and should be
             # be removed at some point
@@ -249,11 +249,11 @@ class ODM_Reconstruction(object):
                         w.write(f.readline()) # CRS
                         w.write(f.readline()) # Offset
             else:
-                log.ODM_INFO("Model geo file already exist: %s" % output_model_txt_geo)
+                log.INFO("Model geo file already exist: %s" % output_model_txt_geo)
             
             self.georef = ODM_GeoRef.FromCoordsFile(output_coords_file)
         except:
-            log.ODM_WARNING('Could not generate coordinates file. The orthophoto will not be georeferenced.')
+            log.WARNING('Could not generate coordinates file. The orthophoto will not be georeferenced.')
 
         self.gcp = GCPFile(None)
         return self.georef
@@ -285,7 +285,7 @@ class ODM_GeoRef(object):
     def FromCoordsFile(coords_file):
         # check for coordinate file existence
         if not io.file_exists(coords_file):
-            log.ODM_WARNING('Could not find file %s' % coords_file)
+            log.WARNING('Could not find file %s' % coords_file)
             return
 
         srs = None
@@ -439,7 +439,7 @@ class ODM_Stage:
         start_time = system.now_raw()
         log.logger.log_json_stage_run(self.name, start_time)
 
-        log.ODM_INFO('Running %s stage' % self.name)
+        log.INFO('Running %s stage' % self.name)
         
         self.process(self.args, outputs)
 
@@ -450,14 +450,14 @@ class ODM_Stage:
         try:
             system.benchmark(start_time, outputs['tree'].benchmarking, self.name)
         except Exception as e:
-            log.ODM_WARNING("Cannot write benchmark file: %s" % str(e))
+            log.WARNING("Cannot write benchmark file: %s" % str(e))
 
-        log.ODM_INFO('Finished %s stage' % self.name)
+        log.INFO('Finished %s stage' % self.name)
         self.update_progress_end()
 
         # Last stage?
         if self.args.end_with == self.name or self.args.rerun == self.name:
-            log.ODM_INFO("No more stages to run")
+            log.INFO("No more stages to run")
             return
 
         # Run next stage?

@@ -30,7 +30,7 @@ def get_orthophoto_vars(args):
     }
 
 def build_overviews(orthophoto_file):
-    log.ODM_INFO("Building Overviews")
+    log.INFO("Building Overviews")
     kwargs = {'orthophoto': orthophoto_file}
     
     # Run gdaladdo
@@ -83,7 +83,7 @@ def generate_png(orthophoto_file, output_file=None, outsize=None):
         
         gtif = None
     except Exception as e:
-        log.ODM_WARNING("Cannot read orthophoto information for PNG generation: %s" % str(e))
+        log.WARNING("Cannot read orthophoto information for PNG generation: %s" % str(e))
 
     if outsize is not None:
         params.append("-outsize %s 0" % outsize)
@@ -148,9 +148,9 @@ def generate_extent_polygon(orthophoto_file):
         feature = None
         ds = None
         gtif = None
-        log.ODM_INFO("Wrote %s" % output_file)
+        log.INFO("Wrote %s" % output_file)
     except Exception as e:
-        log.ODM_WARNING("Cannot create extent layer for %s: %s" % (orthophoto_file, str(e)))
+        log.WARNING("Cannot create extent layer for %s: %s" % (orthophoto_file, str(e)))
 
 
 def generate_tfw(orthophoto_file):
@@ -164,9 +164,9 @@ def generate_tfw(orthophoto_file):
                 # rasterio affine values taken by
                 # https://mharty3.github.io/til/GIS/raster-affine-transforms/
                 f.write("\n".join([str(v) for v in [t.a, t.d, t.b, t.e, t.c, t.f]]) + "\n")
-            log.ODM_INFO("Wrote %s" % tfw_file)
+            log.INFO("Wrote %s" % tfw_file)
     except Exception as e:
-        log.ODM_WARNING("Cannot create .tfw for %s: %s" % (orthophoto_file, str(e)))
+        log.WARNING("Cannot create .tfw for %s: %s" % (orthophoto_file, str(e)))
 
 
 def post_orthophoto_steps(args, bounds_file_path, orthophoto_file, orthophoto_tiles_dir, resolution, reconstruction, tree, embed_gcp_meta=False):
@@ -195,14 +195,14 @@ def post_orthophoto_steps(args, bounds_file_path, orthophoto_file, orthophoto_ti
 
 def compute_mask_raster(input_raster, vector_mask, output_raster, blend_distance=20, only_max_coords_feature=False):
     if not os.path.exists(input_raster):
-        log.ODM_WARNING("Cannot mask raster, %s does not exist" % input_raster)
+        log.WARNING("Cannot mask raster, %s does not exist" % input_raster)
         return
     
     if not os.path.exists(vector_mask):
-        log.ODM_WARNING("Cannot mask raster, %s does not exist" % vector_mask)
+        log.WARNING("Cannot mask raster, %s does not exist" % vector_mask)
         return
 
-    log.ODM_INFO("Computing mask raster: %s" % output_raster)
+    log.INFO("Computing mask raster: %s" % output_raster)
 
     with rasterio.open(input_raster, 'r') as rast:
         with fiona.open(vector_mask) as src:
@@ -232,7 +232,7 @@ def compute_mask_raster(input_raster, vector_mask, output_raster, blend_distance
                     dist_t[dist_t > blend_distance] = 1
                     np.multiply(alpha_band, dist_t, out=alpha_band, casting="unsafe")
                 else:
-                    log.ODM_WARNING("%s does not have an alpha band, cannot blend cutline!" % input_raster)
+                    log.WARNING("%s does not have an alpha band, cannot blend cutline!" % input_raster)
 
             with rasterio.open(output_raster, 'w', BIGTIFF="IF_SAFER", **rast.profile) as dst:
                 dst.colorinterp = rast.colorinterp
@@ -242,10 +242,10 @@ def compute_mask_raster(input_raster, vector_mask, output_raster, blend_distance
 
 def feather_raster(input_raster, output_raster, blend_distance=20):
     if not os.path.exists(input_raster):
-        log.ODM_WARNING("Cannot feather raster, %s does not exist" % input_raster)
+        log.WARNING("Cannot feather raster, %s does not exist" % input_raster)
         return
 
-    log.ODM_INFO("Computing feather raster: %s" % output_raster)
+    log.INFO("Computing feather raster: %s" % output_raster)
     
     with rasterio.open(input_raster, 'r') as rast:
         out_image = rast.read()
@@ -257,7 +257,7 @@ def feather_raster(input_raster, output_raster, blend_distance=20):
                 dist_t[dist_t > blend_distance] = 1
                 np.multiply(alpha_band, dist_t, out=alpha_band, casting="unsafe")
             else:
-                log.ODM_WARNING("%s does not have an alpha band, cannot feather raster!" % input_raster)
+                log.WARNING("%s does not have an alpha band, cannot feather raster!" % input_raster)
 
         with rasterio.open(output_raster, 'w', BIGTIFF="IF_SAFER", **rast.profile) as dst:
             dst.colorinterp = rast.colorinterp
@@ -276,15 +276,15 @@ def merge(input_ortho_and_ortho_cuts, output_orthophoto, orthophoto_vars={}):
 
     for o, c in input_ortho_and_ortho_cuts:
         if not io.file_exists(o):
-            log.ODM_WARNING("%s does not exist. Will skip from merged orthophoto." % o)
+            log.WARNING("%s does not exist. Will skip from merged orthophoto." % o)
             continue
         if not io.file_exists(c):
-            log.ODM_WARNING("%s does not exist. Will skip from merged orthophoto." % c)
+            log.WARNING("%s does not exist. Will skip from merged orthophoto." % c)
             continue
         inputs.append((o, c))
 
     if len(inputs) == 0:
-        log.ODM_WARNING("No input orthophotos, skipping merge.")
+        log.WARNING("No input orthophotos, skipping merge.")
         return
 
     with rasterio.open(inputs[0][0]) as first:
@@ -294,7 +294,7 @@ def merge(input_ortho_and_ortho_cuts, output_orthophoto, orthophoto_vars={}):
         num_bands = first.meta['count'] - 1 # minus alpha
         colorinterp = first.colorinterp
 
-    log.ODM_INFO("%s valid orthophoto rasters to merge" % len(inputs))
+    log.INFO("%s valid orthophoto rasters to merge" % len(inputs))
     sources = [(rasterio.open(o), rasterio.open(c)) for o,c in inputs]
 
     # scan input files.
@@ -308,7 +308,7 @@ def merge(input_ortho_and_ortho_cuts, output_orthophoto, orthophoto_vars={}):
         if src.profile["count"] < 2:
             raise ValueError("Inputs must be at least 2-band rasters")
     dst_w, dst_s, dst_e, dst_n = min(xs), min(ys), max(xs), max(ys)
-    log.ODM_INFO("Output bounds: %r %r %r %r" % (dst_w, dst_s, dst_e, dst_n))
+    log.INFO("Output bounds: %r %r %r %r" % (dst_w, dst_s, dst_e, dst_n))
 
     output_transform = Affine.translation(dst_w, dst_n)
     output_transform *= Affine.scale(res[0], -res[1])
@@ -320,8 +320,8 @@ def merge(input_ortho_and_ortho_cuts, output_orthophoto, orthophoto_vars={}):
 
     # Adjust bounds to fit.
     dst_e, dst_s = output_transform * (output_width, output_height)
-    log.ODM_INFO("Output width: %d, height: %d" % (output_width, output_height))
-    log.ODM_INFO("Adjusted bounds: %r %r %r %r" % (dst_w, dst_s, dst_e, dst_n))
+    log.INFO("Output width: %d, height: %d" % (output_width, output_height))
+    log.INFO("Adjusted bounds: %r %r %r %r" % (dst_w, dst_s, dst_e, dst_n))
 
     profile["transform"] = output_transform
     profile["height"] = output_height

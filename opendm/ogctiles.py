@@ -13,14 +13,14 @@ from shapely.geometry import shape
 
 def build_textured_model(input_obj, output_path, reference_lla = None, model_bounds_file=None, rerun=False):
     if not os.path.isfile(input_obj):
-        log.ODM_WARNING("No input OBJ file to process")
+        log.WARNING("No input OBJ file to process")
         return
 
     if rerun and io.dir_exists(output_path):
-        log.ODM_WARNING("Removing previous 3D tiles directory: %s" % output_path)
+        log.WARNING("Removing previous 3D tiles directory: %s" % output_path)
         shutil.rmtree(output_path)
 
-    log.ODM_INFO("Generating OGC 3D Tiles textured model")
+    log.INFO("Generating OGC 3D Tiles textured model")
     lat = lon = alt = 0
     
     # Read reference_lla.json (if provided)
@@ -32,7 +32,7 @@ def build_textured_model(input_obj, output_path, reference_lla = None, model_bou
                 lon = reference_lla['longitude']
                 alt = reference_lla['altitude']
         except Exception as e:
-            log.ODM_WARNING("Cannot read %s: %s" % (reference_lla, str(e)))
+            log.WARNING("Cannot read %s: %s" % (reference_lla, str(e)))
 
     # Read model bounds (if provided)
     divisions = 1 # default
@@ -44,16 +44,16 @@ def build_textured_model(input_obj, output_path, reference_lla = None, model_bou
                 if len(f) == 1:
                     poly = shape(f[1]['geometry'])
                     area = poly.area
-                    log.ODM_INFO("Approximate area: %s m^2" % round(area, 2))
+                    log.INFO("Approximate area: %s m^2" % round(area, 2))
 
                     if area < DIV_THRESHOLD:
                         divisions = 0
                     else:
                         divisions = math.ceil(math.log((area / DIV_THRESHOLD), 4))
                 else:
-                    log.ODM_WARNING("Invalid boundary file: %s" % model_bounds_file)
+                    log.WARNING("Invalid boundary file: %s" % model_bounds_file)
         except Exception as e:
-            log.ODM_WARNING("Cannot read %s: %s" % (model_bounds_file, str(e)))
+            log.WARNING("Cannot read %s: %s" % (model_bounds_file, str(e)))
 
     try:
         kwargs = {
@@ -67,18 +67,18 @@ def build_textured_model(input_obj, output_path, reference_lla = None, model_bou
         system.run('Obj2Tiles "{input}" "{output}" --divisions {divisions} --lat {lat} --lon {lon} --alt {alt} '.format(**kwargs))
 
     except Exception as e:
-        log.ODM_WARNING("Cannot build 3D tiles textured model: %s" % str(e))
+        log.WARNING("Cannot build 3D tiles textured model: %s" % str(e))
 
 def build_pointcloud(input_pointcloud, output_path, max_concurrency, rerun=False):
     if not os.path.isfile(input_pointcloud):
-        log.ODM_WARNING("No input point cloud file to process")
+        log.WARNING("No input point cloud file to process")
         return
 
     if rerun and io.dir_exists(output_path):
-        log.ODM_WARNING("Removing previous 3D tiles directory: %s" % output_path)
+        log.WARNING("Removing previous 3D tiles directory: %s" % output_path)
         shutil.rmtree(output_path)
 
-    log.ODM_INFO("Generating OGC 3D Tiles point cloud")
+    log.INFO("Generating OGC 3D Tiles point cloud")
     
     try:
         if not os.path.isdir(output_path):
@@ -99,7 +99,7 @@ def build_pointcloud(input_pointcloud, output_path, max_concurrency, rerun=False
             if os.path.isdir(d):
                 shutil.rmtree(d)
     except Exception as e:
-        log.ODM_WARNING("Cannot build 3D tiles point cloud: %s" % str(e))
+        log.WARNING("Cannot build 3D tiles point cloud: %s" % str(e))
 
 
 def build_3dtiles(args, tree, reconstruction, rerun=False):
@@ -125,11 +125,11 @@ def build_3dtiles(args, tree, reconstruction, rerun=False):
 
         build_textured_model(input_obj, model_output_path, reference_lla, model_bounds_file, rerun)
     else:
-        log.ODM_WARNING("OGC 3D Tiles model %s already generated" % model_output_path)
+        log.WARNING("OGC 3D Tiles model %s already generated" % model_output_path)
 
     # Point cloud
     
     if not os.path.isdir(pointcloud_output_path) or rerun:
         build_pointcloud(tree.odm_georeferencing_model_laz, pointcloud_output_path, args.max_concurrency, rerun)
     else:
-        log.ODM_WARNING("OGC 3D Tiles model %s already generated" % model_output_path)
+        log.WARNING("OGC 3D Tiles model %s already generated" % model_output_path)

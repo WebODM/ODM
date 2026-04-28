@@ -42,13 +42,13 @@ def extract_raw_thermal_image_data(image_path):
                     raise Exception("Invalid JSON (not a list)")
 
         except Exception as e:
-            log.ODM_WARNING("Cannot extract tags using exiftool: %s" % str(e))
+            log.WARNING("Cannot extract tags using exiftool: %s" % str(e))
             return {}, None
         finally:
             if os.path.isfile(tmp_file_path):
                 os.remove(tmp_file_path)
     except Exception as e:
-        log.ODM_WARNING("Cannot create temporary file: %s" % str(e))
+        log.WARNING("Cannot create temporary file: %s" % str(e))
         return {}, None
 
 def unit(unit):
@@ -58,7 +58,7 @@ def unit(unit):
         elif isinstance(v, str):
             if not v[-1].isnumeric():
                 if v[-1].upper() != unit.upper():
-                    log.ODM_WARNING("Assuming %s is in %s" % (v, unit))
+                    log.WARNING("Assuming %s is in %s" % (v, unit))
                 return float(v[:-1])
             else:
                 return float(v)

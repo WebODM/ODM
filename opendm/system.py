@@ -40,19 +40,19 @@ def remove_cleanup_callback(func):
     try:
         cleanup_callbacks.remove(func)
     except ValueError as e:
-        log.ODM_EXCEPTION("Tried to remove %s from cleanup_callbacks but got: %s" % (str(func), str(e)))
+        log.EXCEPTION("Tried to remove %s from cleanup_callbacks but got: %s" % (str(func), str(e)))
 
 def exit_gracefully():
     global running_subprocesses
     global cleanup_callbacks
 
-    log.ODM_WARNING("Caught TERM/INT signal, attempting to exit gracefully...")
+    log.WARNING("Caught TERM/INT signal, attempting to exit gracefully...")
 
     for cb in cleanup_callbacks:
         cb()
 
     for sp in running_subprocesses:
-        log.ODM_WARNING("Sending TERM signal to PID %s..." % sp.pid)
+        log.WARNING("Sending TERM signal to PID %s..." % sp.pid)
         if sys.platform == 'win32':
             os.kill(sp.pid, signal.CTRL_C_EVENT)
         else:
@@ -71,7 +71,7 @@ def run(cmd, env_paths=[context.superbuild_bin_path], env_vars={}, packages_path
     global running_subprocesses
 
     if not quiet:
-        log.ODM_INFO('running %s' % cmd)
+        log.INFO('running %s' % cmd)
     env = os.environ.copy()
 
     sep = ":"
