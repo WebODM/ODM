@@ -18,9 +18,9 @@ def create_25dmesh(inPointCloud, outMesh, radius_steps=["0.05"], dsm_resolution=
     if os.path.exists(tmp_directory):
         shutil.rmtree(tmp_directory)
     os.mkdir(tmp_directory)
-    log.ODM_INFO('Created temporary directory: %s' % tmp_directory)
+    log.INFO('Created temporary directory: %s' % tmp_directory)
 
-    log.ODM_INFO('Creating DSM for 2.5D mesh')
+    log.INFO('Creating DSM for 2.5D mesh')
 
     commands.create_dem(
             inPointCloud,
@@ -54,7 +54,7 @@ def create_25dmesh(inPointCloud, outMesh, radius_steps=["0.05"], dsm_resolution=
 
 
 def dem_to_points(inGeotiff, outPointCloud):
-    log.ODM_INFO('Sampling points from DSM: %s' % inGeotiff)
+    log.INFO('Sampling points from DSM: %s' % inGeotiff)
 
     kwargs = {
         'bin': context.dem2points_path,
@@ -73,7 +73,7 @@ def dem_to_points(inGeotiff, outPointCloud):
 
 
 def dem_to_mesh_gridded(inGeotiff, outMesh, maxVertexCount, maxConcurrency=1):
-    log.ODM_INFO('Creating mesh from DSM: %s' % inGeotiff)
+    log.INFO('Creating mesh from DSM: %s' % inGeotiff)
 
     mesh_path, mesh_filename = os.path.split(outMesh)
     # mesh_path = path/to
@@ -107,7 +107,7 @@ def dem_to_mesh_gridded(inGeotiff, outMesh, maxVertexCount, maxConcurrency=1):
         except Exception as e:
             maxConcurrency = math.floor(maxConcurrency / 2)
             if maxConcurrency >= 1:
-                log.ODM_WARNING("dem2mesh failed, retrying with lower concurrency (%s) in case this is a memory issue" % maxConcurrency)
+                log.WARNING("dem2mesh failed, retrying with lower concurrency (%s) in case this is a memory issue" % maxConcurrency)
             else:
                 raise e
 
@@ -149,7 +149,7 @@ def screened_poisson_reconstruction(inPointCloud, outMesh, depth = 8, samples = 
     
     # Since PoissonRecon has some kind of a race condition on ppc64el, and this helps...
     if platform.machine() == 'ppc64le':
-        log.ODM_WARNING("ppc64le platform detected, forcing single-threaded operation for PoissonRecon")
+        log.WARNING("ppc64le platform detected, forcing single-threaded operation for PoissonRecon")
         threads = 1
 
     while True:
@@ -174,7 +174,7 @@ def screened_poisson_reconstruction(inPointCloud, outMesh, depth = 8, samples = 
                     '{parallel} '
                     '--confidence'.format(**poissonReconArgs), env_vars={'OMP_NUM_THREADS': int(threads)})
         except Exception as e:
-            log.ODM_WARNING(str(e))
+            log.WARNING(str(e))
             
         if os.path.isfile(outMeshDirty):
             break # Done!
@@ -187,7 +187,7 @@ def screened_poisson_reconstruction(inPointCloud, outMesh, depth = 8, samples = 
             if threads < 1:
                 break
             else:
-                log.ODM_WARNING("PoissonRecon failed with %s threads, let's retry with %s..." % (threads * 2, threads))
+                log.WARNING("PoissonRecon failed with %s threads, let's retry with %s..." % (threads * 2, threads))
 
 
     # Cleanup and reduce vertex count if necessary

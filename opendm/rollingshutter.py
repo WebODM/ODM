@@ -83,17 +83,17 @@ def get_rolling_shutter_readout(photo, override_value=0):
         elif callable(rsd):
             val = float(rsd(photo))
         else:
-            log.ODM_WARNING("Invalid rolling shutter calibration entry, returning default of %sms" % DEFAULT_RS_READOUT)
+            log.WARNING("Invalid rolling shutter calibration entry, returning default of %sms" % DEFAULT_RS_READOUT)
 
         if not key in info_db_found:
-            log.ODM_INFO("Rolling shutter profile for \"%s %s\" selected, using %sms as --rolling-shutter-readout." % (make, model, val))
+            log.INFO("Rolling shutter profile for \"%s %s\" selected, using %sms as --rolling-shutter-readout." % (make, model, val))
             info_db_found[key] = True
         
         return val
     else:
         # Warn once
         if not key in warn_db_missing:
-            log.ODM_WARNING("Rolling shutter readout time for \"%s %s\" is not in our database, using default of %sms which might be incorrect. Use --rolling-shutter-readout to set an actual value (see https://github.com/WebODM/RSCalibration for instructions on how to calculate this value)" % (make, model, DEFAULT_RS_READOUT))
+            log.WARNING("Rolling shutter readout time for \"%s %s\" is not in our database, using default of %sms which might be incorrect. Use --rolling-shutter-readout to set an actual value (see https://github.com/WebODM/RSCalibration for instructions on how to calculate this value)" % (make, model, DEFAULT_RS_READOUT))
             warn_db_missing[key] = True
         return float(DEFAULT_RS_READOUT)
 

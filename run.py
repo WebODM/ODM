@@ -22,32 +22,32 @@ from stages.odm_app import ODMApp
 if __name__ == '__main__':
     args = config.config()
 
-    log.ODM_INFO('Initializing ODX %s - %s' % (log.odm_version(), system.now()))
+    log.INFO('Initializing ODX %s - %s' % (log.get_version(), system.now()))
 
     progressbc.set_project_name(args.name)
     args.project_path = os.path.join(args.project_path, args.name)
 
     if not io.dir_exists(args.project_path):
-        log.ODM_ERROR('Directory %s does not exist.' % args.name)
+        log.ERROR('Directory %s does not exist.' % args.name)
         exit(1)
 
     opts_json = os.path.join(args.project_path, "options.json")
     auto_rerun_stage, opts_diff = find_rerun_stage(opts_json, args, config.rerun_stages, config.processopts)
     if auto_rerun_stage is not None and len(auto_rerun_stage) > 0:
-        log.ODM_INFO("Rerunning from: %s" % auto_rerun_stage[0])
+        log.INFO("Rerunning from: %s" % auto_rerun_stage[0])
         args.rerun_from = auto_rerun_stage
 
     # Print args
     args_dict = args_to_dict(args)
-    log.ODM_INFO('==============')
+    log.INFO('==============')
     for k in args_dict.keys():
-        log.ODM_INFO('%s: %s%s' % (k, args_dict[k], ' [changed]' if k in opts_diff else ''))
-    log.ODM_INFO('==============')
+        log.INFO('%s: %s%s' % (k, args_dict[k], ' [changed]' if k in opts_diff else ''))
+    log.INFO('==============')
     
 
     # If user asks to rerun everything, delete all of the existing progress directories.
     if args.rerun_all:
-        log.ODM_INFO("Rerun all -- Removing old data")
+        log.INFO("Rerun all -- Removing old data")
         for d in [os.path.join(args.project_path, p) for p in get_processing_results_paths()] + [
                   os.path.join(args.project_path, "odm_meshing"),
                   os.path.join(args.project_path, "opensfm"),
@@ -64,6 +64,6 @@ if __name__ == '__main__':
     
     # Do not show end message for local submodels runs
     if retcode == 0 and not "submodels" in args.project_path:
-        log.ODM_INFO('ODX app finished - %s' % system.now())
+        log.INFO('ODX app finished - %s' % system.now())
     else:
         exit(retcode)

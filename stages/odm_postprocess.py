@@ -12,7 +12,7 @@ class ODMPostProcess(types.ODM_Stage):
         tree = outputs['tree']
         reconstruction = outputs['reconstruction']
 
-        log.ODM_INFO("Post Processing")
+        log.INFO("Post Processing")
 
         if args.gltf:
             textured_model = os.path.join(tree.odm_texturing, tree.odm_textured_model_obj)
@@ -28,11 +28,11 @@ class ODMPostProcess(types.ODM_Stage):
             odm_textured_model_glb = os.path.join(os.path.dirname(input_obj), tree.odm_textured_model_glb)
 
             if not os.path.exists(odm_textured_model_glb) or self.rerun():
-                log.ODM_INFO("Generating glTF Binary")
+                log.INFO("Generating glTF Binary")
                 try:
-                    obj2glb(input_obj, odm_textured_model_glb, rtc=reconstruction.get_proj_offset(), _info=log.ODM_INFO)
+                    obj2glb(input_obj, odm_textured_model_glb, rtc=reconstruction.get_proj_offset(), _info=log.INFO)
                 except Exception as e:
-                    log.ODM_WARNING(str(e))
+                    log.WARNING(str(e))
 
         if getattr(args, '3d_tiles'):
             build_3dtiles(args, tree, reconstruction, self.rerun())
@@ -41,5 +41,5 @@ class ODMPostProcess(types.ODM_Stage):
             try:
                 copy_paths([os.path.join(args.project_path, p) for p in get_processing_results_paths()], args.copy_to, self.rerun())
             except Exception as e:
-                log.ODM_WARNING("Cannot copy to %s: %s" % (args.copy_to, str(e)))
+                log.WARNING("Cannot copy to %s: %s" % (args.copy_to, str(e)))
 

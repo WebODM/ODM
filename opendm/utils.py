@@ -43,7 +43,7 @@ def get_depthmap_resolution(args, photos):
 
         return max(min_dim, int(max_dim * pc_quality_scale[args.pc_quality] * multiplier))
     else:
-        log.ODM_WARNING("Cannot compute max image dimensions, going with default depthmap_resolution of 640")
+        log.WARNING("Cannot compute max image dimensions, going with default depthmap_resolution of 640")
         return 640 # Sensible default
 
 def get_raster_stats(geotiff):
@@ -94,15 +94,15 @@ def copy_paths(paths, destination, rerun):
                 elif os.path.isdir(dst_path):
                     shutil.rmtree(dst_path)
             except Exception as e:
-                log.ODM_WARNING("Cannot remove file %s: %s, skipping..." % (dst_path, str(e)))
+                log.WARNING("Cannot remove file %s: %s, skipping..." % (dst_path, str(e)))
 
         if not os.path.exists(dst_path):
             if os.path.isfile(p):
-                log.ODM_INFO("Copying %s --> %s" % (p, dst_path))
+                log.INFO("Copying %s --> %s" % (p, dst_path))
                 shutil.copy(p, dst_path)
             elif os.path.isdir(p):
                 shutil.copytree(p, dst_path)
-                log.ODM_INFO("Copying %s --> %s" % (p, dst_path))
+                log.INFO("Copying %s --> %s" % (p, dst_path))
 
 def rm_r(path):
     try:
@@ -111,7 +111,7 @@ def rm_r(path):
         elif os.path.exists(path):
             os.remove(path)
     except:
-        log.ODM_WARNING("Cannot remove %s" % path)
+        log.WARNING("Cannot remove %s" % path)
 
 def np_to_json(arr):
     return json.dumps(arr, cls=NumpyEncoder)
@@ -127,11 +127,11 @@ def add_raster_meta_tags(raster, reconstruction, tree, embed_gcp_meta=True):
             if mean_capture_time is not None:
                 mean_capture_dt = datetime.fromtimestamp(mean_capture_time).strftime('%Y:%m:%d %H:%M:%S') + '+00:00'
 
-            log.ODM_INFO("Adding TIFFTAGs to {}".format(raster))
+            log.INFO("Adding TIFFTAGs to {}".format(raster))
             with rasterio.open(raster, 'r+') as rst:
                 if mean_capture_dt is not None:
                     rst.update_tags(TIFFTAG_DATETIME=mean_capture_dt)
-                rst.update_tags(TIFFTAG_SOFTWARE='ODX {}'.format(log.odm_version()))
+                rst.update_tags(TIFFTAG_SOFTWARE='ODX {}'.format(log.get_version()))
 
             if embed_gcp_meta:
                 # Embed GCP info in 2D results via
@@ -149,10 +149,10 @@ def add_raster_meta_tags(raster, reconstruction, tree, embed_gcp_meta=True):
                         if ds.GetMetadata('xml:GROUND_CONTROL_POINTS') is None or self.rerun():
                             ds.SetMetadata(gcp_xml, 'xml:GROUND_CONTROL_POINTS')
                             ds = None
-                            log.ODM_INFO("Wrote xml:GROUND_CONTROL_POINTS metadata to %s" % raster)
+                            log.INFO("Wrote xml:GROUND_CONTROL_POINTS metadata to %s" % raster)
                         else:
-                            log.ODM_WARNING("Already embedded ground control point information")
+                            log.WARNING("Already embedded ground control point information")
                     else:
-                        log.ODM_WARNING("Cannot open %s for writing, skipping GCP embedding" % raster)
+                        log.WARNING("Cannot open %s for writing, skipping GCP embedding" % raster)
     except Exception as e:
-        log.ODM_WARNING("Cannot write raster meta tags to %s: %s" % (raster, str(e)))
+        log.WARNING("Cannot write raster meta tags to %s: %s" % (raster, str(e)))

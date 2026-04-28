@@ -51,7 +51,7 @@ class ODMOpenSfMStage(types.ODM_Stage):
 
         # If we find a special flag file for split/merge we stop right here
         if os.path.exists(octx.path("split_merge_stop_at_reconstruction.txt")):
-            log.ODM_INFO("Stopping OpenSfM early because we found: %s" % octx.path("split_merge_stop_at_reconstruction.txt"))
+            log.INFO("Stopping OpenSfM early because we found: %s" % octx.path("split_merge_stop_at_reconstruction.txt"))
             self.next_stage = None
             cleanup_disk_space()
             return
@@ -75,7 +75,7 @@ class ODMOpenSfMStage(types.ODM_Stage):
             shutil.move(tree.opensfm_reconstruction, tree.opensfm_topocentric_reconstruction)
             shutil.move(tree.opensfm_geocoords_reconstruction, tree.opensfm_reconstruction)
         else:
-            log.ODM_WARNING("Will skip exporting %s" % tree.opensfm_geocoords_reconstruction)
+            log.WARNING("Will skip exporting %s" % tree.opensfm_geocoords_reconstruction)
         
         self.update_progress(80)
 
@@ -134,7 +134,7 @@ class ODMOpenSfMStage(types.ODM_Stage):
             if ainfo is not None:
                 return multispectral.align_image(image, ainfo['warp_matrix'], ainfo['dimension'])
             else:
-                log.ODM_WARNING("Cannot align %s, no alignment matrix could be computed. Band alignment quality might be affected." % (shot_id))
+                log.WARNING("Cannot align %s, no alignment matrix could be computed. Band alignment quality might be affected." % (shot_id))
                 return image
 
         if reconstruction.multi_camera:
@@ -167,10 +167,10 @@ class ODMOpenSfMStage(types.ODM_Stage):
                 if not args.skip_band_alignment:
                     alignment_info = multispectral.compute_alignment_matrices(reconstruction.multi_camera, primary_band_name, tree.dataset_raw, s2p, p2s, max_concurrency=args.max_concurrency)
                 else:
-                    log.ODM_WARNING("Skipping band alignment")
+                    log.WARNING("Skipping band alignment")
                     alignment_info = {}
                     
-                log.ODM_INFO("Adding shots to reconstruction")
+                log.INFO("Adding shots to reconstruction")
                 
                 octx.backup_reconstruction()
                 octx.add_shots_to_reconstruction(p2s)
@@ -192,11 +192,11 @@ class ODMOpenSfMStage(types.ODM_Stage):
         if not io.file_exists(tree.opensfm_reconstruction_nvm) or self.rerun():
             octx.run('export_visualsfm --points')
         else:
-            log.ODM_WARNING('Found a valid OpenSfM NVM reconstruction file in: %s' %
+            log.WARNING('Found a valid OpenSfM NVM reconstruction file in: %s' %
                             tree.opensfm_reconstruction_nvm)
         
         if reconstruction.multi_camera:
-            log.ODM_INFO("Multiple bands found")
+            log.INFO("Multiple bands found")
 
             # Write NVM files for the various bands
             for band in reconstruction.multi_camera:
@@ -221,11 +221,11 @@ class ODMOpenSfMStage(types.ODM_Stage):
                             if band_filename is not None:
                                 img_map[add_image_format_extension(fname, 'tif')] = add_image_format_extension(band_filename, 'tif')
                             else:
-                                log.ODM_WARNING("Cannot find %s band equivalent for %s" % (band, fname))
+                                log.WARNING("Cannot find %s band equivalent for %s" % (band, fname))
 
                     nvm.replace_nvm_images(tree.opensfm_reconstruction_nvm, img_map, nvm_file)
                 else:
-                    log.ODM_WARNING("Found existing NVM file %s" % nvm_file)
+                    log.WARNING("Found existing NVM file %s" % nvm_file)
                     
         # Skip dense reconstruction if necessary and export
         # sparse reconstruction instead
@@ -235,7 +235,7 @@ class ODMOpenSfMStage(types.ODM_Stage):
             if not io.file_exists(output_file) or self.rerun():
                 octx.run('export_ply --no-cameras --point-num-views')
             else:
-                log.ODM_WARNING("Found a valid PLY reconstruction in %s" % output_file)
+                log.WARNING("Found a valid PLY reconstruction in %s" % output_file)
 
         cleanup_disk_space()
 

@@ -34,12 +34,12 @@ def write_raster(data, file):
 
 def compute_cutline(orthophoto_file, crop_area_file, destination, max_concurrency=1, scale=1):
     if io.file_exists(orthophoto_file) and io.file_exists(crop_area_file):
-        log.ODM_INFO("Computing cutline")
+        log.INFO("Computing cutline")
 
         scale = max(0.0001, min(1, scale))
         scaled_orthophoto = None
         if scale < 1:
-            log.ODM_INFO("Scaling orthophoto to %s%% to compute cutline" % (scale * 100))
+            log.INFO("Scaling orthophoto to %s%% to compute cutline" % (scale * 100))
 
             scaled_orthophoto = io.related_file_path(orthophoto_file, postfix=".scaled")
             # Scale orthophoto before computing cutline
@@ -65,12 +65,12 @@ def compute_cutline(orthophoto_file, crop_area_file, destination, max_concurrenc
         line_ver_offset = int(height / number_lines)
 
         if line_hor_offset <= 2 or line_ver_offset <= 2:
-            log.ODM_WARNING("Cannot compute cutline, orthophoto is too small (%sx%spx)" % (width, height))
+            log.WARNING("Cannot compute cutline, orthophoto is too small (%sx%spx)" % (width, height))
             return
 
         crop_f = fiona.open(crop_area_file, 'r')
         if len(crop_f) == 0:
-            log.ODM_WARNING("Crop area is empty, cannot compute cutline")
+            log.WARNING("Crop area is empty, cannot compute cutline")
             return
 
         crop_poly = shape(crop_f[1]['geometry'])
@@ -82,7 +82,7 @@ def compute_cutline(orthophoto_file, crop_area_file, destination, max_concurrenc
         edges = canny(rast)
 
         def compute_linestrings(direction):
-            log.ODM_INFO("Computing %s cutlines" % direction)
+            log.INFO("Computing %s cutlines" % direction)
             # Initialize cost map
             cost_map = np.full((height, width), 1, dtype=np.float32)
 
@@ -129,7 +129,7 @@ def compute_cutline(orthophoto_file, crop_area_file, destination, max_concurrenc
 
                     
         # Generate polygons and keep only those inside the crop area
-        log.ODM_INFO("Generating polygons... this could take a bit.")
+        log.INFO("Generating polygons... this could take a bit.")
         polygons = []
         for p in polygonize(unary_union(linestrings)):
             if crop_poly.contains(p):
@@ -137,10 +137,10 @@ def compute_cutline(orthophoto_file, crop_area_file, destination, max_concurrenc
 
         # This should never happen
         if len(polygons) == 0:
-            log.ODM_WARNING("No polygons, cannot compute cutline")
+            log.WARNING("No polygons, cannot compute cutline")
             return
 
-        log.ODM_INFO("Merging polygons")
+        log.INFO("Merging polygons")
         cutline_polygons = unary_union(polygons)
 
         if not hasattr(cutline_polygons, 'geoms'):
@@ -154,7 +154,7 @@ def compute_cutline(orthophoto_file, crop_area_file, destination, max_concurrenc
                     max_area = p.area
                     largest_cutline = p
         
-        log.ODM_INFO("Largest cutline found: %s m^2" % max_area)
+        log.INFO("Largest cutline found: %s m^2" % max_area)
 
         meta = {
             'crs': fiona.crs.CRS.from_wkt(f.crs.to_wkt()),
@@ -175,10 +175,10 @@ def compute_cutline(orthophoto_file, crop_area_file, destination, max_concurrenc
                 'properties': {}
             })
         f.close()
-        log.ODM_INFO("Wrote %s" % destination)
+        log.INFO("Wrote %s" % destination)
 
         # Cleanup
         if scaled_orthophoto is not None and os.path.exists(scaled_orthophoto):
             os.remove(scaled_orthophoto)
     else:
-        log.ODM_WARNING("We've been asked to compute cutline, but either %s or %s is missing. Skipping..." % (orthophoto_file, crop_area_file))
+        log.WARNING("We've been asked to compute cutline, but either %s or %s is missing. Skipping..." % (orthophoto_file, crop_area_file))

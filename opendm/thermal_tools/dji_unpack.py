@@ -39,9 +39,9 @@ def extract_temperatures_dji(photo, image, dataset_tree):
             try:
                 img = Image.frombytes("I;16L", (640, 512), a)
             except ValueError as e:
-                log.ODM_ERROR("Error during extracting temperature values for file %s : %s" % photo.filename, e)
+                log.ERROR("Error during extracting temperature values for file %s : %s" % photo.filename, e)
         else:
-            log.ODM_WARNING("Only DJI M2EA currently supported, please wait for new updates")
+            log.WARNING("Only DJI M2EA currently supported, please wait for new updates")
             return image
         # Extract raw sensor values from generated image into numpy array
         raw_sensor_np = np.array(img)

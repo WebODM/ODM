@@ -36,7 +36,7 @@ class ODMOpenMVSStage(types.ODM_Stage):
                 cmd = 'export_openmvs'
                 octx.run(cmd)
             else:
-                log.ODM_WARNING("Found existing %s" % openmvs_scene_file)
+                log.WARNING("Found existing %s" % openmvs_scene_file)
             
             self.update_progress(10)
 
@@ -49,16 +49,16 @@ class ODMOpenMVSStage(types.ODM_Stage):
                 os.mkdir(depthmaps_dir)
 
             depthmap_resolution = get_depthmap_resolution(args, photos)
-            log.ODM_INFO("Depthmap resolution set to: %spx" % depthmap_resolution)
+            log.INFO("Depthmap resolution set to: %spx" % depthmap_resolution)
 
             if outputs["undist_image_max_size"] <= depthmap_resolution:
                 resolution_level = 0
             else:
                 resolution_level = int(round(math.log(outputs['undist_image_max_size'] / float(depthmap_resolution)) / math.log(2)))
 
-            log.ODM_INFO("Running dense reconstruction. This might take a while.")
+            log.INFO("Running dense reconstruction. This might take a while.")
             
-            log.ODM_INFO("Estimating depthmaps")
+            log.INFO("Estimating depthmaps")
             number_views_fuse = 2
             densify_ini_file = os.path.join(tree.openmvs, 'Densify.ini')
             subres_levels = 2 # The number of lower resolutions to process before estimating output resolution depthmap.
@@ -109,11 +109,11 @@ class ODMOpenMVSStage(types.ODM_Stage):
                 # If the GPU was enabled and the program failed,
                 # try to run it again without GPU
                 if e.errorCode == 1 and use_gpu:
-                    log.ODM_WARNING("OpenMVS failed with GPU, is your graphics card driver up to date? Falling back to CPU.")
+                    log.WARNING("OpenMVS failed with GPU, is your graphics card driver up to date? Falling back to CPU.")
                     gpu_config = ["--cuda-device -2"]
                     run_densify()
                 elif (e.errorCode == 137 or e.errorCode == 143 or e.errorCode == 3221226505) and not pc_tile:
-                    log.ODM_WARNING("OpenMVS ran out of memory, we're going to turn on tiling to see if we can process this.")
+                    log.WARNING("OpenMVS ran out of memory, we're going to turn on tiling to see if we can process this.")
                     pc_tile = True
                     config.append("--fusion-mode 1")
                     run_densify()
@@ -125,7 +125,7 @@ class ODMOpenMVSStage(types.ODM_Stage):
             scene_dense = os.path.join(tree.openmvs, 'scene_dense.mvs')
 
             if pc_tile:
-                log.ODM_INFO("Computing sub-scenes")
+                log.INFO("Computing sub-scenes")
 
                 subscene_densify_ini_file = os.path.join(tree.openmvs, 'subscene-config.ini')
                 with open(subscene_densify_ini_file, 'w+') as f:
@@ -145,7 +145,7 @@ class ODMOpenMVSStage(types.ODM_Stage):
                 if len(scene_files) == 0:
                     raise system.ExitException("No OpenMVS scenes found. This could be a bug, or the reconstruction could not be processed.")
 
-                log.ODM_INFO("Fusing depthmaps for %s scenes" % len(scene_files))
+                log.INFO("Fusing depthmaps for %s scenes" % len(scene_files))
                 
                 scene_ply_files = []
 
@@ -177,30 +177,30 @@ class ODMOpenMVSStage(types.ODM_Stage):
                         try:
                             system.run('"%s" "%s" %s' % (context.omvs_densify_path, sf, ' '.join(config + gpu_config + extra_config)))
                         except:
-                            log.ODM_WARNING("Sub-scene %s could not be reconstructed, skipping..." % sf)
+                            log.WARNING("Sub-scene %s could not be reconstructed, skipping..." % sf)
 
                         if not io.file_exists(scene_ply_unfiltered):
                             scene_ply_files.pop()
-                            log.ODM_WARNING("Could not compute PLY for subscene %s" % sf)
+                            log.WARNING("Could not compute PLY for subscene %s" % sf)
                         else:
                             # Filter
                             if args.pc_filter > 0:
                                 system.run('"%s" "%s" --filter-point-cloud %s -v 0 --archive-type 3 %s' % (context.omvs_densify_path, scene_dense_mvs, filter_point_th, ' '.join(gpu_config)))
                             else:
                                 # Just rename
-                                log.ODM_INFO("Skipped filtering, %s --> %s" % (scene_ply_unfiltered, scene_ply))
+                                log.INFO("Skipped filtering, %s --> %s" % (scene_ply_unfiltered, scene_ply))
                                 os.rename(scene_ply_unfiltered, scene_ply)
                     else:
-                        log.ODM_WARNING("Found existing dense scene file %s" % scene_ply)
+                        log.WARNING("Found existing dense scene file %s" % scene_ply)
 
                 # Merge
-                log.ODM_INFO("Merging %s scene files" % len(scene_ply_files))
+                log.INFO("Merging %s scene files" % len(scene_ply_files))
                 if len(scene_ply_files) == 0:
                     raise system.ExitException("Could not compute dense point cloud (no PLY files available).")
                 if len(scene_ply_files) == 1:
                     # Simply rename
                     os.replace(scene_ply_files[0], tree.openmvs_model)
-                    log.ODM_INFO("%s --> %s"% (scene_ply_files[0], tree.openmvs_model))
+                    log.INFO("%s --> %s"% (scene_ply_files[0], tree.openmvs_model))
                 else:
                     # Merge
                     fast_merge_ply(scene_ply_files, tree.openmvs_model)
@@ -211,7 +211,7 @@ class ODMOpenMVSStage(types.ODM_Stage):
                     if not os.path.exists(scene_dense_ply):
                         raise system.ExitException("Dense reconstruction failed. This could be due to poor georeferencing or insufficient image overlap.")
 
-                    log.ODM_INFO("Skipped filtering, %s --> %s" % (scene_dense_ply, tree.openmvs_model))
+                    log.INFO("Skipped filtering, %s --> %s" % (scene_dense_ply, tree.openmvs_model))
                     os.rename(scene_dense_ply, tree.openmvs_model)
 
                 # Filter all at once
@@ -226,7 +226,7 @@ class ODMOpenMVSStage(types.ODM_Stage):
                             system.run('"%s" %s' % (context.omvs_densify_path, ' '.join(config + gpu_config + extra_config)))
                         except system.SubprocessException as e:
                             if e.errorCode == 137 or e.errorCode == 143 or e.errorCode == 3221226505:
-                                log.ODM_WARNING("OpenMVS filtering ran out of memory, visibility checks will be skipped.")
+                                log.WARNING("OpenMVS filtering ran out of memory, visibility checks will be skipped.")
                                 skip_filtering()
                             else:
                                 raise e
@@ -249,5 +249,5 @@ class ODMOpenMVSStage(types.ODM_Stage):
                         os.remove(f)
                 shutil.rmtree(depthmaps_dir)
         else:
-            log.ODM_WARNING('Found a valid OpenMVS reconstruction file in: %s' %
+            log.WARNING('Found a valid OpenMVS reconstruction file in: %s' %
                             tree.openmvs_model)

@@ -50,7 +50,7 @@ def dn_to_radiance(photo, image):
     if bit_depth_max:
         image /= bit_depth_max
     else:
-        log.ODM_WARNING("Cannot normalize DN for %s, bit depth is missing" % photo.filename)
+        log.WARNING("Cannot normalize DN for %s, bit depth is missing" % photo.filename)
     
     if V is not None:
         # vignette correction
@@ -162,7 +162,7 @@ def compute_irradiance(photo, use_sun_sensor=True):
         horizontal_irradiance = direct_irradiance * np.sin(solar_elevation) + scattered_irradiance
         return horizontal_irradiance
     elif use_sun_sensor:
-        log.ODM_WARNING("No sun sensor values found for %s" % photo.filename)
+        log.WARNING("No sun sensor values found for %s" % photo.filename)
     
     return 1.0
 
@@ -193,7 +193,7 @@ def get_primary_band_name(multi_camera, user_band_name):
     
     band_name_fallback = multi_camera[0]['name']
 
-    log.ODM_WARNING("Cannot find band name \"%s\", will use \"%s\" instead" % (user_band_name, band_name_fallback))
+    log.WARNING("Cannot find band name \"%s\", will use \"%s\" instead" % (user_band_name, band_name_fallback))
     return band_name_fallback
 
 
@@ -248,7 +248,7 @@ def compute_band_maps(multi_camera, primary_band):
         return s2p, p2s
     except Exception as e:
         # Fallback on filename conventions
-        log.ODM_WARNING("%s, will use filenames instead" % str(e))
+        log.WARNING("%s, will use filenames instead" % str(e))
 
         filename_map = {}
         s2p = {}
@@ -285,7 +285,7 @@ def compute_band_maps(multi_camera, primary_band):
         return s2p, p2s
 
 def compute_alignment_matrices(multi_camera, primary_band_name, images_path, s2p, p2s, max_concurrency=1, max_samples=30):
-    log.ODM_INFO("Computing band alignment")
+    log.INFO("Computing band alignment")
 
     alignment_info = {}
 
@@ -297,21 +297,21 @@ def compute_alignment_matrices(multi_camera, primary_band_name, images_path, s2p
             def parallel_compute_homography(p):
                 try:
                     if len(matrices) >= max_samples:
-                        # log.ODM_INFO("Got enough samples for %s (%s)" % (band['name'], max_samples))
+                        # log.INFO("Got enough samples for %s (%s)" % (band['name'], max_samples))
                         return
 
                     # Find good matrix candidates for alignment
                 
                     primary_band_photo = s2p.get(p['filename'])
                     if primary_band_photo is None:
-                        log.ODM_WARNING("Cannot find primary band photo for %s" % p['filename'])
+                        log.WARNING("Cannot find primary band photo for %s" % p['filename'])
                         return
 
                     warp_matrix, dimension, algo = compute_homography(os.path.join(images_path, p['filename']),
                                                                 os.path.join(images_path, primary_band_photo.filename))
                     
                     if warp_matrix is not None:
-                        log.ODM_INFO("%s --> %s good match" % (p['filename'], primary_band_photo.filename))
+                        log.INFO("%s --> %s good match" % (p['filename'], primary_band_photo.filename))
 
                         matrices.append({
                             'warp_matrix': warp_matrix,
@@ -320,9 +320,9 @@ def compute_alignment_matrices(multi_camera, primary_band_name, images_path, s2p
                             'algo': algo
                         })
                     else:
-                        log.ODM_INFO("%s --> %s cannot be matched" % (p['filename'], primary_band_photo.filename))
+                        log.INFO("%s --> %s cannot be matched" % (p['filename'], primary_band_photo.filename))
                 except Exception as e:
-                    log.ODM_WARNING("Failed to compute homography for %s: %s" % (p['filename'], str(e)))
+                    log.WARNING("Failed to compute homography for %s: %s" % (p['filename'], str(e)))
 
             parallel_map(parallel_compute_homography, [{'filename': p.filename} for p in band['photos']], max_concurrency, single_thread_fallback=False)
 
@@ -342,9 +342,9 @@ def compute_alignment_matrices(multi_camera, primary_band_name, images_path, s2p
             
             if len(matrices) > 0:
                 alignment_info[band['name']] = matrices[0]
-                log.ODM_INFO("%s band will be aligned using warp matrix %s (score: %s)" % (band['name'], matrices[0]['warp_matrix'], matrices[0]['score']))
+                log.INFO("%s band will be aligned using warp matrix %s (score: %s)" % (band['name'], matrices[0]['warp_matrix'], matrices[0]['score']))
             else:
-                log.ODM_WARNING("Cannot find alignment matrix for band %s, The band might end up misaligned!" % band['name'])
+                log.WARNING("Cannot find alignment matrix for band %s, The band might end up misaligned!" % band['name'])
 
     return alignment_info
 
@@ -359,7 +359,7 @@ def compute_homography(image_filename, align_image_filename):
 
         max_dim = max(image_gray.shape)
         if max_dim <= 320:
-            log.ODM_WARNING("Small image for band alignment (%sx%s), this might be tough to compute." % (image_gray.shape[1], image_gray.shape[0]))
+            log.WARNING("Small image for band alignment (%sx%s), this might be tough to compute." % (image_gray.shape[1], image_gray.shape[0]))
 
         align_image = imread(align_image_filename, unchanged=True, anydepth=True)
         if align_image.shape[2] == 3:
@@ -371,7 +371,7 @@ def compute_homography(image_filename, align_image_filename):
             try:
                 h = algorithm(image_gray, align_image_gray)
             except Exception as e:
-                log.ODM_WARNING("Cannot compute homography: %s" % str(e))
+                log.WARNING("Cannot compute homography: %s" % str(e))
                 return None, (None, None)
 
             if h is None:
@@ -404,14 +404,14 @@ def compute_homography(image_filename, align_image_filename):
             
             if result[0] is None:
                 algo = 'ecc'
-                log.ODM_INFO("Can't use features matching, will use ECC (this might take a bit)")
+                log.INFO("Can't use features matching, will use ECC (this might take a bit)")
                 result = compute_using(find_ecc_homography)
                 if result[0] is None:
                     algo = None
 
         else: # ECC only for low resolution images
             algo = 'ecc'
-            log.ODM_INFO("Using ECC (this might take a bit)")
+            log.INFO("Using ECC (this might take a bit)")
             result = compute_using(find_ecc_homography)
             if result[0] is None:
                 algo = None
@@ -420,7 +420,7 @@ def compute_homography(image_filename, align_image_filename):
         return warp_matrix, dimension, algo
 
     except Exception as e:
-        log.ODM_WARNING("Compute homography: %s" % str(e))
+        log.WARNING("Compute homography: %s" % str(e))
         return None, (None, None), None
 
 def find_ecc_homography(image_gray, align_image_gray, number_of_iterations=1000, termination_eps=1e-8, start_eps=1e-4):
@@ -444,7 +444,7 @@ def find_ecc_homography(image_gray, align_image_gray, number_of_iterations=1000,
         min_dim /= 2.0
         pyramid_levels += 1
     
-    log.ODM_INFO("Pyramid levels: %s" % pyramid_levels)
+    log.INFO("Pyramid levels: %s" % pyramid_levels)
     
     # Quick check on size
     if align_image_gray.shape[0] != image_gray.shape[0]:
@@ -488,11 +488,11 @@ def find_ecc_homography(image_gray, align_image_gray, number_of_iterations=1000,
                 number_of_iterations, eps)
 
         try:
-            log.ODM_INFO("Computing ECC pyramid level %s" % level)
+            log.INFO("Computing ECC pyramid level %s" % level)
             _, warp_matrix = cv2.findTransformECC(ig, aig, warp_matrix, cv2.MOTION_HOMOGRAPHY, criteria, inputMask=None, gaussFiltSize=9)
         except Exception as e:
             if level != pyramid_levels:
-                log.ODM_INFO("Could not compute ECC warp_matrix at pyramid level %s, resetting matrix" % level)
+                log.INFO("Could not compute ECC warp_matrix at pyramid level %s, resetting matrix" % level)
                 warp_matrix = np.eye(3, 3, dtype=np.float32)
             else:
                 raise e

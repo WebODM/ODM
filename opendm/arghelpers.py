@@ -35,7 +35,7 @@ def save_opts(opts_json, args):
         with open(opts_json, "w", encoding='utf-8') as f:
             f.write(json.dumps(args_to_dict(args)))
     except Exception as e:
-        log.ODM_WARNING("Cannot save options to %s: %s" % (opts_json, str(e)))
+        log.WARNING("Cannot save options to %s: %s" % (opts_json, str(e)))
 
 def compare_args(opts_json, args, rerun_stages):
     if not os.path.isfile(opts_json):

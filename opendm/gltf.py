@@ -117,7 +117,7 @@ def convert_materials_to_jpeg(materials):
         with MemoryFile() as memfile:
             bands, h, w = image.shape
             bands = min(3, bands)
-            with memfile.open(driver='JPEG', jpeg_quality=90, count=bands, width=w, height=h, dtype=rasterio.dtypes.uint8) as dst:
+            with memfile.open(driver='JPEG', quality=90, count=bands, width=w, height=h, dtype=rasterio.dtypes.uint8) as dst:
                 for b in range(1, min(3, bands) + 1):
                     dst.write(image[b - 1], b)
             memfile.seek(0)
@@ -305,6 +305,6 @@ def obj2glb(input_obj, output_glb, rtc=(None, None), draco_compression=True, _in
                 os.remove(output_glb)
                 os.rename(compressed_glb, output_glb)
         except Exception as e:
-            log.ODM_WARNING("Cannot compress GLB with draco: %s" % str(e))
+            log.WARNING("Cannot compress GLB with draco: %s" % str(e))
             
 

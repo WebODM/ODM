@@ -7,7 +7,7 @@ import shutil
 import multiprocessing
 from functools import lru_cache
 
-from opendm.arghelpers import args_to_dict
+from opendm.arghelpers import double_quote, args_to_dict
 from vmem import virtual_memory
 
 if sys.platform == 'win32' or os.getenv('no_ansiesc'):
@@ -16,7 +16,7 @@ if sys.platform == 'win32' or os.getenv('no_ansiesc'):
     OKBLUE = ''
     OKGREEN = ''
     DEFAULT = ''
-    WARNING = ''
+    WARN = ''
     FAIL = ''
     ENDC = ''
 else:
@@ -24,14 +24,14 @@ else:
     OKBLUE = '\033[94m'
     OKGREEN = '\033[92m'
     DEFAULT = '\033[39m'
-    WARNING = '\033[93m'
+    WARN = '\033[93m'
     FAIL = '\033[91m'
     ENDC = '\033[0m'
 
 lock = threading.Lock()
 
 @lru_cache(maxsize=None)
-def odm_version():
+def get_version():
     with open(os.path.join(os.path.dirname(__file__), "..", "VERSION")) as f:
         return f.read().split("\n")[0].strip()
 
@@ -39,10 +39,10 @@ def memory():
     mem = virtual_memory()
     return {
         'total': round(mem.total / 1024 / 1024),
-        'available': round(mem.available / 1024 / 1024),
+        'available': round(mem.available / 1024 / 1024)
     }
 
-class ODMLogger:
+class Logger:
     def __init__(self):
         self.json = None
         self.json_output_file = None
@@ -63,7 +63,9 @@ class ODMLogger:
         self.json_output_files = output_files
         self.json_output_file = output_files[0]
         self.json = {}
-        self.json['odmVersion'] = odm_version()
+        self.json['odmVersion'] = get_version() # deprecated
+        self.json['engine'] = 'ODX'
+        self.json['version'] = get_version()
         self.json['memory'] = memory()
         self.json['cpus'] = multiprocessing.cpu_count()
         self.json['images'] = -1
@@ -119,7 +121,6 @@ class ODMLogger:
             if self.json['stages']:
                 last_stage = self.json['stages'][-1]
                 last_stage['endTime'] = end_time.isoformat()
-                # NOTE use Z replacement for Python < 3.11. Python 3.11+ dosesn't need this
                 start_time = datetime.datetime.fromisoformat(last_stage['startTime'].replace("Z", "+00:00"))
                 last_stage['totalTime'] = round((end_time - start_time).total_seconds(), 2)
             
@@ -127,7 +128,7 @@ class ODMLogger:
         self.log(DEFAULT, msg, "INFO")
 
     def warning(self, msg):
-        self.log(WARNING, msg, "WARNING")
+        self.log(WARN, msg, "WARNING")
 
     def error(self, msg):
         self.log(FAIL, msg, "ERROR")
@@ -145,9 +146,9 @@ class ODMLogger:
             except Exception as e:
                 print("Cannot write log.json: %s" % str(e))
 
-logger = ODMLogger()
+logger = Logger()
 
-ODM_INFO = logger.info
-ODM_WARNING = logger.warning
-ODM_ERROR = logger.error
-ODM_EXCEPTION = logger.exception
+INFO = logger.info
+WARNING = logger.warning
+ERROR = logger.error
+EXCEPTION = logger.exception

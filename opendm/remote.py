@@ -36,12 +36,12 @@ class LocalRemoteExecutor:
         }
         self.node_online = True
 
-        log.ODM_INFO("LRE: Initializing using cluster node %s:%s" % (self.node.host, self.node.port))
+        log.INFO("LRE: Initializing using cluster node %s:%s" % (self.node.host, self.node.port))
         try:
             info = self.node.info()
-            log.ODM_INFO("LRE: Node is online and running %s version %s"  % (info.engine, info.engine_version))
+            log.INFO("LRE: Node is online and running %s version %s"  % (info.engine, info.engine_version))
         except exceptions.NodeConnectionError:
-            log.ODM_WARNING("LRE: The node seems to be offline! We'll still process the dataset, but it's going to run entirely locally.")
+            log.WARNING("LRE: The node seems to be offline! We'll still process the dataset, but it's going to run entirely locally.")
             self.node_online = False
         except Exception as e:
             raise system.ExitException("LRE: An unexpected problem happened while opening the node connection: %s" % str(e))
@@ -72,7 +72,7 @@ class LocalRemoteExecutor:
         # Create queue
         q = queue.Queue()
         for pp in self.project_paths:
-            log.ODM_INFO("LRE: Adding to queue %s" % pp)
+            log.INFO("LRE: Adding to queue %s" % pp)
             q.put(taskClass(pp, self.node, self.params))
 
         def remove_task_safe(task):
@@ -84,22 +84,22 @@ class LocalRemoteExecutor:
         
         def cleanup_remote_tasks():
             if self.params['tasks']:
-                log.ODM_WARNING("LRE: Attempting to cleanup remote tasks")
+                log.WARNING("LRE: Attempting to cleanup remote tasks")
             else:
-                log.ODM_INFO("LRE: No remote tasks left to cleanup")
+                log.INFO("LRE: No remote tasks left to cleanup")
 
             for task in self.params['tasks']:
-                log.ODM_INFO("LRE: Removing remote task %s... %s" % (task.uuid, 'OK' if remove_task_safe(task) else 'NO'))
+                log.INFO("LRE: Removing remote task %s... %s" % (task.uuid, 'OK' if remove_task_safe(task) else 'NO'))
 
         def handle_result(task, local, error = None, partial=False):
             def cleanup_remote():
                 if not partial and task.remote_task:
-                    log.ODM_INFO("LRE: Cleaning up remote task (%s)... %s" % (task.remote_task.uuid, 'OK' if remove_task_safe(task.remote_task) else 'NO'))
+                    log.INFO("LRE: Cleaning up remote task (%s)... %s" % (task.remote_task.uuid, 'OK' if remove_task_safe(task.remote_task) else 'NO'))
                     self.params['tasks'].remove(task.remote_task)
                     task.remote_task = None
 
             if error:
-                log.ODM_WARNING("LRE: %s failed with: %s" % (task, str(error)))
+                log.WARNING("LRE: %s failed with: %s" % (task, str(error)))
                 
                 # Special case in which the error is caused by a SIGTERM signal
                 # this means a local processing was terminated either by CTRL+C or 
@@ -123,7 +123,7 @@ class LocalRemoteExecutor:
                                     pass
 
                             nonloc.max_remote_tasks = max(1, node_task_limit)
-                            log.ODM_INFO("LRE: Node task limit reached. Setting max remote tasks to %s" % node_task_limit)
+                            log.INFO("LRE: Node task limit reached. Setting max remote tasks to %s" % node_task_limit)
                                 
 
                 # Retry, but only if the error is not related to a task failure
@@ -137,7 +137,7 @@ class LocalRemoteExecutor:
                     cleanup_remote()
                     q.task_done()
 
-                    log.ODM_INFO("LRE: Re-queueing %s (retries: %s)" % (task, task.retries))
+                    log.INFO("LRE: Re-queueing %s (retries: %s)" % (task, task.retries))
                     q.put(task)
                     if not local: remote_running_tasks.increment(-1)
                     return
@@ -147,7 +147,7 @@ class LocalRemoteExecutor:
                     if not local: remote_running_tasks.increment(-1)
             else:
                 if not partial:
-                    log.ODM_INFO("LRE: %s finished successfully" % task)
+                    log.INFO("LRE: %s finished successfully" % task)
                     finished_tasks.increment()
                     if not local: remote_running_tasks.increment(-1)
 
@@ -184,7 +184,7 @@ class LocalRemoteExecutor:
                 
                 # Yield to local processing
                 if not nonloc.local_processing:
-                    log.ODM_INFO("LRE: Yielding to local processing, sending %s back to the queue" % task)
+                    log.INFO("LRE: Yielding to local processing, sending %s back to the queue" % task)
                     q.put(task)
                     q.task_done()
                     time.sleep(0.05)
@@ -222,7 +222,7 @@ class LocalRemoteExecutor:
             while finished_tasks.value < len(self.project_paths) and nonloc.error is None:
                 time.sleep(0.5)
         except KeyboardInterrupt:
-            log.ODM_WARNING("LRE: CTRL+C")
+            log.WARNING("LRE: CTRL+C")
             system.exit_gracefully()
         
         # stop workers
@@ -268,7 +268,7 @@ class Task:
         def handle_result(error = None, partial=False):
             done(self, local, error, partial)
 
-        log.ODM_INFO("LRE: About to process %s %s" % (self, 'locally' if local else 'remotely'))
+        log.INFO("LRE: About to process %s %s" % (self, 'locally' if local else 'remotely'))
         
         if local:
             self._process_local(handle_result) # Block until complete
@@ -276,7 +276,7 @@ class Task:
             now = datetime.datetime.now()
             if self.wait_until > now:
                 wait_for = (self.wait_until - now).seconds + 1
-                log.ODM_INFO("LRE: Waiting %s seconds before processing %s" % (wait_for, self))
+                log.INFO("LRE: Waiting %s seconds before processing %s" % (wait_for, self))
                 time.sleep(wait_for)
 
             # TODO: we could consider uploading multiple tasks
@@ -352,7 +352,7 @@ class Task:
 
         def print_progress(percentage):
             if (time.time() - nonloc.last_update >= 2) or int(percentage) == 100:
-                log.ODM_INFO("LRE: Upload of %s at [%s%%]" % (self, int(percentage)))
+                log.INFO("LRE: Upload of %s at [%s%%]" % (self, int(percentage)))
                 nonloc.last_update = time.time()
 
         # Upload task
@@ -381,24 +381,24 @@ class Task:
                     # If a task switches from RUNNING to QUEUED, then we need to 
                     # stop the process and re-add the task to the queue.
                     if info.status == TaskStatus.QUEUED:
-                        log.ODM_WARNING("LRE: %s (%s) turned from RUNNING to QUEUED. Re-adding to back of the queue." % (self, task.uuid))
+                        log.WARNING("LRE: %s (%s) turned from RUNNING to QUEUED. Re-adding to back of the queue." % (self, task.uuid))
                         raise NodeTaskLimitReachedException("Delayed task limit reached")
                     elif info.status == TaskStatus.RUNNING:
                         # Print a status message once in a while
                         nonloc.status_callback_calls += 1
                         if nonloc.status_callback_calls > 30:
-                            log.ODM_INFO("LRE: %s (%s) is still running" % (self, task.uuid))
+                            log.INFO("LRE: %s (%s) is still running" % (self, task.uuid))
                             nonloc.status_callback_calls = 0
                 try:
                     def print_progress(percentage):
                         if (time.time() - nonloc.last_update >= 2) or int(percentage) == 100:
-                            log.ODM_INFO("LRE: Download of %s at [%s%%]" % (self, int(percentage)))
+                            log.INFO("LRE: Download of %s at [%s%%]" % (self, int(percentage)))
                             nonloc.last_update = time.time()
 
                     task.wait_for_completion(status_callback=status_callback)
-                    log.ODM_INFO("LRE: Downloading assets for %s" % self)
+                    log.INFO("LRE: Downloading assets for %s" % self)
                     task.download_assets(self.project_path, progress_callback=print_progress)
-                    log.ODM_INFO("LRE: Downloaded and extracted assets for %s" % self)
+                    log.INFO("LRE: Downloaded and extracted assets for %s" % self)
                     done()
                 except exceptions.TaskFailedError as e:
                     # Try to get output
@@ -413,7 +413,7 @@ class Task:
                         msg = "(%s) failed with task output: %s\nFull log saved at %s" % (task.uuid, "\n".join(output_lines[-10:]), error_log_path)
                         done(exceptions.TaskFailedError(msg))
                     except:
-                        log.ODM_WARNING("LRE: Could not retrieve task output for %s (%s)" % (self, task.uuid))
+                        log.WARNING("LRE: Could not retrieve task output for %s (%s)" % (self, task.uuid))
                         done(e)
                 except Exception as e:
                     done(e)
@@ -441,9 +441,9 @@ class Task:
 class ReconstructionTask(Task):
     def process_local(self):
         octx = OSFMContext(self.path("opensfm"))
-        log.ODM_INFO("==================================")
-        log.ODM_INFO("Local Reconstruction %s" % octx.name())
-        log.ODM_INFO("==================================")
+        log.INFO("==================================")
+        log.INFO("Local Reconstruction %s" % octx.name())
+        log.INFO("==================================")
         octx.feature_matching(self.params['rerun'])
         octx.create_tracks(self.params['rerun'])
         octx.reconstruct(self.params['rolling_shutter'], True, self.params['rerun'])
@@ -460,7 +460,7 @@ class ReconstructionTask(Task):
                                             "opensfm/tracks.csv",
                                             "cameras.json"])
         else:
-            log.ODM_INFO("Already processed feature matching and reconstruction for %s" % octx.name())
+            log.INFO("Already processed feature matching and reconstruction for %s" % octx.name())
             done()
 
 class ToolchainTask(Task):
@@ -469,9 +469,9 @@ class ToolchainTask(Task):
         submodel_name = os.path.basename(self.project_path)
         
         if not os.path.exists(completed_file) or self.params['rerun']:
-            log.ODM_INFO("=============================")
-            log.ODM_INFO("Local Toolchain %s" % self)
-            log.ODM_INFO("=============================")
+            log.INFO("=============================")
+            log.INFO("Local Toolchain %s" % self)
+            log.INFO("=============================")
 
             submodels_path = os.path.abspath(self.path(".."))
             argv = get_submodel_argv(config.config(), submodels_path, submodel_name)
@@ -482,7 +482,7 @@ class ToolchainTask(Task):
             # This will only get executed if the command above succeeds
             self.touch(completed_file)
         else:
-            log.ODM_INFO("Already processed toolchain for %s" % submodel_name)
+            log.INFO("Already processed toolchain for %s" % submodel_name)
     
     def process_remote(self, done):
         completed_file = self.path("toolchain_completed.txt")
@@ -509,5 +509,5 @@ class ToolchainTask(Task):
                                         "odm_report",
                                         "odm_georeferencing"])
         else:
-            log.ODM_INFO("Already processed toolchain for %s" % submodel_name)
+            log.INFO("Already processed toolchain for %s" % submodel_name)
             handle_result()

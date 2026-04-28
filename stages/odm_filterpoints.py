@@ -41,13 +41,13 @@ class ODMFilterPoints(types.ODM_Stage):
                         if boundary_distance is not None:
                             outputs['boundary'] = compute_boundary_from_shots(tree.opensfm_reconstruction, boundary_distance, reconstruction.get_proj_offset())
                             if outputs['boundary'] is None:
-                                log.ODM_WARNING("Cannot compute boundary from camera shots")
+                                log.WARNING("Cannot compute boundary from camera shots")
                         else:
-                            log.ODM_WARNING("Cannot compute boundary (GSD cannot be estimated)")
+                            log.WARNING("Cannot compute boundary (GSD cannot be estimated)")
                     else:
-                        log.ODM_WARNING("--auto-boundary set but so is --boundary, will use --boundary")
+                        log.WARNING("--auto-boundary set but so is --boundary, will use --boundary")
                 else:
-                    log.ODM_WARNING("Not a georeferenced reconstruction, will ignore --auto-boundary")
+                    log.WARNING("Not a georeferenced reconstruction, will ignore --auto-boundary")
                     
             point_cloud.filter(inputPointCloud, tree.filtered_point_cloud, tree.filtered_point_cloud_stats,
                                 standard_deviation=args.pc_filter, 
@@ -63,7 +63,7 @@ class ODMFilterPoints(types.ODM_Stage):
                     extra_msg = '. Also, since you used a boundary setting, make sure that the boundary polygon you specified covers the reconstruction area correctly.'
                 raise system.ExitException("Uh oh! We ended up with an empty point cloud. This means that the reconstruction did not succeed. Have you followed best practices for data acquisition? See https://docs.webodm.org/flying-tips/%s" % extra_msg)
         else:
-            log.ODM_WARNING('Found a valid point cloud file in: %s' %
+            log.WARNING('Found a valid point cloud file in: %s' %
                             tree.filtered_point_cloud)
         
         if args.optimize_disk_space and inputPointCloud:

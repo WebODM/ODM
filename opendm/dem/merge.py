@@ -26,12 +26,12 @@ def euclidean_merge_dems(input_dems, output_dem, creation_options={}, euclidean_
     existing_dems = []
     for dem in input_dems:
         if not io.file_exists(dem):
-            log.ODM_WARNING("%s does not exist. Will skip from merged DEM." % dem)
+            log.WARNING("%s does not exist. Will skip from merged DEM." % dem)
             continue
         existing_dems.append(dem)
 
     if len(existing_dems) == 0:
-        log.ODM_WARNING("No input DEMs, skipping euclidean merge.")
+        log.WARNING("No input DEMs, skipping euclidean merge.")
         return
 
     with rasterio.open(existing_dems[0]) as first:
@@ -45,7 +45,7 @@ def euclidean_merge_dems(input_dems, output_dem, creation_options={}, euclidean_
         if eumap and io.file_exists(eumap):
             inputs.append((dem, eumap))
 
-    log.ODM_INFO("%s valid DEM rasters to merge" % len(inputs))
+    log.INFO("%s valid DEM rasters to merge" % len(inputs))
 
     sources = [(rasterio.open(d), rasterio.open(e)) for d,e in inputs]
 
@@ -64,7 +64,7 @@ def euclidean_merge_dems(input_dems, output_dem, creation_options={}, euclidean_
             if src_d.profile["count"] != 1 or src_e.profile["count"] != 1:
                 raise ValueError("Inputs must be 1-band rasters")
         dst_w, dst_s, dst_e, dst_n = min(xs), min(ys), max(xs), max(ys)
-    log.ODM_INFO("Output bounds: %r %r %r %r" % (dst_w, dst_s, dst_e, dst_n))
+    log.INFO("Output bounds: %r %r %r %r" % (dst_w, dst_s, dst_e, dst_n))
 
     output_transform = Affine.translation(dst_w, dst_n)
     output_transform *= Affine.scale(res[0], -res[1])
@@ -76,8 +76,8 @@ def euclidean_merge_dems(input_dems, output_dem, creation_options={}, euclidean_
 
     # Adjust bounds to fit.
     dst_e, dst_s = output_transform * (output_width, output_height)
-    log.ODM_INFO("Output width: %d, height: %d" % (output_width, output_height))
-    log.ODM_INFO("Adjusted bounds: %r %r %r %r" % (dst_w, dst_s, dst_e, dst_n))
+    log.INFO("Output width: %d, height: %d" % (output_width, output_height))
+    log.INFO("Adjusted bounds: %r %r %r %r" % (dst_w, dst_s, dst_e, dst_n))
 
     profile["transform"] = output_transform
     profile["height"] = output_height

@@ -175,7 +175,7 @@ def config(argv=None, parser=None):
                     yaml_defaults = {k.replace('-', '_'): v for k, v in yaml_defaults.items()}
                     parser.set_defaults(**yaml_defaults)
             except Exception as e:
-                log.ODM_WARNING(f"Could not load settings from {context.settings_path}: {e}")
+                log.WARNING(f"Could not load settings from {context.settings_path}: {e}")
 
     parser.add_argument('--project-path',
                         metavar='<path>',
@@ -902,37 +902,37 @@ def config(argv=None, parser=None):
 
     for p in unknown:
         if p in DEPRECATED:
-            log.ODM_WARNING("%s is no longer a valid argument and will be ignored!" % p)
+            log.WARNING("%s is no longer a valid argument and will be ignored!" % p)
 
     # check that the project path setting has been set properly
     if not args.project_path:
-        log.ODM_ERROR('You need to set the project path in the '
+        log.ERROR('You need to set the project path in the '
                       'settings.yaml file before you can run ODM, '
                       'or use `--project-path <path>`. Run `python3 '
                       'run.py --help` for more information. ')
         sys.exit(1)
 
     if args.fast_orthophoto:
-      log.ODM_INFO('Fast orthophoto is turned on, automatically setting --skip-3dmodel')
+      log.INFO('Fast orthophoto is turned on, automatically setting --skip-3dmodel')
       args.skip_3dmodel = True
 
     if args.dtm and not args.pc_classify:
-      log.ODM_INFO("DTM is turned on, automatically turning on point cloud classification")
+      log.INFO("DTM is turned on, automatically turning on point cloud classification")
       args.pc_classify = True
 
     if args.skip_3dmodel and args.use_3dmesh:
-      log.ODM_WARNING('--skip-3dmodel is set, but so is --use-3dmesh. --skip-3dmodel will be ignored.')
+      log.WARNING('--skip-3dmodel is set, but so is --use-3dmesh. --skip-3dmodel will be ignored.')
       args.skip_3dmodel = False
 
     if args.orthophoto_cutline and not args.crop:
-      log.ODM_WARNING("--orthophoto-cutline is set, but --crop is not. --crop will be set to 0.01")
+      log.WARNING("--orthophoto-cutline is set, but --crop is not. --crop will be set to 0.01")
       args.crop = 0.01
 
     if args.sm_cluster:
         try:
             Node.from_url(args.sm_cluster).info()
         except exceptions.NodeConnectionError as e:
-            log.ODM_ERROR("Cluster node seems to be offline: %s"  % str(e))
+            log.ERROR("Cluster node seems to be offline: %s"  % str(e))
             sys.exit(1)
 
     return args

@@ -6,7 +6,7 @@ PROGRESS_BROADCAST_PORT = 6367 #ODMR
 try:
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 except:
-    log.ODM_WARNING("Cannot create UDP socket, progress reporting will be disabled.")
+    log.WARNING("Cannot create UDP socket, progress reporting will be disabled.")
     sock = None
 
 class Broadcaster:
@@ -28,13 +28,13 @@ class Broadcaster:
         UDP_IP = "127.0.0.1"
 
         if global_progress > 100:
-            log.ODM_WARNING("Global progress is > 100 (%s), please contact the developers." % global_progress)
+            log.WARNING("Global progress is > 100 (%s), please contact the developers." % global_progress)
             global_progress = 100
 
         try:
             sock.sendto("PGUP/{}/{}/{}".format(self.pid, self.project_name, float(global_progress)).encode('utf8'), 
                         (UDP_IP, self.port))
         except Exception as e:
-            log.ODM_WARNING("Failed to broadcast progress update on UDP port %s (%s)" % (str(self.port), str(e)))
+            log.WARNING("Failed to broadcast progress update on UDP port %s (%s)" % (str(self.port), str(e)))
 
 progressbc = Broadcaster(PROGRESS_BROADCAST_PORT)

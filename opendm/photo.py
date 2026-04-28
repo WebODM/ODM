@@ -84,7 +84,7 @@ def get_mm_per_unit(resolution_unit):
     elif resolution_unit == 5:  # um
         return 0.001
     else:
-        log.ODM_WARNING("Unknown EXIF resolution unit value: {}".format(resolution_unit))
+        log.WARNING("Unknown EXIF resolution unit value: {}".format(resolution_unit))
         return None
 
 class PhotoCorruptedException(Exception):
@@ -216,14 +216,14 @@ class ODM_Photo:
                         self.camera_make = tags['Image Make'].values
                         self.camera_make = self.camera_make.strip()
                     except UnicodeDecodeError:
-                        log.ODM_WARNING("EXIF Image Make might be corrupted")
+                        log.WARNING("EXIF Image Make might be corrupted")
                         self.camera_make = "unknown"
                 if 'Image Model' in tags:
                     try:
                         self.camera_model = tags['Image Model'].values
                         self.camera_model = self.camera_model.strip()
                     except UnicodeDecodeError:
-                        log.ODM_WARNING("EXIF Image Model might be corrupted")
+                        log.WARNING("EXIF Image Model might be corrupted")
                         self.camera_model = "unknown"
                 if 'GPS GPSAltitude' in tags:
                     self.altitude = self.float_value(tags['GPS GPSAltitude'])
@@ -232,17 +232,17 @@ class ODM_Photo:
                 if 'GPS GPSLatitude' in tags and 'GPS GPSLatitudeRef' in tags:
                     self.latitude = self.dms_to_decimal(tags['GPS GPSLatitude'], tags['GPS GPSLatitudeRef'])
                 elif 'GPS GPSLatitude' in tags:
-                    log.ODM_WARNING("GPS position for %s might be incorrect, GPSLatitudeRef tag is missing (assuming N)" % self.filename)
+                    log.WARNING("GPS position for %s might be incorrect, GPSLatitudeRef tag is missing (assuming N)" % self.filename)
                     self.latitude = self.dms_to_decimal(tags['GPS GPSLatitude'], GPSRefMock('N'))
                 if 'GPS GPSLongitude' in tags and 'GPS GPSLongitudeRef' in tags:
                     self.longitude = self.dms_to_decimal(tags['GPS GPSLongitude'], tags['GPS GPSLongitudeRef'])
                 elif 'GPS GPSLongitude' in tags:
-                    log.ODM_WARNING("GPS position for %s might be incorrect, GPSLongitudeRef tag is missing (assuming E)" % self.filename)
+                    log.WARNING("GPS position for %s might be incorrect, GPSLongitudeRef tag is missing (assuming E)" % self.filename)
                     self.longitude = self.dms_to_decimal(tags['GPS GPSLongitude'], GPSRefMock('E'))
                 if 'Image Orientation' in tags:
                     self.orientation = self.int_value(tags['Image Orientation'])
             except (IndexError, ValueError) as e:
-                log.ODM_WARNING("Cannot read basic EXIF tags for %s: %s" % (self.filename, str(e)))
+                log.WARNING("Cannot read basic EXIF tags for %s: %s" % (self.filename, str(e)))
 
             try:
                 if 'Image Tag 0xC61A' in tags:
@@ -300,12 +300,12 @@ class ODM_Photo:
                    self.exif_height = self.int_value(tags['EXIF ExifImageLength'])
                 
             except Exception as e:
-                log.ODM_WARNING("Cannot read extended EXIF tags for %s: %s" % (self.filename, str(e)))
+                log.WARNING("Cannot read extended EXIF tags for %s: %s" % (self.filename, str(e)))
 
             # Warn if GPS coordinates are suspiciously wrong
             if self.latitude is not None and self.latitude == 0 and \
                 self.longitude is not None and self.longitude == 0:
-                log.ODM_WARNING("%s has GPS position (0,0), possibly corrupted" % self.filename)
+                log.WARNING("%s has GPS position (0,0), possibly corrupted" % self.filename)
 
 
             # Extract XMP tags
@@ -477,7 +477,7 @@ class ODM_Photo:
                             self.roll *= -1
 
                 except Exception as e:
-                    log.ODM_WARNING("Cannot read XMP tags for %s: %s" % (self.filename, str(e)))
+                    log.WARNING("Cannot read XMP tags for %s: %s" % (self.filename, str(e)))
 
                 # self.set_attr_from_xmp_tag('center_wavelength', xtags, [
                 #     'Camera:CentralWavelength'
@@ -512,7 +512,7 @@ class ODM_Photo:
         try:
             self.focal_ratio = self.extract_focal(self.camera_make, self.camera_model, tags, xtags)
         except (IndexError, ValueError) as e:
-            log.ODM_WARNING("Cannot extract focal ratio for %s: %s" % (self.filename, str(e)))
+            log.WARNING("Cannot extract focal ratio for %s: %s" % (self.filename, str(e)))
 
     def extract_focal(self, make, model, tags, xtags):
         if make != "unknown":
@@ -605,7 +605,7 @@ class ODM_Photo:
                 from bs4 import BeautifulSoup
                 xmp_str = str(BeautifulSoup(xmp_str, 'xml'))
                 xdict = x2d.parse(xmp_str)
-                log.ODM_WARNING("%s has malformed XMP XML (but we fixed it)" % self.filename)
+                log.WARNING("%s has malformed XMP XML (but we fixed it)" % self.filename)
             xdict = xdict.get('x:xmpmeta', {})
             xdict = xdict.get('rdf:RDF', {})
             xdict = xdict.get('rdf:Description', {})
@@ -925,7 +925,7 @@ class ODM_Photo:
             m = np.linalg.norm(xnp)
             
             if m == 0:
-                log.ODM_WARNING("Cannot compute OPK angles, divider = 0")
+                log.WARNING("Cannot compute OPK angles, divider = 0")
                 return
             
             # Unit vector pointing north

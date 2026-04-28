@@ -19,7 +19,7 @@ def generate_tiles(geotiff, output_dir, max_concurrency, resolution):
     if os.path.isdir(output_dir):
         shutil.rmtree(output_dir)
     
-    log.ODM_INFO("Generating static tiles for %s" % geotiff)
+    log.INFO("Generating static tiles for %s" % geotiff)
     with StaticTiler(geotiff, output_dir, px_per_tile, tms=True) as tiler:
         for z in range(z_min, z_max + 1):
             tiles = tiler.get_tiles_for_zoom(z)
@@ -30,7 +30,7 @@ def generate_orthophoto_tiles(geotiff, output_dir, max_concurrency, resolution):
     try:
         generate_tiles(geotiff, output_dir, max_concurrency, resolution)
     except Exception as e:
-        log.ODM_WARNING("Cannot generate orthophoto tiles: %s" % str(e))
+        log.WARNING("Cannot generate orthophoto tiles: %s" % str(e))
 
 def generate_colored_hillshade(geotiff):
     relief_file = os.path.join(os.path.dirname(__file__), "color_relief.txt")
@@ -52,7 +52,7 @@ def generate_colored_hillshade(geotiff):
         
         return outputs
     except Exception as e:
-        log.ODM_WARNING("Cannot generate colored hillshade: %s" % str(e))
+        log.WARNING("Cannot generate colored hillshade: %s" % str(e))
         return (None, None, None)
 
 def generate_dem_tiles(geotiff, output_dir, max_concurrency, resolution):
@@ -65,4 +65,4 @@ def generate_dem_tiles(geotiff, output_dir, max_concurrency, resolution):
             if os.path.isfile(f):
                 os.remove(f)
     except Exception as e:
-        log.ODM_WARNING("Cannot generate DEM tiles: %s" % str(e))
+        log.WARNING("Cannot generate DEM tiles: %s" % str(e))

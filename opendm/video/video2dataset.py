@@ -43,11 +43,11 @@ class Video2Dataset:
         for input_file in self.parameters.input:
             # get file name
             file_name = os.path.basename(input_file)
-            log.ODM_INFO("Processing video: {}".format(input_file))
+            log.INFO("Processing video: {}".format(input_file))
 
             # get video info
             video_info = get_video_info(input_file)
-            log.ODM_INFO(video_info)
+            log.INFO(video_info)
 
             # Set pseudo start time
             if self.date_now is None:
@@ -58,7 +58,7 @@ class Video2Dataset:
             else:
                 self.date_now += datetime.timedelta(seconds=video_info.total_frames / video_info.frame_rate)
             
-            log.ODM_INFO("Use pseudo start time: %s" % self.date_now)
+            log.INFO("Use pseudo start time: %s" % self.date_now)
 
             if self.parameters.use_srt:
 
@@ -69,31 +69,31 @@ class Video2Dataset:
 
                 for srt_file in srt_files:
                     if os.path.exists(srt_file):
-                        log.ODM_INFO("Loading SRT file: {}".format(srt_file))
+                        log.INFO("Loading SRT file: {}".format(srt_file))
                         try:
                             srt_parser = SrtFileParser(srt_file)
                             srt_parser.parse()
                             break
                         except Exception as e:
-                            log.ODM_INFO("Error parsing SRT file: {}".format(e))
+                            log.INFO("Error parsing SRT file: {}".format(e))
                             srt_parser = None
             else:
                 srt_parser = None
 
             if (self.black_checker is not None and self.black_checker.NeedPreProcess()):
                 start2 = time.time()
-                log.ODM_INFO("Preprocessing for black frame checker... this might take a bit")
+                log.INFO("Preprocessing for black frame checker... this might take a bit")
                 self.black_checker.PreProcess(input_file, self.parameters.start, self.parameters.end)
                 end = time.time()
-                log.ODM_INFO("Preprocessing time: {:.2f}s".format(end - start2))
-                log.ODM_INFO("Calculated luminance_range_size is {}".format(self.black_checker.luminance_range_size))
-                log.ODM_INFO("Calculated luminance_minimum_value is {}".format(self.black_checker.luminance_minimum_value))
-                log.ODM_INFO("Calculated absolute_threshold is {}".format(self.black_checker.absolute_threshold))
+                log.INFO("Preprocessing time: {:.2f}s".format(end - start2))
+                log.INFO("Calculated luminance_range_size is {}".format(self.black_checker.luminance_range_size))
+                log.INFO("Calculated luminance_minimum_value is {}".format(self.black_checker.luminance_minimum_value))
+                log.INFO("Calculated absolute_threshold is {}".format(self.black_checker.absolute_threshold))
 
             # open video file
             cap = cv2.VideoCapture(input_file)
             if (not cap.isOpened()):
-                log.ODM_INFO("Error opening video stream or file")
+                log.INFO("Error opening video stream or file")
                 return
 
             if (self.parameters.start is not None):
@@ -136,11 +136,11 @@ class Video2Dataset:
             self.f.close()
 
         if self.parameters.limit is not None and self.parameters.limit > 0 and self.global_idx >= self.parameters.limit:
-            log.ODM_INFO("Limit of {} frames reached, trimming dataset".format(self.parameters.limit))
+            log.INFO("Limit of {} frames reached, trimming dataset".format(self.parameters.limit))
             output_file_paths = limit_files(output_file_paths, self.parameters.limit)
 
         end = time.time()
-        log.ODM_INFO("Total processing time: {:.2f}s".format(end - start))
+        log.INFO("Total processing time: {:.2f}s".format(end - start))
         return output_file_paths
 
 

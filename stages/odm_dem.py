@@ -26,7 +26,7 @@ class ODMDEMStage(types.ODM_Stage):
         pseudo_georeference = False
         
         if not reconstruction.is_georeferenced():
-            log.ODM_WARNING("Not georeferenced, using ungeoreferenced point cloud...")
+            log.WARNING("Not georeferenced, using ungeoreferenced point cloud...")
             ignore_resolution = True
             pseudo_georeference = True
 
@@ -36,9 +36,9 @@ class ODMDEMStage(types.ODM_Stage):
                                         ignore_resolution=ignore_resolution and args.ignore_gsd,
                                         has_gcp=reconstruction.has_gcp())
 
-        log.ODM_INFO('Create DSM: ' + str(args.dsm))
-        log.ODM_INFO('Create DTM: ' + str(args.dtm))
-        log.ODM_INFO('DEM input file {0} found: {1}'.format(dem_input, str(pc_model_found)))
+        log.INFO('Create DSM: ' + str(args.dsm))
+        log.INFO('Create DTM: ' + str(args.dtm))
+        log.INFO('DEM input file {0} found: {1}'.format(dem_input, str(pc_model_found)))
 
         # define paths and create working directories
         odm_dem_root = tree.path('odm_dem')
@@ -100,6 +100,6 @@ class ODMDEMStage(types.ODM_Stage):
                     progress += 40
                     self.update_progress(progress)
             else:
-                log.ODM_WARNING('Found existing outputs in: %s' % odm_dem_root)
+                log.WARNING('Found existing outputs in: %s' % odm_dem_root)
         else:
-            log.ODM_WARNING('DEM will not be generated')
+            log.WARNING('DEM will not be generated')

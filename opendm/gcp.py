@@ -38,7 +38,7 @@ class GCPFile:
                         if len(parts) >= 6:
                             self.entries.append(line)
                         else:
-                            log.ODM_WARNING("Malformed GCP line: %s" % line)
+                            log.WARNING("Malformed GCP line: %s" % line)
 
     def iter_entries(self):
         for entry in self.entries:
@@ -60,18 +60,18 @@ class GCPFile:
             if coords[k] < 3:
                 description = "insufficient" if coords[k] < 2 else "not ideal"
                 for entry in gcps[k]:
-                    log.ODM_WARNING(str(entry))
-                log.ODM_WARNING("The number of images where the GCP %s has been tagged are %s" % (k, description))
-                log.ODM_WARNING("You should tag at least %s more images" % (3 - coords[k]))
-                log.ODM_WARNING("=====================================")
+                    log.WARNING(str(entry))
+                log.WARNING("The number of images where the GCP %s has been tagged are %s" % (k, description))
+                log.WARNING("You should tag at least %s more images" % (3 - coords[k]))
+                log.WARNING("=====================================")
                 errors += 1
         if len(coords) < 3:
-            log.ODM_WARNING("Low number of GCPs detected (%s). For best results use at least 5." % (3 - len(coords)))
-            log.ODM_WARNING("=====================================")
+            log.WARNING("Low number of GCPs detected (%s). For best results use at least 5." % (3 - len(coords)))
+            log.WARNING("=====================================")
             errors += 1
 
         if errors > 0:
-            log.ODM_WARNING("Some issues detected with GCPs (but we're going to process this anyway)")
+            log.WARNING("Some issues detected with GCPs (but we're going to process this anyway)")
 
     def parse_entry(self, entry):
         if entry:

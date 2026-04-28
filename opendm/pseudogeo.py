@@ -12,11 +12,11 @@ def get_pseudogeo_scale():
 
 def add_pseudo_georeferencing(geotiff):
     if not io.file_exists(geotiff):
-        log.ODM_WARNING("Cannot add pseudo georeferencing, %s does not exist" % geotiff)
+        log.WARNING("Cannot add pseudo georeferencing, %s does not exist" % geotiff)
         return
 
     try:
-        log.ODM_INFO("Adding pseudo georeferencing (raster should show up at the equator) to %s" % geotiff)
+        log.INFO("Adding pseudo georeferencing (raster should show up at the equator) to %s" % geotiff)
 
         dst_ds = gdal.Open(geotiff, GA_Update)
         srs = osr.SpatialReference()
@@ -27,4 +27,4 @@ def add_pseudo_georeferencing(geotiff):
         dst_ds = None
 
     except Exception as e:
-        log.ODM_WARNING("Cannot add pseudo georeferencing to %s (%s), skipping..." % (geotiff, str(e)))
+        log.WARNING("Cannot add pseudo georeferencing to %s (%s), skipping..." % (geotiff, str(e)))

@@ -56,7 +56,7 @@ def compute_alignment_matrix(input_laz, align_file, stats_dir):
 
     # Check if we need to reproject align file
     input_crs = get_point_cloud_crs(input_laz)
-    log.ODM_INFO("Input CRS: %s" % input_crs)
+    log.INFO("Input CRS: %s" % input_crs)
 
     _, ext = os.path.splitext(align_file)
     repr_func = None
@@ -68,16 +68,16 @@ def compute_alignment_matrix(input_laz, align_file, stats_dir):
         align_crs = get_point_cloud_crs(align_file)
         repr_func = reproject_point_cloud
     else:
-        log.ODM_WARNING("Unsupported alignment file: %s" % align_file)
+        log.WARNING("Unsupported alignment file: %s" % align_file)
         return
     
     to_delete = []
 
     try:
-        log.ODM_INFO("Align CRS: %s" % align_crs)
+        log.INFO("Align CRS: %s" % align_crs)
         if input_crs != align_crs:
             # Reprojection needed
-            log.ODM_INFO("Reprojecting %s to %s" % (align_file, input_crs))
+            log.INFO("Reprojecting %s to %s" % (align_file, input_crs))
             align_file = repr_func(align_file, input_crs)
             to_delete.append(align_file)
 
@@ -85,10 +85,10 @@ def compute_alignment_matrix(input_laz, align_file, stats_dir):
         fnd_obj, aoi_obj = codem.preprocess(conf)
         fnd_obj.prep()
         aoi_obj.prep()
-        log.ODM_INFO("Aligning reconstruction to %s" % align_file)
-        log.ODM_INFO("Coarse registration...")
+        log.INFO("Aligning reconstruction to %s" % align_file)
+        log.INFO("Coarse registration...")
         dsm_reg = codem.coarse_registration(fnd_obj, aoi_obj, conf)
-        log.ODM_INFO("Fine registration...")
+        log.INFO("Fine registration...")
         icp_reg = codem.fine_registration(fnd_obj, aoi_obj, dsm_reg, conf)
 
         app_reg = codem.registration.ApplyRegistration(
